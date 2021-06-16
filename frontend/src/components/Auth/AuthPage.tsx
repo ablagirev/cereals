@@ -1,17 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
 import "react-app-polyfill/ie11";
-import { Formik, Field, Form } from "formik";
+import { Formik, Form } from "formik";
 import { AuthContext } from "../../context";
 
 import { EMPTY_CHAR } from "../../utils/consts";
 import { useUserData } from "../../hooks/useUserData";
+import { Button, Flex, Input, Spacer, Typography } from "../../uikit";
+import styled from "styled-components";
 
 interface ILoginValues {
   login: string;
   password: string;
 }
 
-export const AuthPage = () => {
+export const AuthPage: React.FC = () => {
   const auth = useContext(AuthContext);
   const [userCredentials, setUserCredentials] = useState<ILoginValues>();
   const {
@@ -43,21 +45,45 @@ export const AuthPage = () => {
   }, [isError]);
 
   return (
-    <div>
-      <h1>Signup</h1>
-      <Formik
-        initialValues={{
-          login: EMPTY_CHAR,
-          password: EMPTY_CHAR,
-        }}
-        onSubmit={handleLogin}
-      >
-        <Form>
-          <Field id="login" name="login" placeholder={EMPTY_CHAR} />
-          <Field id="password" name="password" placeholder={EMPTY_CHAR} />
-          <button type="submit">Отправить</button>
-        </Form>
-      </Formik>
-    </div>
+    <>
+      <Spacer space={180} />
+      <Flex hAlignContent="center">
+        <AuthInnerWrapper>
+          <Flex column hAlignContent="center">
+            <Typography bold size="xl">
+              Daylesford
+            </Typography>
+            <Spacer />
+            <Typography align="center">
+              Закупка зерновых по всей России покупка и продажа аграрной
+              продукции
+            </Typography>
+            <Spacer space={32} />
+            <Formik
+              initialValues={{
+                login: EMPTY_CHAR,
+                password: EMPTY_CHAR,
+              }}
+              onSubmit={handleLogin}
+            >
+              <Form>
+                <Flex column>
+                  <Input name="login" label="Имя пользователя" />
+                  <Spacer />
+                  <Input name="password" label="Пароль" />
+                  <Spacer space={44} />
+                  <Button type="submit">Отправить</Button>
+                  <Spacer />
+                </Flex>
+              </Form>
+            </Formik>
+          </Flex>
+        </AuthInnerWrapper>
+      </Flex>
+    </>
   );
 };
+
+const AuthInnerWrapper = styled.div`
+  width: 345px;
+`;

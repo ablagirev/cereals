@@ -1,6 +1,5 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { theme } from "../../theme";
 import { Button, Flex, Spacer, Typography } from "../../uikit";
 
 /**
@@ -25,11 +24,9 @@ export const NoPermissions = () => {
       hAlignContent="center"
     >
       <Spacer />
-      <Typography size="sm" color={theme?.palette.common.colors.inputGray}>
-        Нет доступа
-      </Typography>
+      <Typography size="sm">Нет доступа</Typography>
       <Spacer />
-      <Button variant="secondary" onClick={handleButtonClick}>
+      <Button onClick={handleButtonClick}>
         Перейти к доступному функционалу
       </Button>
     </Flex>

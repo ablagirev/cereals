@@ -43,7 +43,7 @@ export const commonProps = {
     },
     typography: {
         htmlFontSize: 16,
-        fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+        fontFamily: '"Rubik", "Roboto", "Helvetica", "Arial", sans-serif',
         fontSizeXs: 11.5,
         fontSizeS: 12,
         fontSize: 13,

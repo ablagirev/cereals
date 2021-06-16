@@ -1,38 +1,35 @@
-import React, { forwardRef, ReactNode } from "react";
-import BSButton from "react-bootstrap/Button";
-import {
-  BsPrefixPropsWithChildren,
-  BsPrefixRefForwardingComponent,
-} from "react-bootstrap/esm/helpers";
-import { ButtonVariant } from "react-bootstrap/esm/types";
+import React, { ReactNode } from "react";
+import styled from "styled-components";
+import { darken } from "polished";
 
-export declare type ButtonType = "button" | "reset" | "submit" | string;
+export declare type ButtonType = "submit" | "link" | "base";
 
-/**
- * Свойства компонента.
- *
- * @prop {boolean} active Активность.
- */
-export interface IButtonProps
-  extends Omit<React.HTMLAttributes<HTMLElement>, "children">,
-    Omit<BsPrefixPropsWithChildren, "children"> {
-  active?: boolean;
-  block?: boolean;
-  variant?: ButtonVariant;
+export interface IButtonProps {
+  onClick?: () => void;
   size?: "sm" | "lg";
   type?: ButtonType;
-  href?: string;
   disabled?: boolean;
-  target?: any;
   children?: ReactNode;
 }
-declare type Button = BsPrefixRefForwardingComponent<"button", IButtonProps>;
-export declare type CommonButtonProps =
-  | "href"
-  | "size"
-  | "variant"
-  | "disabled";
+export const Button: React.FC<IButtonProps> = ({ children, onClick }) => (
+  <StyledButton onClick={onClick}>{children}</StyledButton>
+);
 
-export const Button: Button = forwardRef((props, ref) => (
-  <BSButton {...props} ref={ref} />
-));
+const StyledButton = styled.button`
+  width: 345px;
+  height: 50px;
+  cursor: pointer;
+  background: #8e66fe;
+  border: 0;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  color: #ffffff;
+  transition: 0.3s;
+
+  &:hover {
+    background-color: ${() => darken(0.04, "#8e66fe")};
+  }
+  &:active {
+    background-color: ${() => darken(0.07, "#8e66fe")};
+  }
+`;
