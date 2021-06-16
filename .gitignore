@@ -1,0 +1,5 @@
+db.sqlite3
+venv
+temp_file
+media
+.idea
