@@ -1,0 +1,1 @@
+export {DealingsPage} from './DealingsPage'
