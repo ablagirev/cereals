@@ -26,7 +26,7 @@ const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   const { token, userId, login, logout, ready } = useAuth();
-  const isAuthenticated = !!token;
+  const isAuthenticated = !token;
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
@@ -37,8 +37,8 @@ const App: React.FC = () => {
             value={{ token, userId, login, logout, isAuthenticated }}
           >
             <BrowserRouter>
-              <Layout navigation={navigation} isAuthenticated={isAuthenticated}>
-                <Routes isAuthenticated={isAuthenticated} />
+              <Layout navigation={navigation}>
+                <Routes />
               </Layout>
             </BrowserRouter>
           </AuthContext.Provider>

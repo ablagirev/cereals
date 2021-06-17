@@ -82,6 +82,6 @@ const Wrapper = styled.span<IWrapperProps>`
     reset ? "1em" : `${calculateLH(size, caption)}px`};
   margin-top: 0;
   margin-bottom: 0;
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Rubik", "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-align: ${({ align }) => align ?? "left"};
 `;

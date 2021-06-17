@@ -1,5 +1,5 @@
 import React from "react";
-import { DealingsPage } from "../components/Dealings";
+import { OffersPage } from "../components/Offers";
 
 import { routes } from "./consts";
 import { TAppNavSection } from "./models";
@@ -11,7 +11,8 @@ export const navigation: TAppNavSection = {
       allowed: [],
       path: routes.dealings.path,
       route: {
-        render: () => <DealingsPage />,
+        exact: true,
+        render: () => <div>Страница сделок</div>,
       },
       element: {
         label: "Сделки",
@@ -21,7 +22,7 @@ export const navigation: TAppNavSection = {
       allowed: [],
       path: routes.offers.path,
       route: {
-        render: () => <div>Страница предложений</div>,
+        render: () => <OffersPage />,
       },
       element: {
         label: "Предложения",
@@ -31,6 +32,7 @@ export const navigation: TAppNavSection = {
       allowed: [],
       path: routes.analytics.path,
       route: {
+        exact: true,
         render: () => <div>Страница аналитики</div>,
       },
       element: {
@@ -41,6 +43,7 @@ export const navigation: TAppNavSection = {
       allowed: [],
       path: routes.farmers.path,
       route: {
+        exact: true,
         render: () => <div>Страница фермеров</div>,
       },
       element: {
@@ -51,6 +54,7 @@ export const navigation: TAppNavSection = {
       allowed: [],
       path: routes.settings.path,
       route: {
+        exact: true,
         render: () => <div>Страница настроек</div>,
       },
       element: {

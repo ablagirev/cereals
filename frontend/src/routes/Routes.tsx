@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Redirect, Route, BrowserRouter } from "react-router-dom";
+import { Switch, Redirect, Route } from "react-router-dom";
 import { hasPermissions } from "../utils";
 import { usePermissions } from "../hooks/usePermissions";
 import { routes } from "./consts";
@@ -8,6 +8,7 @@ import { TAppNavItem } from "./models";
 import { navigation } from "./navigation";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AuthPage } from "../components/Auth";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 /**
  * Возвращает первый доступный пользователю роут карты.
@@ -58,9 +59,8 @@ const buildRoutes = () => {
 /**
  * Возвращает основную (корневую) карту роутов приложения.
  */
-export const Routes: React.FC<{ isAuthenticated: boolean }> = ({
-  isAuthenticated,
-}) => {
+export const Routes: React.FC = () => {
+  const { isAuthenticated } = useAuthContext();
   const userPermissions = usePermissions();
 
   const redirectRoute = getFirstAvailableRoute(userPermissions);

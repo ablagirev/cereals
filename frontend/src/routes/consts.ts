@@ -1,4 +1,7 @@
 
+const DEALINGS = 'dealings'
+const OFFERS = 'offers'
+
 /**
  * Содержит конфигурацию роутов приложения.
  */
@@ -8,12 +11,25 @@ export const routes = {
         path: '/',
     },
     dealings: {
-        key: 'dealings',
-        path: '/dealings',
+        key: DEALINGS,
+        path: `/${DEALINGS}`,
+        
     },
     offers: {
-        key: 'offers',
-        path: '/offers',
+        key: OFFERS,
+        path: `/${OFFERS}`,
+        list: {
+            key: 'list',
+            path: `/${OFFERS}/list`,
+        },
+        create: {
+            key: 'create',
+            path: `/${OFFERS}/create`,
+        },
+        edit: {
+            key: 'edit',
+            path: `/${OFFERS}/edit/:id`,
+        },
     },
     analytics: {
         key: 'analytics',

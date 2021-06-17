@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { useAuthContext } from "../../hooks/useAuthContext";
 import { TAppNavSection } from "../../routes/models";
 import { Flex } from "../../uikit";
 
@@ -12,17 +13,13 @@ import { NavSidebar } from "./NavSidebar";
  */
 interface ILayoutProps {
   navigation: TAppNavSection;
-  isAuthenticated: boolean;
 }
 
 /**
  * Компонент лейаута страницы приложения.
  */
-export const Layout: React.FC<ILayoutProps> = ({
-  children,
-  navigation,
-  isAuthenticated,
-}) => {
+export const Layout: React.FC<ILayoutProps> = ({ children, navigation }) => {
+  const { isAuthenticated } = useAuthContext();
   return (
     <Flex fillHeight>
       {isAuthenticated && <NavSidebar navigation={navigation} />}
@@ -35,5 +32,5 @@ export const Layout: React.FC<ILayoutProps> = ({
 };
 
 const PageHeader = styled.div`
-  height: 75px;
+  height: 44px;
 `;

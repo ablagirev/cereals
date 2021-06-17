@@ -86,6 +86,14 @@ export const AuthPage: React.FC = () => {
                           value: "1",
                           label: "1",
                         },
+                        {
+                          value: "1asdas",
+                          label: "13333",
+                        },
+                        {
+                          value: "1asd423434sad",
+                          label: "1asdsa",
+                        },
                       ]}
                     />
                   </FormikField> */}
