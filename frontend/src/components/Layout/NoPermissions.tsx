@@ -26,7 +26,7 @@ export const NoPermissions = () => {
       <Spacer />
       <Typography size="sm">Нет доступа</Typography>
       <Spacer />
-      <Button onClick={handleButtonClick}>
+      <Button variant="base" onClick={handleButtonClick}>
         Перейти к доступному функционалу
       </Button>
     </Flex>

@@ -30,8 +30,8 @@ export const Typography = ({
       <Color
         color={`${
           inverted
-            ? theme?.palette.common.colors.white
-            : color || theme?.palette.text.primary
+            ? theme.palette.common.colors.white
+            : color || theme.palette.text.primary
         }`}
       >
         <Bold bold={bold}>{children}</Bold>

@@ -8,12 +8,14 @@ interface IProps {
   name: string;
   placeholder?: string;
   label?: string;
+  type?: string;
 }
 
 export const Input: React.FC<IProps> = ({
   name,
   placeholder = EMPTY_CHAR,
   label,
+  type,
 }) => (
   <>
     {label && (
@@ -22,7 +24,7 @@ export const Input: React.FC<IProps> = ({
         <Spacer space={4} />
       </>
     )}
-    <StyledField id={name} name={name} placeholder={placeholder} />
+    <StyledField id={name} name={name} placeholder={placeholder} type={type} />
   </>
 );
 

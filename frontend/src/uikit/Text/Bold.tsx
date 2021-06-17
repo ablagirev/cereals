@@ -6,5 +6,5 @@ interface IProps {
 }
 
 export const Bold = styled.b<IProps>`
-  font-weight: ${({ bold }) => (bold ? theme?.typography.fontWeightBold : 400)};
+  font-weight: ${({ bold }) => (bold ? theme.typography.fontWeightBold : 400)};
 `;

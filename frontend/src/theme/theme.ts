@@ -188,6 +188,7 @@ declare module 'styled-components' {
             common: {
                 colors: {
                     black: string;
+                    purple: string;
                     white: string;
                     blackAlt: string;
                     blue: string;

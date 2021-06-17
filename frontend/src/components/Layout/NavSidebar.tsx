@@ -49,7 +49,7 @@ export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
               );
             })}
           </NavList>
-          <Spacer width={theme?.spacings.s} />
+          <Spacer width={theme.spacings.s} />
         </Flex>
       </Fragment>
     </NavSidebarInner>
