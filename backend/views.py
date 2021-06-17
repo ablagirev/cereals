@@ -9,14 +9,14 @@ from rest_framework.response import Response
 from Daylesford.settings import BASE_DIR
 from backend.create_sign import create_sign, CreateSign
 from backend.generation_doc import gen_doc
-from backend.models import Product, Offer, Warehouse, Deal, Document
+from backend.models import Product, Offer, Warehouse, Deal, Document, Company
 from rest_framework import generics
 from rest_framework.views import APIView
 import json
 
 from backend.send_doc_to_edm import send_doc, SendDocToSBIS
 from backend.serializer import ProductSerializer, OfferSerializer, WarehouseSerializer, DealSerializer, \
-    DocumentSerializer
+    DocumentSerializer, CompanySerializer
 
 
 class ProductListView(generics.ListCreateAPIView):
@@ -45,6 +45,15 @@ class WarehouseListView(generics.ListCreateAPIView):
 class WarehouseUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Warehouse.objects.all()
     serializer_class = WarehouseSerializer
+
+
+class CompanyListView(generics.ListCreateAPIView):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+
+class CompanyUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
 
 
 class AcceptOffer(APIView):

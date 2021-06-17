@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from backend.models import Product, Offer, Warehouse, Deal, Document
+from backend.models import Product, Offer, Warehouse, Deal, Document, Company
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -45,4 +45,10 @@ class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
         fields = ['name', 'type_doc', 'file', 'sign_file']
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = '__all__'
 

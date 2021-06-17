@@ -1,7 +1,28 @@
 from django.contrib.auth.models import User
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
+
+
+class Company(models.Model):
+    name_of_provider = models.CharField('Название компании', max_length=250)
+    head_of_provider = models.CharField('ФИО руководителя компании', max_length=250, blank=True, null=True)
+    short_fio = models.CharField('сокращенное ФИО руководителя компании', max_length=250, blank=True, null=True)
+    position_head_of_provider = models.CharField('Должность руководителя компании', max_length=250, blank=True, null=True)
+    basis_of_doc = models.CharField('Должность руководителя компании', max_length=250, blank=True, null=True)
+    address_load = models.CharField('Должность руководителя компании', max_length=250, blank=True, null=True)
+    ul_address = models.CharField('Юридический адрес компании', max_length=500, blank=True, null=True)
+    inn = models.IntegerField('ИНН компании', blank=True, null=True)
+    kpp = models.IntegerField('КПП компании', blank=True, null=True)
+    ogrn = models.IntegerField('ОГРН компании', blank=True, null=True)
+    bik = models.CharField('БИК компании', max_length=250, blank=True, null=True)
+    payment_account = models.CharField('Расчетный счет компании', max_length=250, blank=True, null=True)
+    correspondent_account = models.CharField('Корреспондентский счет компании', max_length=250, blank=True, null=True)
+    phone_number = models.CharField('Телефонный номер компании', max_length=64, blank=True, null=True)
+    email_of_head = models.CharField('Email руководителя', max_length=250, blank=True, null=True)
+    name_of_bank = models.CharField('Название банка', max_length=250, blank=True, null=True)
+
+
 
 
 class Product(models.Model):
@@ -135,6 +156,16 @@ class Deal(models.Model):
     shipment = models.ManyToManyField(Shipment)
     control = models.ManyToManyField(Сontrol)
 
+    name_of_contract = models.CharField('Название договора', max_length=250, blank=True, null=True)
+    number_of_spec = models.CharField('Номер спецификации', max_length=250, blank=True, null=True)
+    date_start_of_spec = models.DateTimeField('Дата начала спецификации', blank=True, null=True)
+    date_finish_of_spec = models.DateTimeField('Дата окончания спецификации', blank=True, null=True)
+    date_start_of_contract = models.DateTimeField('Дата начала договора', blank=True, null=True)
+    date_finish_of_contract = models.DateTimeField('Дата окончания договора', blank=True, null=True)
+
+    date_start_shipment = models.DateTimeField('Дата старта экспорта', blank=True, null=True)
+    date_finish_shipment = models.DateTimeField('Дата окончания экспорта', blank=True, null=True)
+    amount_of_NDS = models.IntegerField('Размер НДС', blank=True, null=True)
 
     pass
 

@@ -5,7 +5,8 @@ from rest_framework import schemas
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from backend.views import ProductListView, OfferListView, WarehouseListView, WarehouseUpdateDestroyView, \
-    OfferUpdateDestroyView, AcceptOffer, CreateSign, UploadDoc, CreateSignView
+    OfferUpdateDestroyView, AcceptOffer, CreateSign, UploadDoc, CreateSignView, CompanyListView, \
+    CompanyUpdateDestroyView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -40,6 +41,10 @@ urlpatterns = [
     path('warehouse/', WarehouseListView.as_view(), name='warehouse_view_set'),
     path('warehouse/<int:pk>/', WarehouseUpdateDestroyView.as_view(),
          name='warehouse_update_destroy_view'),
+
+    # API Company
+    path('company/', CompanyListView.as_view(), name='company_view_set'),
+    path('company/<int:pk>/', CompanyUpdateDestroyView.as_view(), name='company_update_destroy_view'),
 
     # API AcceptOffer
     path('accept_offer/', AcceptOffer.as_view(), name='accept_offer_view'),
