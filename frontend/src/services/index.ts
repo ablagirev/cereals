@@ -1,3 +1,3 @@
-import {authService} from './auth-service'
+import {daylesfordService } from './daylesford-service'
 
-export {authService}
+export {daylesfordService}

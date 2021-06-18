@@ -16,6 +16,7 @@
     "@types/react-select": "^4.0.15",
     "@types/styled-components": "^5.1.10",
     "@types/superagent": "^4.1.11",
+    "axios": "^0.21.1",
     "beautiful-react-hooks": "^0.35.0",
     "formik": "^2.2.9",
     "lodash-es": "^4.17.21",
@@ -57,5 +58,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://cp.c025prts.one:8000"
 }

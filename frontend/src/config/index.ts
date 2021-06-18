@@ -1,1 +1,1 @@
-export {appConfig, proxyPath} from './AppConfig';
+export {appConfig} from './AppConfig';

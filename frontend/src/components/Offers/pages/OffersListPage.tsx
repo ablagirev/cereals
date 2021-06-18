@@ -1,24 +1,77 @@
 import React from "react";
-import { Flex, Tabs, Typography } from "../../../uikit";
+import { useOffers } from "../../../hooks/useOffers";
+import { Flex, Spacer, Tabs, Typography } from "../../../uikit";
+import { Card } from "../../../uikit/Card/Card";
+import { Table } from "../../Table/Table";
 
-const data = [
+const dataMock = [
   {
-    label: "test label 1",
-    items: ["item1 form label 1", "item2 from label 1"],
+    label: "Активные",
+    items: [
+      {
+        title: "Пшеница 5 класс, урожай 2016",
+        statusText: "Редактировать",
+        list: [
+          {
+            title: "Продавец",
+            content: ["ООО «ПРОДАЕМ УРОЖАЙ»"],
+          },
+        ],
+      },
+      {
+        title: "Пшеница 5 класс, урожай 2016",
+        statusText: "Редактировать",
+        list: [
+          {
+            title: "Продавец",
+            content: ["ООО «ПРОДАЕМ УРОЖАЙ»"],
+          },
+        ],
+      },
+    ],
   },
   {
-    label: "test label 2",
-    items: ["item1 form label 2", "item2 from label 2"],
+    label: "Завершенные",
+    items: [
+      {
+        title: "Пшеница 5 класс, урожай 2016",
+        statusText: "Редактировать",
+        list: [
+          {
+            title: "Сделка",
+            content: ["6,245,000.00", "6,650,000.00"],
+          },
+        ],
+      },
+    ],
   },
 ];
 
 export const OffersListPage: React.FC = () => {
+  const { data } = useOffers();
+  // TODO: добавить данные с моделью
+
+  const tabs = dataMock.map((el) => {
+    const cards = el.items.map(({ title, statusText, list }) => (
+      <Card title={title} statusText={statusText}>
+        <Spacer space={30} />
+        <Table data={list} />
+      </Card>
+    ));
+
+    return {
+      ...el,
+      items: cards,
+    };
+  });
+
   return (
     <Flex column>
       <Typography size="lg2" bold>
         Мои предложения
       </Typography>
-      <Tabs data={data} />
+      <Spacer space={28} />
+      <Tabs tabs={tabs} />
     </Flex>
   );
 };

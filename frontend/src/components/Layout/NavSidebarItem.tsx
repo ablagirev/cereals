@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { matchPath, NavLink } from "react-router-dom";
+import { matchPath, NavLink, NavLinkProps } from "react-router-dom";
 import styled from "styled-components";
 import { TAppNavItem } from "../../routes/models";
 
@@ -20,8 +20,6 @@ interface INavSidebarItemProps {
  * Компонент элемента главного меню.
  */
 export const NavSidebarItem: React.FC<INavSidebarItemProps> = ({ navItem }) => {
-  const [isActive, setIsActive] = useState(false);
-
   return (
     <StyledListItem>
       <StyledNavLink
@@ -34,13 +32,10 @@ export const NavSidebarItem: React.FC<INavSidebarItemProps> = ({ navItem }) => {
             exact: false,
             strict: false,
           });
-          setIsActive(isChosen);
           return isChosen;
         }}
       >
-        {navItem?.element?.label && (
-          <NavItem isActive={isActive}>{navItem.element.label}</NavItem>
-        )}
+        {navItem?.element?.label && <span>{navItem.element.label}</span>}
       </StyledNavLink>
     </StyledListItem>
   );
@@ -50,10 +45,12 @@ const StyledListItem = styled.li`
   padding-bottom: 20px;
 `;
 
-const StyledNavLink = styled(NavLink)`
+const StyledNavLink = styled(NavLink)<NavLinkProps>`
+  color: #191919;
   text-decoration: none;
-`;
+  transition: 0.3s;
 
-const NavItem = styled.span<{ isActive: boolean }>`
-  color: ${({ isActive }) => (isActive ? "#8E66FE" : "#191919")};
+  &.active {
+    color: #8e66fe;
+  }
 `;

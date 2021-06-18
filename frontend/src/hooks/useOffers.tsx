@@ -1,14 +1,14 @@
 import { useQuery } from "react-query";
 import { daylesfordService } from "../services";
 
-const AUTH_DATA_QUERY_KEY = "AUTH_DATA_QUERY_KEY";
+const OFFER_LIST_DATA_QUERY_KEY = "OFFER_LIST_DATA_QUERY_KEY";
 
-export const useUserData = (request: any) => {
+export const useOffers = () => {
   const result = useQuery<any>(
-    AUTH_DATA_QUERY_KEY,
-    () => daylesfordService.login(request),
+    OFFER_LIST_DATA_QUERY_KEY,
+    () => daylesfordService.getOfferList(),
     {
-      enabled: false,
+      enabled: true,
       refetchOnWindowFocus: false,
       retry: false,
     }

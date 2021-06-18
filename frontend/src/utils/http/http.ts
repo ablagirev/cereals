@@ -74,7 +74,7 @@ export const saveAs = (blob: Blob, filename: string) => {
  * @param {string} auxMsg Дополнительное сообщение.
  */
 const showError = (url: string, error: any, auxMsg?: string) => {
-    console.log('error on: ', url) // TODO: доработать с появлением БТ
+   // console.error('error on: ', url)  TODO: доработать с появлением БТ
 };
 
 /**
@@ -88,8 +88,7 @@ const requestMethodFactory = <TResponse>(method: 'POST' | 'GET' | 'PUT' | 'DELET
         const {data, queryParams, url} = params;
         const req = request(method, `${url}`)
             .set('Accept', 'application/json; charset=UTF-8')
-            .set('Authorization', `Bearer ${appConfig.api.token}`); // TODO: поправить когда будет понятно откуда берется токен
-
+            .set('Authorization', `${appConfig.api.token}`);
         !!data && req.send(data);
 
         !!queryParams && req.query(queryParams);

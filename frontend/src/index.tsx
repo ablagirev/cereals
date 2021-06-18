@@ -11,12 +11,6 @@ import { GlobalStyle } from "./globalStyles";
 import { useAuth } from "./hooks";
 import { AuthContext } from "./context";
 import { BrowserRouter } from "react-router-dom";
-import { appConfig } from "./config";
-
-/**
- * Инициализация конфигурации приложения.
- */
-appConfig.init();
 
 /**
  * Инициализация кеша react-query.

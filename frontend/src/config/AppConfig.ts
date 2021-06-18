@@ -1,42 +1,30 @@
-const currentStage = process.env.STAGE;
-const isDevelopment = process.env.NODE_ENV === 'development';
-export const proxyPath = 'microservices'; // TODO: заменить на актуальный
-
-const buildEndpoint = (name: string, useProxyForDevelopment = false) => {
-    const {hostname, protocol} = window.location;
-    const appDomain = isDevelopment ? `fake.cloud` : hostname.replace(/.*?\./, ''); // TODO: заменить на актуальный
-    
-    if (isDevelopment && useProxyForDevelopment) {
-        return `${window.location.origin}/${proxyPath}/${name}`;
-    }
-    return `${protocol}//${name}.${appDomain}`;
-};
+import { STORAGE_TOKEN_NAME } from "../hooks/consts";
 
 const apiNames = {
-    authService: 'auth-service', // TODO: добавить нужные сервисы
+    auth: 'auth',
+    offer: 'offer'
 };
+
+const buildEndpoint = (name: string) => {
+    return `/${name}`
+}
 
 /**
  * Хранилище конфигурации приложения.
  */
 class AppConfig {
 
-    private _api: any = {};
-
-    /**
-     * Инициализация нестатичных изначально параметров конфигурации.
-     */
-    public init = () => {
+    get api() {
         const {
-            authService,
+            auth,
+            offer
         } = apiNames;
 
-        this._api.authService = buildEndpoint(authService, true);
-
-    };
-
-    get api() {
-        return this._api;
+        return {
+            auth: buildEndpoint(auth),
+            offer: buildEndpoint(offer),
+            token: localStorage.getItem(STORAGE_TOKEN_NAME)
+        };
     }
 }
 
