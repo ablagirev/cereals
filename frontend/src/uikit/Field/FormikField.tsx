@@ -1,16 +1,10 @@
 // import clsx from 'clsx';
 import { useField } from "formik";
 import React from "react";
+import { Spacer, Typography } from "..";
 
-// import {ErrorMessage} from './ErrorMessage';
-
-/**
- * Модель свойтсв компонента.
- *
- * @prop {string} name Имя (путь) поля в модели.
- * @prop {JSX.Element} children Оборачиваемый компонент.
- */
 interface IProps {
+  title?: string;
   name: string;
   children: JSX.Element;
 }
@@ -20,7 +14,7 @@ interface IProps {
  */
 export const FormikField: React.FC<IProps> = (props: IProps) => {
   const [field, meta, helpers] = useField(props);
-  const { children } = props;
+  const { children, title } = props;
   // const className = clsx(children.props?.className, meta.touched && meta.error ? 'is-invalid' : null);
 
   /**
@@ -48,6 +42,12 @@ export const FormikField: React.FC<IProps> = (props: IProps) => {
 
   return (
     <>
+      {title && (
+        <>
+          <Typography color="#918F88">{title}</Typography>
+          <Spacer space={10} />
+        </>
+      )}
       {React.cloneElement(children, {
         ...field,
         onChange: children.props?.onChange

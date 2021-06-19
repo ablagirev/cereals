@@ -9,23 +9,36 @@ interface ISelect {
 }
 
 interface IProps {
+  variant: "light" | "dark";
   options: ISelect[];
 }
 
-export const Select: React.FC<IProps> = ({ options, ...rest }) => (
-  <StyledReactSelect classNamePrefix="Select" options={options} {...rest} />
+const getBgColor = (variant: "light" | "dark") =>
+  variant === "light" ? "#F5F2EA" : "#e7e2d4";
+
+export const Select: React.FC<IProps> = ({ options, variant, ...rest }) => (
+  <StyledReactSelect
+    classNamePrefix="Select"
+    options={options}
+    variant={variant}
+    {...rest}
+  />
 );
 
 const StyledReactSelect = styled(ReactSelect)`
   color: #333333;
   transition: 0.3s;
 
+  .Select__value-container {
+    padding-left: 20px;
+  }
+
   .Select__control {
     cursor: pointer;
     min-width: 345px;
     height: 50px;
     border: 0px;
-    background-color: #e7e2d4;
+    background-color: ${({ variant }) => getBgColor(variant)};
     border-radius: 6px;
   }
 
@@ -34,16 +47,16 @@ const StyledReactSelect = styled(ReactSelect)`
   }
 
   .Select__menu {
-    background-color: #e7e2d4;
+    background-color: ${({ variant }) => getBgColor(variant)};
   }
 
   .Select__option {
     color: #333333;
-    background-color: #e7e2d4;
+    background-color: ${({ variant }) => getBgColor(variant)};
     cursor: pointer;
 
     &:hover {
-      background-color: ${() => darken(0.03, "#e7e2d4")};
+      background-color: ${({ variant }) => darken(0.03, getBgColor(variant))};
     }
   }
 `;

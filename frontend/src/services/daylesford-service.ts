@@ -1,10 +1,10 @@
-import axios from "axios";
 import { appConfig } from "../config";
 import { POST, GET } from "../utils/http";
+import { IOffer } from "./models";
 
 const {auth, offer} = appConfig.api
 
-/**s
+/**
  * Методы auth-service.
  */
 export const daylesfordService = {
@@ -14,6 +14,6 @@ export const daylesfordService = {
      logout: (request: any) => POST<any>(`${auth}/logout/`, request), // TODO: прописать модели
      
      // offers
-     getOfferList: () => GET<any>(`${offer}`), // TODO: прописать модели
+     getOfferList: () => GET<IOffer[]>(`${offer}`),
 };
  

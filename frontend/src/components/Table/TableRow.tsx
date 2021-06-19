@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Flex, Typography } from "../../uikit";
+import { Flex, Spacer, Typography } from "../../uikit";
 
 export interface ITableRow {
   title: string;
@@ -17,6 +17,7 @@ export const TableRow: React.FC<ITableRow> = ({ title, content }) => {
           {content.map((item: string, idx) => (
             <li key={idx}>
               <Typography>{item}</Typography>
+              <Spacer space={10} />
             </li>
           ))}
         </ul>

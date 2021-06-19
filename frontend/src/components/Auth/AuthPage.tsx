@@ -78,25 +78,6 @@ export const AuthPage: React.FC = () => {
                   />
                   <Spacer />
                   <Input type="password" name="password" label="Пароль" />
-                  {/* TODO: убрать. Сделано для теста компонента */}
-                  {/* <FormikField name="someOptions">
-                    <Select
-                      options={[
-                        {
-                          value: "1",
-                          label: "1",
-                        },
-                        {
-                          value: "1asdas",
-                          label: "13333",
-                        },
-                        {
-                          value: "1asd423434sad",
-                          label: "1asdsa",
-                        },
-                      ]}
-                    />
-                  </FormikField> */}
                   <Spacer space={44} />
                   <Button variant="action" type="submit">
                     Отправить

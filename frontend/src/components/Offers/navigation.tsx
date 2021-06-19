@@ -1,9 +1,10 @@
 import React from "react";
-import { Switch } from "react-router-dom";
+import { generatePath, Switch } from "react-router-dom";
 import { routes } from "../../routes/consts";
 import { TAppNavItem } from "../../routes/models";
 import { ProtectedRoute } from "../../routes/ProtectedRoute";
 import { RedirectToFirstAvailable } from "../../routes/RedirectToFirstAvailable";
+import { OfferPage } from "./pages/OfferPage";
 import { OffersListPage } from "./pages/OffersListPage";
 
 export const getDealingsNavigation = (): TAppNavItem[] => [
@@ -13,6 +14,14 @@ export const getDealingsNavigation = (): TAppNavItem[] => [
     route: {
       exact: true,
       render: () => <OffersListPage />,
+    },
+  },
+  {
+    allowed: [],
+    path: routes.offers.create.path,
+    route: {
+      exact: true,
+      render: () => <OfferPage />,
     },
   },
 ];

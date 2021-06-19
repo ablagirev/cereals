@@ -49,7 +49,6 @@ const dataMock = [
 
 export const OffersListPage: React.FC = () => {
   const { data } = useOffers();
-  // TODO: добавить данные с моделью
 
   const tabs = dataMock.map((el) => {
     const cards = el.items.map(({ title, statusText, list }) => (
