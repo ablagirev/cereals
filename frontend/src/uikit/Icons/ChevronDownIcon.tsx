@@ -5,9 +5,9 @@ interface IProps {
 }
 
 /**
- * Иконка "Стрелка вверх".
+ * Иконка "Стрелка вниз".
  */
-export const ChevronUpIcon = ({ size }: IProps) => (
+export const ChevronDownIcon = ({ size }: IProps) => (
   <svg
     width={size ? size : "7"}
     height={size ? size : "5"}
@@ -16,7 +16,7 @@ export const ChevronUpIcon = ({ size }: IProps) => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M6 4L3.5 1L1 4"
+      d="M1 1L3.5 4L6 1"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"

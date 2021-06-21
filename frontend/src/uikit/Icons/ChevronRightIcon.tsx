@@ -1,25 +1,19 @@
 import React from "react";
 
-/**
- * Свойства компонента.
- *
- * @prop {string} [className] Имя класса.
- */
 interface IProps {
-  className?: string;
+  size?: string;
 }
 
 /**
  * Иконка, изображающая переход вправо.
  */
-export const ChevronRightIcon: React.FC<IProps> = ({ className }) => (
+export const ChevronRightIcon = ({ size }: IProps) => (
   <svg
-    width="7"
-    height="10"
+    width={size ? size : "7"}
+    height={size ? size : "10"}
     viewBox="0 0 7 10"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={className}
   >
     <path
       fillRule="evenodd"

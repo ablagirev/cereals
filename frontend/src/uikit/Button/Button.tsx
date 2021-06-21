@@ -3,18 +3,16 @@ import styled from "styled-components";
 import { darken } from "polished";
 import { theme } from "../../theme";
 
-export declare type ButtonType = "action" | "link" | "base";
+export declare type ButtonVariant = "action" | "link" | "base" | "icon";
 
 export interface IButtonProps {
-  onClick?: () => void;
+  onClick?: (e: any) => void;
   size?: "sm" | "lg";
   type?: "submit" | "button" | "reset";
-  variant: ButtonType;
+  variant: ButtonVariant;
   disabled?: boolean;
   children?: ReactNode;
 }
-
-// const getBgColor = (type: )
 
 const preset = {
   base: {
@@ -34,6 +32,12 @@ const preset = {
     color: "#ffffff",
     borderColor: "transparent",
     shadow: "0px 2px 10px rgba(0, 0, 0, 0.2)",
+  },
+  icon: {
+    backgroundColor: "transparent",
+    color: "initial",
+    borderColor: "transparent",
+    shadow: "none",
   },
 };
 
