@@ -8,15 +8,15 @@
 deploy-prod:
   stage: deploy
   image: ubuntu:latest
-  before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan cp.c025prts.one >> ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts
-
+#  before_script:
+#    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+#    - eval $(ssh-agent -s)
+#    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+#    - mkdir -p ~/.ssh
+#    - chmod 700 ~/.ssh
+#    - ssh-keyscan cp.c025prts.one >> ~/.ssh/known_hosts
+#    - chmod 644 ~/.ssh/known_hosts
+#
   script:
     - apt-get update -y && apt-get install openssh-client -y
     - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
