@@ -11,7 +11,7 @@ deploy-prod:
     - apt install sshpass -y
     - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
 #    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - sshpass -p $PASS_USER ssh artem@cp.c025prts.one -p 55022
+    - sshpass -p zaq1234 ssh artem@cp.c025prts.one -p 55022
     - ls
   only:
     - main
