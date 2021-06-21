@@ -6,6 +6,7 @@
 deploy-prod:
   stage: deploy
   script:
+    - apt-get install sshpass
     - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
     - sshpass -p $PASS_USER ssh artem@cp.c025prts.one -p 55022
     - ls
