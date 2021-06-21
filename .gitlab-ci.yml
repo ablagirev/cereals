@@ -8,7 +8,7 @@ deploy-prod:
   image: ubuntu:latest
   script:
     - apt update
-    - apt install sshpass
+    - apt install sshpass -y
     - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
 #    - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - sshpass -p $PASS_USER ssh artem@cp.c025prts.one -p 55022
