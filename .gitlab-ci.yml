@@ -3,9 +3,8 @@ deploy-prod:
 #  image: ubuntu:latest
 
   script:
-    - cd /home
-    - ls
-#    - git reset --hard
-#    - git pull origin main
+    - cd /home/artem/daylesford-merchant
+    - git reset --hard
+    - git pull
   only:
     - main
