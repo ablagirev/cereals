@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import routers, serializers, viewsets, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from Daylesford.settings import BASE_DIR
@@ -136,7 +136,8 @@ class UploadDoc(APIView):
 
 
 class LoginView(APIView):
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = [AllowAny]
 
     def post(self, request, format=None):
         data = request.data
