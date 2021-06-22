@@ -1,30 +1,11 @@
-#build-job:
-#  stage: build
-#  script:
-#    - echo "Hello, $GITLAB_USER_LOGIN!"
-
-
 
 deploy-prod:
   stage: deploy
-  image: ubuntu:latest
-  before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-#    - ssh-keyscan cp.c025prts.one >> ~/.ssh/known_hosts
-#    - chmod 644 ~/.ssh/known_hosts
 
   script:
-#    - apt-get update -y && apt-get install openssh-client -y
-#    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
-#    - eval $(ssh-agent -s)
-#    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-#    - mkdir -p ~/.ssh
-#    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - ssh -o StrictHostKeyChecking=no artem@cp.c025prts.one -p 55022
+#    - git reset --hard
+#    - git pull origin main
+#    - cd /home
     - ls
   only:
     - main
