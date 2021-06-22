@@ -27,6 +27,9 @@ deploy-prod:
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
 #    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - ssh-keyscan cp.c025prts.one >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
