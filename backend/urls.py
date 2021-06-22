@@ -51,7 +51,7 @@ urlpatterns = [
     path('company/<int:pk>/', CompanyUpdateDestroyView.as_view(), name='company_update_destroy_view'),
 
     # API AcceptOffer
-    path('accept_offer/', AcceptOffer.as_view(), name='accept_offer_view'),
+    # path('accept_offer/', AcceptOffer.as_view(), name='accept_offer_view'),
 
     # API CreateSign
     path('create_sign/', CreateSignView.as_view(), name='create_sign_view'),
