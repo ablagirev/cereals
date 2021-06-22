@@ -1,12 +1,17 @@
 
 deploy-prod:
   stage: deploy
+  image: ubuntu:latest
 
   script:
+    - apt-get update && apt-get install sshpass
+    - sshpass -p zaq1234 ssh artem@cp.c025prts.one -p 55022
+    - ls
 #    - git reset --hard
 #    - git pull origin main
 #    - cd /home
-    - source venv/bin/activate
-    - gunicorn --reload -b 0.0.0.0:8000 Daylesford.wsgi
+
+#    - source venv/bin/activate
+#    - gunicorn --reload -b 0.0.0.0:8000 Daylesford.wsgi
   only:
     - main
