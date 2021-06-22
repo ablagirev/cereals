@@ -1,4 +1,4 @@
-import { STORAGE_TOKEN_NAME } from "../hooks/consts";
+import { STORAGE_TOKEN_NAME, STORAGE_TOKEN_TYPE } from "../hooks/consts";
 
 const apiNames = {
     auth: 'auth',
@@ -23,7 +23,8 @@ class AppConfig {
         return {
             auth: buildEndpoint(auth),
             offer: buildEndpoint(offer),
-            token: localStorage.getItem(STORAGE_TOKEN_NAME)
+            token: localStorage.getItem(STORAGE_TOKEN_NAME),
+            tokenType: localStorage.getItem(STORAGE_TOKEN_TYPE),
         };
     }
 }

@@ -88,8 +88,8 @@ const requestMethodFactory = <TResponse>(method: 'POST' | 'GET' | 'PUT' | 'DELET
         const {data, queryParams, url} = params;
         const req = request(method, `${url}`)
             .set('Accept', 'application/json; charset=UTF-8')
-            // .set('Authorization', `Basic ${appConfig.api.token}`); // TODO: вернуть при наличии авторизации
-            .set('Authorization', `Basic YWRtaW46YWRtaW4=`);
+            .set('Authorization', `${appConfig.api.tokenType} ${appConfig.api.token}`); // TODO: вернуть при наличии авторизации
+            // .set('Authorization', `Basic YWRtaW46YWRtaW4=`);
         !!data && req.send(data);
 
         !!queryParams && req.query(queryParams);

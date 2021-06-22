@@ -19,8 +19,10 @@ import { BrowserRouter } from "react-router-dom";
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
-  const { token, userId, login, logout, ready } = useAuth();
-  const isAuthenticated = !token;
+  const { token, tokenType, login, logout, ready } = useAuth();
+
+  const isAuthenticated = !!token;
+
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
@@ -28,7 +30,7 @@ const App: React.FC = () => {
         <Normalize />
         {ready ? (
           <AuthContext.Provider
-            value={{ token, userId, login, logout, isAuthenticated }}
+            value={{ token, tokenType, login, logout, isAuthenticated }}
           >
             <BrowserRouter>
               <Layout navigation={navigation}>

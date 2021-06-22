@@ -7,11 +7,9 @@ import { EMPTY_CHAR } from "../../utils/consts";
 import { useUserData } from "../../hooks/useUserData";
 import { Button, Flex, Input, Spacer, Typography } from "../../uikit";
 import styled from "styled-components";
-import { Select } from "../../uikit/Selects";
-import { FormikField } from "../../uikit/Field";
 
 interface ILoginValues {
-  login: string;
+  username: string;
   password: string;
 }
 
@@ -23,17 +21,18 @@ export const AuthPage: React.FC = () => {
     isError,
     refetch: fetchUserData,
   } = useUserData(userCredentials);
-  const { token, userId } = data || {};
+
+  const { token, type } = data || {};
 
   const handleLogin = (values: ILoginValues) => {
     setUserCredentials(values);
   };
 
   useEffect(() => {
-    if (token && userId) {
-      auth.login(token, userId);
+    if (token && type) {
+      auth.login(token, type);
     }
-  }, [token, userId, auth]);
+  }, [token, type, auth]);
 
   useEffect(() => {
     if (isError) {
@@ -42,8 +41,8 @@ export const AuthPage: React.FC = () => {
   }, [isError]);
 
   useEffect(() => {
-    const { login, password } = userCredentials || {};
-    const hasData = !!login && !!password;
+    const { username, password } = userCredentials || {};
+    const hasData = !!username && !!password;
     hasData && fetchUserData();
   }, [userCredentials]);
 
@@ -64,7 +63,7 @@ export const AuthPage: React.FC = () => {
             <Spacer space={32} />
             <Formik
               initialValues={{
-                login: EMPTY_CHAR,
+                username: EMPTY_CHAR,
                 password: EMPTY_CHAR,
               }}
               onSubmit={handleLogin}
@@ -73,7 +72,7 @@ export const AuthPage: React.FC = () => {
                 <Flex column>
                   <Input
                     type="username"
-                    name="login"
+                    name="username"
                     label="Имя пользователя"
                   />
                   <Spacer />
