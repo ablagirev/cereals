@@ -4,7 +4,7 @@ deploy-prod:
   image: ubuntu:latest
 
   script:
-    - apt-get update && apt-get install sshpass
+    - apt-get update -y && apt-get install sshpass -y
     - sshpass -p zaq1234 ssh artem@cp.c025prts.one -p 55022
     - ls
 #    - git reset --hard
