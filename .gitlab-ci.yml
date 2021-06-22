@@ -5,7 +5,7 @@ deploy-prod:
 
   script:
     - apt-get update -y && apt-get install sshpass -y
-    - sshpass -p zaq1234 ssh -tt artem@cp.c025prts.one -p 55022
+    - sshpass -p zaq1234 ssh -t artem@cp.c025prts.one -p 55022
     - ls
 #    - git reset --hard
 #    - git pull origin main
