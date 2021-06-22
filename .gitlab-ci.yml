@@ -1,9 +1,11 @@
 deploy-prod:
   stage: deploy
-  image: ubuntu:latest
+#  image: ubuntu:latest
 
   script:
-    - git reset --hard
-    - git pull origin main
+    - cd /home
+    - ls
+#    - git reset --hard
+#    - git pull origin main
   only:
     - main
