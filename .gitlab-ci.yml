@@ -6,6 +6,7 @@ deploy-prod:
 #    - git reset --hard
 #    - git pull origin main
 #    - cd /home
-    - ls
+    - source venv/bin/activate
+    - gunicorn --reload -b 0.0.0.0:8000 Daylesford.wsgi
   only:
     - main
