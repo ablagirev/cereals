@@ -1,5 +1,9 @@
+import base64
+
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import routers, serializers, viewsets, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
@@ -19,13 +23,21 @@ from backend.serializer import ProductSerializer, OfferSerializer, WarehouseSeri
     DocumentSerializer, CompanySerializer
 
 
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return  # To not perform the csrf check previously happening
+
 class ProductListView(generics.ListCreateAPIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
 class OfferListView(generics.ListCreateAPIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
     queryset = Offer.objects.all()
@@ -123,3 +135,35 @@ class UploadDoc(APIView):
             return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class LoginView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def post(self, request, format=None):
+        data = request.data
+
+        username = data.get('username', None)
+        password = data.get('password', None)
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+
+                data = {
+                    'type': 'Basic',
+                    'token': base64.b64encode('{0}:{1}'.format(username,password).encode('ascii'))
+                }
+
+                return Response(data=data, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+class LogoutView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def get(self, request):
+        logout(request)
+        return Response(status=status.HTTP_200_OK)

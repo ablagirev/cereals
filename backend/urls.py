@@ -1,4 +1,5 @@
 from django.urls import path, include
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 # from rest_framework.schemas import get_schema_view
 from rest_framework import schemas
@@ -6,7 +7,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from backend.views import ProductListView, OfferListView, WarehouseListView, WarehouseUpdateDestroyView, \
     OfferUpdateDestroyView, AcceptOffer, CreateSign, UploadDoc, CreateSignView, CompanyListView, \
-    CompanyUpdateDestroyView
+    CompanyUpdateDestroyView, LoginView, LogoutView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -26,6 +27,9 @@ urlpatterns = [
         template_name='swagger_ui.html',
         extra_context={'schema_url': 'openapi-schema'}),
         name='swagger-ui'),
+
+    path('auth/login/', LoginView.as_view(), name='login_view'),
+    path('auth/logout/', LogoutView.as_view(), name='logout_view'),
 
 
     # API Product
