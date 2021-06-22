@@ -11,7 +11,7 @@ export const daylesfordService = {
 
      // auth
      login: (request: any) => POST<any>(`${auth}/login/`, request), // TODO: прописать модели
-     logout: (request: any) => POST<any>(`${auth}/logout/`, request), // TODO: прописать модели
+     logout: () => GET<any>(`${auth}/logout/`), // TODO: прописать модели
      
      // offers
      getOfferList: () => GET<IOffer[]>(`${offer}`),

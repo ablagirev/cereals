@@ -1,5 +1,5 @@
 import { FC, Fragment } from "react";
-import { Spacer } from "../../uikit";
+import { Spacer } from "..";
 import { ITableRow, TableRow } from "./TableRow";
 
 interface IProps {

@@ -1,6 +1,10 @@
-import React, { Fragment, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import styled from "styled-components";
+import { useLogout } from "../../hooks/useAuth";
+import { useAuthContext } from "../../hooks/useAuthContext";
 import { usePermissions } from "../../hooks/usePermissions";
+import { routes } from "../../routes/consts";
 import { TAppNavItem, TAppNavSection } from "../../routes/models";
 import { theme } from "../../theme";
 import { Flex, Spacer } from "../../uikit";
@@ -21,8 +25,9 @@ interface IProps {
  * Отображает разворачиваемую панель с основным меню.
  */
 export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
+  const { logout } = useAuthContext();
   const userPermissions = usePermissions();
-  const [activeSection, setActiveSection] = useState(EMPTY_CHAR);
+  const { refetch: triggerLogout } = useLogout();
 
   const { items, label } = navigation;
 
@@ -32,10 +37,15 @@ export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
       hasPermissions(userPermissions, item.allowed) &&
       item
   );
+
+  const handleLogout = () => {
+    triggerLogout() && logout();
+  };
+
   return (
     <NavSidebarInner>
-      <Logo>{navigation.label}</Logo>
-      <Fragment key={label}>
+      <div key={label}>
+        <Logo>{navigation.label}</Logo>
         <Flex fillWidth>
           <NavList>
             {itemsWithPermissions.map((item: TAppNavItem) => {
@@ -44,26 +54,34 @@ export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
                   currentSection={label}
                   key={item.path}
                   navItem={item}
-                  onItemClick={(val) => setActiveSection(val)}
                 />
               );
             })}
           </NavList>
           <Spacer width={theme.spacings.s} />
         </Flex>
-      </Fragment>
+      </div>
+      <StyledNavLink exact to={routes.root.path} onClick={handleLogout}>
+        <span>Выйти</span>
+      </StyledNavLink>
     </NavSidebarInner>
   );
 };
+
+const StyledNavLink = styled(NavLink)`
+  color: #191919;
+  text-decoration: none;
+`;
 
 const NavList = styled.ul`
   width: 100%;
 `;
 
 const NavSidebarInner = styled.div`
-  padding-top: 33px;
-  padding-left: 25px;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 33px 0 33px 25px;
   width: 250px;
   background-color: #e7e2d1;
 `;

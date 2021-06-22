@@ -4,7 +4,7 @@ import { Formik, Form } from "formik";
 import { AuthContext } from "../../context";
 
 import { EMPTY_CHAR } from "../../utils/consts";
-import { useUserData } from "../../hooks/useUserData";
+import { useLogin } from "../../hooks/useAuth";
 import { Button, Flex, Input, Spacer, Typography } from "../../uikit";
 import styled from "styled-components";
 
@@ -16,11 +16,7 @@ interface ILoginValues {
 export const AuthPage: React.FC = () => {
   const auth = useContext(AuthContext);
   const [userCredentials, setUserCredentials] = useState<ILoginValues>();
-  const {
-    data,
-    isError,
-    refetch: fetchUserData,
-  } = useUserData(userCredentials);
+  const { data, isError, refetch: fetchUserData } = useLogin(userCredentials);
 
   const { token, type } = data || {};
 

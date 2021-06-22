@@ -2,7 +2,7 @@ import React from "react";
 import { useOffers } from "../../../hooks/useOffers";
 import { Flex, Spacer, Tabs, Typography } from "../../../uikit";
 import { Card } from "../../../uikit/Card/Card";
-import { Table } from "../../Table/Table";
+import { Table } from "../../../uikit/Table/Table";
 
 const dataMock = [
   {

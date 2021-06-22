@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { matchPath, NavLink, NavLinkProps } from "react-router-dom";
 import styled from "styled-components";
 import { TAppNavItem } from "../../routes/models";
@@ -8,12 +8,10 @@ import { TAppNavItem } from "../../routes/models";
  *
  * @prop {TAppNavItem} navItem Параметры навигации.
  * @prop {string} currentSection Название текущей секции.
- * @prop {Function} onItemClick Хендлер клика на элемент.
  */
 interface INavSidebarItemProps {
   navItem: TAppNavItem;
   currentSection: string;
-  onItemClick: (val: string) => void;
 }
 
 /**

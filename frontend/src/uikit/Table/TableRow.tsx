@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Flex, Spacer, Typography } from "../../uikit";
+import { Flex, Spacer, Typography } from "..";
 
 export interface ITableRow {
   title: string;

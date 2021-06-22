@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { EMPTY_CHAR } from "../utils/consts";
 import { STORAGE_TOKEN_NAME, STORAGE_TOKEN_TYPE } from "./consts";
+import { daylesfordService } from "../services";
+import { useQuery } from "react-query";
+import { useAuthContext } from "./useAuthContext";
+
+const LOGIN_DATA_QUERY_KEY = "AUTH_DATA_QUERY_KEY";
+const LOGOUT_DATA_QUERY_KEY = "AUTH_DATA_QUERY_KEY";
 
 export const useAuth = () => {
   // eslint-disable-next-line no-undef
@@ -39,4 +45,34 @@ export const useAuth = () => {
   }, [login]);
 
   return { login, logout, token, tokenType, ready };
+};
+
+export const useLogin = (request: any) => {
+  const result = useQuery<any>(
+    LOGIN_DATA_QUERY_KEY,
+    () => daylesfordService.login(request),
+    {
+      enabled: false,
+      refetchOnWindowFocus: false,
+      retry: false,
+      cacheTime: 0,
+    }
+  );
+
+  return result;
+};
+
+export const useLogout = () => {
+  const result = useQuery<any>(
+    LOGOUT_DATA_QUERY_KEY,
+    () => daylesfordService.logout(),
+    {
+      enabled: false,
+      refetchOnWindowFocus: false,
+      retry: false,
+      cacheTime: 0,
+    }
+  );
+
+  return result;
 };

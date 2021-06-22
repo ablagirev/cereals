@@ -3,7 +3,7 @@ import { createContext } from "react";
 export interface IAuthContext {
     token: string | null,
     tokenType: string | null,
-    login: (jwtToken: string | null, id: string | null) => void,
+    login: (token: string | null, id: string | null) => void,
     logout: () => void,
     isAuthenticated: boolean,
 }
