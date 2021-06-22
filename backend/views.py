@@ -24,13 +24,20 @@ from backend.serializer import ProductSerializer, OfferSerializer, WarehouseSeri
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
-
     def enforce_csrf(self, request):
         return  # To not perform the csrf check previously happening
+
 
 class ProductListView(generics.ListCreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
+
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class ProductUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -45,6 +52,8 @@ class OfferListView(generics.ListCreateAPIView):
 
 
 class OfferUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
 

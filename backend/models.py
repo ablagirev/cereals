@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 # Create your models here.
+from backend.consts import NDS
 
 
 class Company(models.Model):
@@ -91,17 +92,34 @@ class Offer(models.Model):
     title = models.CharField('Заголовок', max_length=250)
     volume = models.IntegerField('Объем', blank=True, null=True)
     description = models.TextField('Описание', blank=True, null=True)
-    offer_lifetime = models.DateTimeField('Время жизни предложения', blank=True, null=True)
+    # offer_lifetime = models.DateTimeField('Время жизни предложения', blank=True, null=True)
     status = models.CharField('Статус', max_length=250, blank=True, null=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Создатель', blank=True, null=True)  # TODO
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Создатель', blank=True, null=True)
     created_at = models.DateTimeField('Создано (время)', auto_now_add=True)
     product = models.ForeignKey(Product, related_name='Культура', on_delete=models.CASCADE, blank=True, null=True)
     warehouses = models.ManyToManyField(Warehouse, blank=True)
-    period_of_export = models.DateTimeField('Период экспорта', blank=True, null=True)
+    date_start_shipment = models.DateTimeField('Дата старта поставки', blank=True, null=True)
+    date_finish_shipment = models.DateTimeField('Дата окончания поставки', blank=True, null=True)
+    cost = models.FloatField('Цена', blank=True, null=True)
+
+    @property
+    def cost_with_NDS(self):
+        if self.cost:
+            return self.cost + (self.cost / 100) * NDS
+        else:
+            return 0
 
     @property
     def cost_by_tonne(self):
         return 0
+
+    @property
+    def period_of_export(self):
+        if self.date_finish_shipment and self.date_start_shipment:
+            delta = self.date_finish_shipment - self.date_start_shipment
+            return delta.days
+        else:
+            return 0
 
     def __str__(self):
         return self.title
