@@ -3,6 +3,7 @@ import { Field } from "formik";
 import { EMPTY_CHAR } from "../../utils/consts";
 import styled from "styled-components";
 import { Spacer } from "..";
+import { theme } from "../../theme";
 
 interface IProps {
   name: string;
@@ -10,6 +11,7 @@ interface IProps {
   label?: string;
   type?: string;
   disabled?: boolean;
+  isError?: boolean;
 }
 
 export const Input: React.FC<IProps> = ({
@@ -18,6 +20,7 @@ export const Input: React.FC<IProps> = ({
   label,
   type,
   disabled,
+  isError,
 }) => (
   <>
     {label && (
@@ -32,6 +35,7 @@ export const Input: React.FC<IProps> = ({
       placeholder={placeholder}
       type={type}
       disabled={disabled}
+      isError={isError}
     />
   </>
 );
@@ -40,6 +44,8 @@ const StyledField = styled(Field)`
   min-width: 345px;
   height: 50px;
   border: 0px;
+  border: 1px solid
+    ${({ isError }) => (isError ? theme.palette.common.colors.red : "none")};
   background-color: #e7e2d4;
   border-radius: 6px;
   color: #333333;
