@@ -8,14 +8,14 @@
 deploy-prod:
   stage: deploy
   image: ubuntu:latest
-  before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan cp.c025prts.one >> ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts
+#  before_script:
+#    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+#    - eval $(ssh-agent -s)
+#    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+#    - mkdir -p ~/.ssh
+#    - chmod 700 ~/.ssh
+#    - ssh-keyscan cp.c025prts.one >> ~/.ssh/known_hosts
+#    - chmod 644 ~/.ssh/known_hosts
 
   script:
 #    - apt-get update -y && apt-get install openssh-client -y
@@ -24,7 +24,7 @@ deploy-prod:
 #    - ssh-add <(echo "$SSH_PRIVATE_KEY")
 #    - mkdir -p ~/.ssh
 #    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - ssh -t artem@cp.c025prts.one -p 55022
+#    - ssh -t artem@cp.c025prts.one -p 55022
     - ls
   only:
     - main
