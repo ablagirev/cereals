@@ -7,7 +7,7 @@ deploy-prod:
     - python3 -m venv venv
     - source venv/bin/activate
     - pip3 install -r req.txt
-    - gunicorn --reload -b 0.0.0.0:8000 Daylesford.wsgi
+    - gunicorn --reload -b 0.0.0.0:8000 Daylesford.wsgi &
   only:
     - main
 
