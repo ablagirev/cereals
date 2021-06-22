@@ -25,6 +25,7 @@ deploy-prod:
 #    - mkdir -p ~/.ssh
 #    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 #    - ssh -t artem@cp.c025prts.one -p 55022
-    - git pull
+    - git reset --hard
+    - git pull origin main
   only:
     - main
