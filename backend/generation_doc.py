@@ -44,7 +44,7 @@ def gen_doc():
     position_head_of_provider = 'Директор'
     short_fio = 'Ротко А.В.'
 
-    doc = DocxTemplate("./temp_file/text1.docx")
+    doc = DocxTemplate("./temp_file/text2.docx")
     context = {
         'number_of_spec': number_of_spec,
         'name_of_contract': name_of_contract,

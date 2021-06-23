@@ -7,7 +7,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from backend.views import ProductListView, OfferListView, WarehouseListView, WarehouseUpdateDestroyView, \
     OfferUpdateDestroyView, AcceptOffer, CreateSign, UploadDoc, CreateSignView, CompanyListView, \
-    CompanyUpdateDestroyView, LoginView, LogoutView, ProductUpdateDestroyView
+    CompanyUpdateDestroyView, LoginView, LogoutView, ProductUpdateDestroyView, SpecificationsOfProductUpdateDestroyView, \
+    SpecificationsOfProductListView, ProductSpecificationsListView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -35,6 +36,8 @@ urlpatterns = [
     # API Product
     path('product/', ProductListView.as_view(), name='product_view_set'),
     path('product/<int:pk>/', ProductUpdateDestroyView.as_view(), name='product_update_destroy_view'),
+    path('product/<int:pk>/specifications', ProductSpecificationsListView.as_view(),
+         name='product_specifications_list_view'),
 
 
     # API Offer
@@ -50,6 +53,12 @@ urlpatterns = [
     # API Company
     path('company/', CompanyListView.as_view(), name='company_view_set'),
     path('company/<int:pk>/', CompanyUpdateDestroyView.as_view(), name='company_update_destroy_view'),
+
+    # API Specifications Of Product
+    path('specifications_of_product/', SpecificationsOfProductListView.as_view(),
+         name='specifications_of_product_view_set'),
+    path('specifications_of_product/<int:pk>/', SpecificationsOfProductUpdateDestroyView.as_view(),
+         name='specifications_of_product_update_destroy_view'),
 
     # API AcceptOffer
     path('accept_offer/', AcceptOffer.as_view(), name='accept_offer_view'),

@@ -1,5 +1,5 @@
-migrate:
+m:
 	python manage.py migrate
 
-makemigrations:
+mm:
 	python manage.py makemigrations

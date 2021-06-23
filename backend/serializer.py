@@ -1,12 +1,14 @@
 from rest_framework import serializers
 
-from backend.models import Product, Offer, Warehouse, Deal, Document, Company
+from backend.models import Product, Offer, Warehouse, Deal, Document, Company, SpecificationsOfProduct
 
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+        depth = 2
+
 
 
 class OfferSerializer(serializers.ModelSerializer):
@@ -41,3 +43,9 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = '__all__'
 
+
+class SpecificationsOfProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpecificationsOfProduct
+        fields = '__all__'
+        depth = 1

@@ -13,14 +13,15 @@ from rest_framework.response import Response
 from Daylesford.settings import BASE_DIR
 from backend.create_sign import create_sign, CreateSign
 from backend.generation_doc import gen_doc
-from backend.models import Product, Offer, Warehouse, Deal, Document, Company
+from backend.models import Product, Offer, Warehouse, Deal, Document, Company, SpecificationsOfProduct, \
+    NameOfSpecification
 from rest_framework import generics
 from rest_framework.views import APIView
 import json
 
 from backend.send_doc_to_edm import send_doc, SendDocToSBIS
 from backend.serializer import ProductSerializer, OfferSerializer, WarehouseSerializer, DealSerializer, \
-    DocumentSerializer, CompanySerializer
+    DocumentSerializer, CompanySerializer, SpecificationsOfProductSerializer
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -43,6 +44,20 @@ class ProductUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
 
 
+class ProductSpecificationsListView(generics.ListAPIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def get(self, request, *args, **kwargs):
+        query = self.get_object().specifications.all()
+        data = SpecificationsOfProductSerializer(query, many=True).data
+        return Response(data)
+
+
+
 class OfferListView(generics.ListCreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -52,32 +67,38 @@ class OfferListView(generics.ListCreateAPIView):
 
 
 class OfferUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = [CsrfExemptSessionAuthentication]
 
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
 
 
 class WarehouseListView(generics.ListCreateAPIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
     queryset = Warehouse.objects.all()
     serializer_class = WarehouseSerializer
 
 
 class WarehouseUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
     queryset = Warehouse.objects.all()
     serializer_class = WarehouseSerializer
 
 
 class CompanyListView(generics.ListCreateAPIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
 
+
 class CompanyUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
 
 
 class AcceptOffer(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
     def post(self, request):
         offer = Offer.objects.first()
         user = User.objects.first()
@@ -96,8 +117,11 @@ class AcceptOffer(APIView):
         return Response(ds.data)
 
 
+
 class CreateSignView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
     def get(self, request):
+
         deal = Deal.objects.first()
         user = User.objects.first()
         doc = Document.objects.last()
@@ -132,6 +156,7 @@ class CreateSignView(APIView):
 
 
 class UploadDoc(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request):
@@ -145,7 +170,7 @@ class UploadDoc(APIView):
 
 
 class LoginView(APIView):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = [CsrfExemptSessionAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request, format=None):
@@ -171,9 +196,22 @@ class LoginView(APIView):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+
 class LogoutView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self, request):
         logout(request)
         return Response(status=status.HTTP_200_OK)
+
+
+class SpecificationsOfProductListView(generics.ListCreateAPIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
+    queryset = SpecificationsOfProduct.objects.all()
+    serializer_class = SpecificationsOfProductSerializer
+
+
+class SpecificationsOfProductUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
+    queryset = SpecificationsOfProduct.objects.all()
+    serializer_class = SpecificationsOfProductSerializer
