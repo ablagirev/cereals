@@ -114,7 +114,7 @@ class Warehouse(models.Model):
 
 
 class Offer(models.Model):
-    title = models.CharField('Заголовок', max_length=250)
+    title = models.CharField('Заголовок', max_length=250, blank=True, null=True)
     volume = models.IntegerField('Объем', blank=True, null=True)
     description = models.TextField('Описание', blank=True, null=True)
     # offer_lifetime = models.DateTimeField('Время жизни предложения', blank=True, null=True)
