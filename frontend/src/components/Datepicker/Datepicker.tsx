@@ -3,27 +3,47 @@ import { useFormikContext } from "formik";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Flex } from "../../uikit";
+import styled from "styled-components";
 
-export const DatePickerField: React.FC = () => {
-  const [startDate, setStartDate] = useState(new Date("2014/02/08"));
-  const [endDate, setEndDate] = useState(new Date("2014/02/10"));
+interface IProps {
+  initialValues: {
+    start?: string;
+    end?: string;
+  };
+  startFieldName: string;
+  endFieldName: string;
+}
+
+export const DatePickerField: React.FC<IProps> = ({
+  initialValues,
+  startFieldName,
+  endFieldName,
+}) => {
+  const { start, end } = initialValues;
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const { setFieldValue } = useFormikContext();
 
   useEffect(() => {
-    setFieldValue("startDate", startDate.toString());
-    setFieldValue("endDate", endDate.toString());
+    setFieldValue(startFieldName, startDate);
+    setFieldValue(endFieldName, endDate);
   }, [startDate, endDate]);
 
+  useEffect(() => {
+    start && setStartDate(new Date(start));
+    end && setEndDate(new Date(end));
+  }, [start, end]);
+
   return (
-    <Flex>
-      <DatePicker
+    <StyledFlex fillWidth>
+      <StyledDatePicker
         selected={startDate}
         onChange={(date: Date) => setStartDate(date)}
         selectsStart
         startDate={startDate}
         endDate={endDate}
       />
-      <DatePicker
+      <StyledDatePicker
         selected={endDate}
         onChange={(date: Date) => setEndDate(date)}
         selectsEnd
@@ -31,6 +51,20 @@ export const DatePickerField: React.FC = () => {
         endDate={endDate}
         minDate={startDate}
       />
-    </Flex>
+    </StyledFlex>
   );
 };
+
+const StyledFlex = styled(Flex)`
+  justify-content: space-between;
+`;
+
+const StyledDatePicker = styled(DatePicker)`
+  height: 50px;
+  border: 0px;
+  border: 1px solid none;
+  background-color: #fffcf4;
+  border-radius: 6px;
+  color: #333333;
+  text-align: center;
+`;

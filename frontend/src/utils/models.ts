@@ -16,8 +16,8 @@
 /**
  * Модель хука useParams.
  *
- * @prop {string} [id] ID предложения.
+ * @prop {string} id ID предложения.
  */
  export interface IRouteParams {
-    id?: string;
+    id: string;
 }

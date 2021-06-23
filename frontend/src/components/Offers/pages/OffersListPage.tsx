@@ -15,7 +15,6 @@ export const OffersListPage: React.FC = () => {
   const offerData = data || [];
 
   const handleOfferClick = (id: string | number) => {
-    console.log(id);
     history.push(generatePath(routes.offers.edit.path, { id }));
   };
 
