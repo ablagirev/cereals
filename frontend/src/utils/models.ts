@@ -12,3 +12,12 @@
     enabled?: boolean | (() => boolean);
     checkRoot?: boolean;
 }
+
+/**
+ * Модель хука useParams.
+ *
+ * @prop {string} [id] ID предложения.
+ */
+ export interface IRouteParams {
+    id?: string;
+}

@@ -4,10 +4,11 @@ import { routes } from "../../routes/consts";
 import { TAppNavItem } from "../../routes/models";
 import { ProtectedRoute } from "../../routes/ProtectedRoute";
 import { RedirectToFirstAvailable } from "../../routes/RedirectToFirstAvailable";
+import { IRouteParams } from "../../utils/models";
 import { OfferPage } from "./pages/OfferPage";
 import { OffersListPage } from "./pages/OffersListPage";
 
-export const getDealingsNavigation = (): TAppNavItem[] => [
+export const getDealingsNavigation = ({ id }: IRouteParams): TAppNavItem[] => [
   {
     allowed: [],
     path: routes.offers.list.path,
@@ -24,10 +25,20 @@ export const getDealingsNavigation = (): TAppNavItem[] => [
       render: () => <OfferPage />,
     },
   },
+  {
+    allowed: [],
+    path: routes.offers.edit.path,
+    linkTo: id
+      ? generatePath(routes.offers.edit.path, { id })
+      : routes.offers.list.path,
+    route: {
+      render: () => <OfferPage />,
+    },
+  },
 ];
 
-export const getDealingsRoutes = () => {
-  const dealingsNavigation = getDealingsNavigation();
+export const getDealingsRoutes = ({ id }: IRouteParams) => {
+  const dealingsNavigation = getDealingsNavigation({ id });
 
   return (
     <Switch>

@@ -1,23 +1,28 @@
 import { Fragment } from "react";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { Flex, Spacer } from "..";
+import groupBy from "lodash-es/groupBy";
+import flattenDeep from "lodash-es/flattenDeep";
 
-interface IProps {
+export interface IProps {
   tabs: ITab[];
 }
 
-interface ITab {
+export interface ITab {
   label: string;
-  items: ReactNode[];
+  items?: JSX.Element[];
 }
 
 export const Tabs: React.FC<IProps> = ({ tabs }) => {
   const [active, setActive] = useState(0);
+  const groupedTabs = flattenDeep(
+    Object.values(groupBy(tabs, (obj) => obj.label))
+  );
   return (
     <Flex column>
       <Flex>
-        {tabs.map(({ label }, index) => (
+        {groupedTabs.map(({ label }, index) => (
           <TabFilter
             key={index}
             isActive={active === index}
@@ -29,7 +34,7 @@ export const Tabs: React.FC<IProps> = ({ tabs }) => {
       </Flex>
       <Spacer space={40} />
       <Flex column>
-        {tabs[active].items.map((item, idx) => (
+        {groupedTabs[active]?.items?.map((item, idx) => (
           <Fragment key={idx}>
             <Flex>{item}</Flex>
             <Spacer space={10} />

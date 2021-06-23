@@ -6,12 +6,19 @@ import { Typography } from "../Text";
 
 interface IProps {
   title: string;
-  statusText: string;
+  statusText?: string;
+  onClick?: () => void;
 }
 
-export const Card: React.FC<IProps> = ({ title, statusText, children }) => {
+export const Card: React.FC<IProps> = ({
+  title,
+  statusText,
+  children,
+  onClick,
+  ...rest
+}) => {
   return (
-    <Wrapper>
+    <Wrapper onClick={onClick} {...rest}>
       <StyledFlex>
         <Flex column>
           <Typography size="lg" bold>
@@ -31,7 +38,6 @@ export const Card: React.FC<IProps> = ({ title, statusText, children }) => {
 
 const Wrapper = styled.div`
   width: 800px;
-  height: 330px;
   background-color: #f9f6ed;
   border-radius: 10px;
   cursor: pointer;

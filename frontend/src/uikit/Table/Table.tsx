@@ -10,11 +10,12 @@ export const Table: FC<IProps> = ({ data }) => {
   return (
     <>
       {data.map((item, idx) => {
+        const isLastItem = data?.length - 1 === idx;
         const { title, content } = item || {};
         return (
           <Fragment key={idx}>
             <TableRow title={title} content={content} />
-            <Spacer space={20} />
+            {!isLastItem && <Spacer space={20} />}
           </Fragment>
         );
       })}

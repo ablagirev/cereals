@@ -1,68 +1,82 @@
 import React from "react";
+import { generatePath, useHistory } from "react-router-dom";
 import { useOffers } from "../../../hooks/useOffers";
+import { routes } from "../../../routes/consts";
+import { IOffer } from "../../../services/models";
 import { Flex, Spacer, Tabs, Typography } from "../../../uikit";
 import { Card } from "../../../uikit/Card/Card";
 import { Table } from "../../../uikit/Table/Table";
-
-const dataMock = [
-  {
-    label: "Активные",
-    items: [
-      {
-        title: "Пшеница 5 класс, урожай 2016",
-        statusText: "Редактировать",
-        list: [
-          {
-            title: "Продавец",
-            content: ["ООО «ПРОДАЕМ УРОЖАЙ»"],
-          },
-        ],
-      },
-      {
-        title: "Пшеница 5 класс, урожай 2016",
-        statusText: "Редактировать",
-        list: [
-          {
-            title: "Продавец",
-            content: ["ООО «ПРОДАЕМ УРОЖАЙ»"],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Завершенные",
-    items: [
-      {
-        title: "Пшеница 5 класс, урожай 2016",
-        statusText: "Редактировать",
-        list: [
-          {
-            title: "Сделка",
-            content: ["6,245,000.00", "6,650,000.00"],
-          },
-        ],
-      },
-    ],
-  },
-];
+import { ITab } from "../../../uikit/Tabs/Tabs";
+import { formatDate, formatMoney } from "../../../utils/utils";
 
 export const OffersListPage: React.FC = () => {
   const { data } = useOffers();
+  const history = useHistory();
+  const offerData = data || [];
 
-  const tabs = dataMock.map((el) => {
-    const cards = el.items.map(({ title, statusText, list }) => (
-      <Card title={title} statusText={statusText}>
-        <Spacer space={30} />
-        <Table data={list} />
-      </Card>
-    ));
+  const handleOfferClick = (id: string | number) => {
+    console.log(id);
+    history.push(generatePath(routes.offers.edit.path, { id }));
+  };
 
-    return {
-      ...el,
-      items: cards,
+  const renderOfferTab = (data: IOffer[]): ITab => {
+    const tab = {
+      label: `${data?.[0]?.status} - ${data?.length}`,
+      items: data?.map((item) => {
+        const {
+          title,
+          volume,
+          cost_with_NDS,
+          cost,
+          period_of_export,
+          date_finish_shipment,
+          date_start_shipment,
+          warehouses,
+          id,
+        } = item || {};
+
+        const periodOfShippment = `${formatDate(
+          date_start_shipment
+        )} — ${formatDate(date_finish_shipment)} (${period_of_export} дней)`;
+
+        const dataList = [
+          {
+            title: "Объем, т",
+            content: [volume],
+          },
+          {
+            title: "Цена покупателя, руб",
+            content: [
+              `${formatMoney(cost)} без НДС / CNCPT`,
+              `${formatMoney(cost_with_NDS)} с НДС / CVCPT`,
+            ],
+          },
+          {
+            title: "Период поставки",
+            content: [periodOfShippment],
+          },
+          {
+            title: "Порт",
+            content: [warehouses?.join(", ")],
+          },
+        ];
+        return (
+          <Card title={title} onClick={() => handleOfferClick(id)}>
+            <Spacer space={30} />
+            <Table data={dataList} />
+          </Card>
+        );
+      }),
     };
-  });
+    return tab;
+  };
+
+  const activeData = renderOfferTab(
+    offerData?.filter((el) => el.status === "active")
+  );
+  const archiveData = renderOfferTab(
+    offerData?.filter((el) => el.status === "archive")
+  );
 
   return (
     <Flex column>
@@ -70,7 +84,7 @@ export const OffersListPage: React.FC = () => {
         Мои предложения
       </Typography>
       <Spacer space={28} />
-      <Tabs tabs={tabs} />
+      <Tabs tabs={[activeData, archiveData]} />
     </Flex>
   );
 };
