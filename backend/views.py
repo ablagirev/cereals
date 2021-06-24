@@ -1,5 +1,5 @@
 import base64
-
+import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render
@@ -99,20 +99,29 @@ class CompanyUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
 class AcceptOffer(APIView):
     authentication_classes = [CsrfExemptSessionAuthentication]
+
     def post(self, request):
         offer = Offer.objects.first()
-        user = User.objects.first()
-        offer.save()
+        company = Company.objects.first()
+        product = Product.objects.get(id=2)
+        deal = Deal.objects.first()
+        # deal.date_start_of_contract = datetime.date(2021, 1, 27)
+        # deal.date_finish_of_contract = datetime.date(2021, 12, 31)
+        # deal.date_start_of_spec = datetime.date(2021, 1, 27)
+        # deal.date_start_shipment = datetime.date(2021, 1, 27)
+        # deal.date_finish_shipment = datetime.date(2021, 2, 28)
+        # deal.save()
+
         # ---- Генерация документов
-        gen_doc()
+        gen_doc(offer, company, product, deal)
         # ----
-        deal = Deal()
-        deal.offer = offer
-        deal.provider = user
-        deal.status = 'CREATE'
-        deal.save()
-        deal.documents.set(Document.objects.all())
-        deal.save()
+        # deal = Deal()
+        # deal.offer = offer
+        # deal.provider = user
+        # deal.status = 'CREATE'
+        # deal.save()
+        # deal.documents.set(Document.objects.all())
+        # deal.save()
         ds = DealSerializer(deal)
         return Response(ds.data)
 
@@ -187,7 +196,7 @@ class LoginView(APIView):
 
                 data = {
                     'type': 'Basic',
-                    'token': base64.b64encode('{0}:{1}'.format(username,password).encode('ascii'))
+                    'token': base64.b64encode('{0}:{1}'.format(username, password).encode('ascii'))
                 }
 
                 return Response(data=data, status=status.HTTP_200_OK)
