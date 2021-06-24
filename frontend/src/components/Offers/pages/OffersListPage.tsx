@@ -30,7 +30,7 @@ export const OffersListPage: React.FC = () => {
           period_of_export,
           date_finish_shipment,
           date_start_shipment,
-          warehouses,
+          warehouse,
           id,
         } = item || {};
 
@@ -56,7 +56,7 @@ export const OffersListPage: React.FC = () => {
           },
           {
             title: "Порт",
-            content: [warehouses?.join(", ")],
+            content: [warehouse],
           },
         ];
         return (

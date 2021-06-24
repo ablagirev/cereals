@@ -41,7 +41,7 @@ export const Input: React.FC<IProps> = ({
 );
 
 const StyledField = styled(Field)`
-  min-width: 345px;
+  width: 345px;
   height: 50px;
   border: 0px;
   border: 1px solid

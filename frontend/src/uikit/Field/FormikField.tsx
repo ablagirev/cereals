@@ -58,7 +58,8 @@ export const FormikField: React.FC<IProps> = (props: IProps) => {
         onReset: handleReset,
       })}
 
-      {meta.touched && meta.error ? "Ошибка" : null}
+      {/* {meta.touched && meta.error ? "Ошибка" : null} */}
+      <Spacer space={35} />
     </>
   );
 };

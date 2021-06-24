@@ -13,6 +13,7 @@ export const useOffers = () => {
     () => daylesfordService.getOfferList(),
     {
       enabled: true,
+      retry: true,
     }
   );
 

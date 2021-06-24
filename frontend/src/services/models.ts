@@ -12,5 +12,40 @@ export interface IOffer {
     status: string;
     title: string;
     volume: number;
-    warehouses: number[];
+    warehouse: number;
 }
+
+export interface IProduct {
+    id: number,
+    title: string,
+    description: string,
+    specifications: [
+      {
+        id: number,
+        min_value: number,
+        is_edit_min_value: boolean,
+        max_value: number,
+        is_edit_max_value: boolean,
+        GOST: string,
+        name_of_specification: {
+          id: number,
+          name: string
+        },
+        type_field: {
+          id: number,
+          type: string
+        },
+        unit_of_measurement: {
+          id: number,
+          unit: string
+        }
+      }
+    ]
+  }
+
+  export interface IWarehouse {
+    id: number,
+    title: string,
+    address: string,
+    owner: number
+  }

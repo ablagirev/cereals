@@ -1,52 +1,88 @@
 import { Form, Formik } from "formik";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { generatePath, useHistory, useParams } from "react-router-dom";
 import styled from "styled-components";
-import {
-  useOffer,
-  useOfferCreate,
-  useOfferEdit,
-} from "../../../hooks/useOffers";
-import { IOffer } from "../../../services/models";
+import { useOffer, useOfferEdit } from "../../../hooks/useOffers";
+import { useProducts } from "../../../hooks/useProducts";
+import { useWarehouses } from "../../../hooks/useWarehouses";
+import { routes } from "../../../routes/consts";
 import { Button, Flex, Input, Spacer, Typography } from "../../../uikit";
 import { FormikField } from "../../../uikit/Field";
 import { Select } from "../../../uikit/Selects";
 import { IRouteParams } from "../../../utils/models";
 import { DatePickerField } from "../../Datepicker/Datepicker";
 
-const fakeOptions = [
-  {
-    value: "1",
-    label: "1",
-  },
-  {
-    value: "1asdas",
-    label: "13333",
-  },
-  {
-    value: "1asd423434sad",
-    label: "1asdsa",
-  },
-];
-
 export const OfferPage: React.FC = () => {
   const { id }: IRouteParams = useParams();
+  const history = useHistory();
+  const { data: productsData } = useProducts();
+  const { data: warehouseData } = useWarehouses();
   const { data: initialOfferData } = useOffer(id);
   const [formData, setFormData] = useState();
-  const { date_finish_shipment, date_start_shipment, volume } =
-    initialOfferData || {};
+
+  const productOptions = useMemo(() => {
+    return (
+      productsData?.map((product) => {
+        const { title, id } = product || {};
+        return {
+          value: id,
+          label: title,
+        };
+      }) || []
+    );
+  }, [productsData]);
+
+  const warehouseOptions = useMemo(() => {
+    return (
+      warehouseData?.map((warehouse) => {
+        const { title, id } = warehouse || {};
+        return {
+          value: id,
+          label: title,
+        };
+      }) || []
+    );
+  }, [warehouseData]);
+
+  const {
+    date_finish_shipment,
+    date_start_shipment,
+    volume,
+    cost_with_NDS,
+    product: offerProduct,
+    warehouse: offerWarehouse,
+  } = initialOfferData || {};
 
   const { isSuccess, refetch: refetchOfferEdit } = useOfferEdit(formData);
 
   const handleSubmit = (values: any) => {
-    // TODO: обработать данные формы в модель предложения
-    setFormData({ ...values, id });
-    console.log(values);
+    const { product, warehouse } = values || {};
+    setFormData({
+      ...values,
+      product: product?.value,
+      warehouse: warehouse?.value,
+      id,
+    });
   };
 
   useEffect(() => {
     refetchOfferEdit();
   }, [formData]);
+
+  useEffect(() => {
+    isSuccess && history.push(generatePath(routes.offers.list.path));
+  }, [isSuccess]);
+
+  const initialValues = useMemo(() => {
+    return {
+      volume,
+      cost_with_NDS, // TODO: уточнить должно ли отправляться с НДС или без
+      product: productOptions?.find((option) => option?.value === offerProduct),
+      warehouse: warehouseOptions?.find(
+        (option) => option?.value === offerWarehouse
+      ),
+    };
+  }, [initialOfferData, warehouseOptions, productOptions]);
 
   return (
     <Flex column>
@@ -56,20 +92,21 @@ export const OfferPage: React.FC = () => {
       <Spacer space={28} />
 
       <Formik
-        enableReinitialize={true}
-        initialValues={{
-          volume,
-        }}
+        enableReinitialize
+        initialValues={initialValues}
         onSubmit={handleSubmit}
       >
         <Form>
           <StyledFlex>
             <Flex column>
-              <FormikField name="someOptions" title="Культура">
-                <Select variant="light" options={fakeOptions} />
+              <FormikField name="product" title="Культура">
+                <Select variant="light" options={productOptions} />
               </FormikField>
-              <FormikField name="price" title="Цена">
-                <Input name="price" disabled />
+              <FormikField
+                name="cost_with_NDS"
+                title="Цена CNCPT на воротах порта, ₽/т"
+              >
+                <Input name="cost_with_NDS" />
               </FormikField>
               <FormikField name="volume" title="Объем, т">
                 <Input name="volume" />
@@ -82,7 +119,11 @@ export const OfferPage: React.FC = () => {
                   }}
                   startFieldName="date_start_shipment"
                   endFieldName="date_finish_shipment"
+                  hasCounter
                 />
+              </FormikField>
+              <FormikField name="warehouse" title="Порт">
+                <Select options={warehouseOptions} />
               </FormikField>
             </Flex>
             <Indicators>asds</Indicators>

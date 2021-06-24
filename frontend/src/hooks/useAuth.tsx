@@ -52,7 +52,7 @@ export const useLogin = (request: any) => {
     LOGIN_DATA_QUERY_KEY,
     () => daylesfordService.login(request),
     {
-      enabled: false,
+      enabled: !!request,
       refetchOnWindowFocus: false,
       retry: false,
       cacheTime: 0,

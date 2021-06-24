@@ -4,19 +4,23 @@ import ReactSelect from "react-select";
 import styled from "styled-components";
 
 interface ISelect {
-  value: string;
-  label: string;
+  value: string | number;
+  label: string | number;
 }
 
 interface IProps {
-  variant: "light" | "dark";
+  variant?: "light" | "dark";
   options: ISelect[];
 }
 
 const getBgColor = (variant: "light" | "dark") =>
   variant === "light" ? "#F5F2EA" : "#e7e2d4";
 
-export const Select: React.FC<IProps> = ({ options, variant, ...rest }) => (
+export const Select: React.FC<IProps> = ({
+  options,
+  variant = "dark",
+  ...rest
+}) => (
   <StyledReactSelect
     classNamePrefix="Select"
     options={options}
@@ -35,7 +39,7 @@ const StyledReactSelect = styled(ReactSelect)`
 
   .Select__control {
     cursor: pointer;
-    min-width: 345px;
+    width: 345px;
     height: 50px;
     border: 0px;
     background-color: ${({ variant }) => getBgColor(variant)};
