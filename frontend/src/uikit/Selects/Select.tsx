@@ -25,6 +25,7 @@ export const Select: React.FC<IProps> = ({
     classNamePrefix="Select"
     options={options}
     variant={variant}
+    placeholder="Выберите . . ."
     {...rest}
   />
 );
@@ -39,9 +40,9 @@ const StyledReactSelect = styled(ReactSelect)`
 
   .Select__control {
     cursor: pointer;
+    border: 0px;
     width: 345px;
     height: 50px;
-    border: 0px;
     background-color: ${({ variant }) => getBgColor(variant)};
     border-radius: 6px;
   }
@@ -52,6 +53,7 @@ const StyledReactSelect = styled(ReactSelect)`
 
   .Select__menu {
     background-color: ${({ variant }) => getBgColor(variant)};
+    width: 345px;
   }
 
   .Select__option {

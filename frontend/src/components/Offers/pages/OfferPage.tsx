@@ -2,7 +2,11 @@ import { Form, Formik } from "formik";
 import React, { useEffect, useMemo, useState } from "react";
 import { generatePath, useHistory, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { useOffer, useOfferEdit } from "../../../hooks/useOffers";
+import {
+  useOffer,
+  useOfferCreate,
+  useOfferEdit,
+} from "../../../hooks/useOffers";
 import { useProducts } from "../../../hooks/useProducts";
 import { useWarehouses } from "../../../hooks/useWarehouses";
 import { routes } from "../../../routes/consts";
@@ -13,11 +17,11 @@ import { IRouteParams } from "../../../utils/models";
 import { DatePickerField } from "../../Datepicker/Datepicker";
 
 export const OfferPage: React.FC = () => {
-  const { id }: IRouteParams = useParams();
+  const { id: paramId }: IRouteParams = useParams();
   const history = useHistory();
   const { data: productsData } = useProducts();
   const { data: warehouseData } = useWarehouses();
-  const { data: initialOfferData } = useOffer(id);
+  const { data: initialOfferData } = useOffer(paramId);
   const [formData, setFormData] = useState();
 
   const productOptions = useMemo(() => {
@@ -53,7 +57,10 @@ export const OfferPage: React.FC = () => {
     warehouse: offerWarehouse,
   } = initialOfferData || {};
 
-  const { isSuccess, refetch: refetchOfferEdit } = useOfferEdit(formData);
+  const { isSuccess: isEditSuccess, refetch: refetchOfferEdit } =
+    useOfferEdit(formData);
+  const { isSuccess: isCreateSuccess, refetch: refetchOfferCreate } =
+    useOfferCreate(formData);
 
   const handleSubmit = (values: any) => {
     const { product, warehouse } = values || {};
@@ -61,17 +68,19 @@ export const OfferPage: React.FC = () => {
       ...values,
       product: product?.value,
       warehouse: warehouse?.value,
-      id,
+      paramId,
     });
   };
 
   useEffect(() => {
-    refetchOfferEdit();
+    paramId ? refetchOfferEdit() : refetchOfferCreate();
   }, [formData]);
 
   useEffect(() => {
-    isSuccess && history.push(generatePath(routes.offers.list.path));
-  }, [isSuccess]);
+    formData &&
+      (isEditSuccess || isCreateSuccess) &&
+      history.push(generatePath(routes.offers.list.path));
+  }, [isEditSuccess, isCreateSuccess, formData]);
 
   const initialValues = useMemo(() => {
     return {
@@ -87,7 +96,7 @@ export const OfferPage: React.FC = () => {
   return (
     <Flex column>
       <Typography size="lg2" bold>
-        {`${id ? "Редактировать" : "Создать"} предложение`}
+        {`${paramId ? "Редактировать" : "Создать"} предложение`}
       </Typography>
       <Spacer space={28} />
 
