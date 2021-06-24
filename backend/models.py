@@ -122,7 +122,7 @@ class Offer(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField('Создано (время)', auto_now_add=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
-    warehouses = models.ForeignKey(Warehouse, on_delete=models.CASCADE, blank=True, null=True, )
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, blank=True, null=True, )
     date_start_shipment = models.DateTimeField('Дата старта поставки', blank=True, null=True)
     date_finish_shipment = models.DateTimeField('Дата окончания поставки', blank=True, null=True)
     cost = models.FloatField('Цена', blank=True, null=True)
