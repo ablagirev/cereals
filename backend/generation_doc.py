@@ -87,13 +87,13 @@ def gen_doc(offer, company, product, deal):
     }
     # doc.render(context)
     # doc.save("generated.docx")
-    import pythoncom
-    pythoncom.CoInitializeEx(0)
-    from docx2pdf import convert
-
-    # convert("generated.docx")
-    convert("generated.docx", "output.pdf")
-    # convert("my_docx_folder/")
+    # import pythoncom
+    # pythoncom.CoInitializeEx(0)
+    # from docx2pdf import convert
+    #
+    # # convert("generated.docx")
+    # convert("generated.docx", "output.pdf")
+    # # convert("my_docx_folder/")
 
 #
 # {
