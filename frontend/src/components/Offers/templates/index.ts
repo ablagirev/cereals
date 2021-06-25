@@ -1,0 +1,1 @@
+export {OffersTemplate} from './OffersTemplate'
