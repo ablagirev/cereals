@@ -38,7 +38,7 @@ class UnitOfMeasurementOfSpecification(models.Model):
 
 class SpecificationsOfProduct(models.Model):
     name_of_specification = models.ForeignKey(NameOfSpecification, on_delete=models.CASCADE,
-                                              related_name='name_of_specification')
+                                              related_name='name_of_specification', blank=True, null=True)
     type_field = models.ForeignKey(TypeOfSpecification, on_delete=models.CASCADE,
                                    related_name='type_field', blank=True, null=True)
     unit_of_measurement = models.ForeignKey(UnitOfMeasurementOfSpecification, on_delete=models.CASCADE,
@@ -122,7 +122,7 @@ class Offer(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField('Создано (время)', auto_now_add=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, blank=True, null=True, )
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, blank=True, null=True)
     date_start_shipment = models.DateTimeField('Дата старта поставки', blank=True, null=True)
     date_finish_shipment = models.DateTimeField('Дата окончания поставки', blank=True, null=True)
     cost = models.FloatField('Цена', blank=True, null=True)
