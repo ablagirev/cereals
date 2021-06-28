@@ -2,73 +2,54 @@
   gather_facts: no
   become: yes
   tasks:
-#    - name: Create swap file
-#      command: dd if=/dev/zero of=/swapfile bs=1024 count=1024k
-#        creates="/swapfile"
-#      tags:
-#        - swap.file.create
-#
-#
-#    - name: Change swap file permissions
-#      file: path="/swapfile"
-#        owner=root
-#        group=root
-#        mode=0600
-#      tags:
-#        - swap.file.permissions
-#
-#
-#    - name: "Check swap file type"
-#      command: file /swapfile
-#      register: swapfile
-#      tags:
-#        - swap.file.mkswap
-#
-#
-#    - name: Make swap file
-#      command: "sudo mkswap /swapfile"
-#      when: swapfile.stdout.find('swap file') == -1
-#      tags:
-#        - swap.file.mkswap
-#
-#
-#    - name: Write swap entry in fstab
-#      mount: name=none
-#        src=/swapfile
-#        fstype=swap
-#        opts=sw
-#        passno=0
-#        dump=0
-#        state=present
-#      tags:
-#        - swap.fstab
+    - name: Update the apt package index
+      become: yes
+      apt:
+        name: "*"
+        state: latest
+        update_cache: yes
+        force_apt_get: yes
+
+    - name: Install packages for apt add repository over HTTPS
+      become: yes
+      apt:
+        name: "{{ packagesdep }}"
+        force_apt_get: yes
+        state: latest
+        update_cache: yes
+      vars:
+        packagesdep:
+          - git
+          - apt-transport-https
+          - ca-certificates
+          - wget
+          - software-properties-common
+          - gnupg2
+          - curl
 
 
-#    - name: Mount swap
-#      command: "swapon /swapfile"
-##      when: ansible_swaptotal_mb < 1
-#      tags:
-#        - swap.file.swapon
-
-    - name: Install aptitude using apt
-      apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
-
-    - name: Install required system packages
-      apt: name={{ item }} state=latest update_cache=yes
-      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools', 'firewalld' ]
-
-    - name: Add Docker GPG apt Key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: Add Docker Repository
+    - name: add docker official repository for Debian Stretch
       apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        repo: deb [arch=amd64] https://download.docker.com/linux/debian stretch stable
         state: present
 
-    - name: Update apt and install docker-ce
-      apt: update_cache=yes name=docker-ce state=latest
+    - name: Add Apt signing key from official docker repo
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: Index new repo into the cache
+      become: yes
+      apt:
+        name: "*"
+        state: latest
+        update_cache: yes
+        force_apt_get: yes
+
+    - name: actually install docker
+      apt:
+        name: "docker-ce"
+        state: latest
 
     - name: Install Docker Module for Python
       pip:
@@ -77,190 +58,3 @@
     - name: Install Docker-Compose Python
       pip:
         name: docker-compose
-
-    - name: Create docker directory
-      file:
-        path: /ovk-group
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
-
-#    - name: Copy docker directory
-#      template:
-#        src: Dockerfile
-#        dest: /src/Dockerfile
-
-    - name: Create static directory
-      file:
-        path: /ovk-group/static
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
-
-    - name: Create media directory
-      file:
-        path: /ovk-group/media
-        state: directory
-
-    - name: Create media directory
-      file:
-        path: /ovk-group/images
-        state: directory
-
-    - name: Copy main data
-      synchronize:
-        src: main
-        dest: /ovk-group
-        delete: yes
-        recursive: yes
-        mode: push
-
-    - name: Copy frontend data
-      synchronize:
-        src: frontend
-        dest: /ovk-group
-        delete: yes
-        recursive: yes
-        mode: push
-
-    - name: Copy nginx data
-      synchronize:
-        src: nginx
-        dest: /ovk-group
-        delete: yes
-        recursive: yes
-        mode: push
-
-    - name: Copy traefik data
-      synchronize:
-        src: traefik
-        dest: /ovk-group
-        delete: yes
-        recursive: yes
-        mode: push
-
-    - name: Copy docker-compose.yaml data
-      synchronize:
-        src: docker-compose.yaml
-        dest: /ovk-group/docker-compose.yaml
-        mode: push
-
-#    - name: Run docker network create web
-#      shell: docker network create web
-
-    - name: Run docker-compose up -d
-      delegate_to: 127.0.0.1
-      become: no
-      command: docker-compose build --build-arg BACKEND_API_URL=${BACKEND_API_URL} --build-arg API_URL=${API_URL}
-      environment:
-        SITE_HOST: 'ovk-dom.ru'
-        POSTGRES_USER: user
-        POSTGRES_PASSWORD: Passw!ord
-        DB: 'postgresql://user:Passw!ord@db:5432/postgres'
-        SALT: '7f68ed0d-c661-4264-91ba-89c83f585fa5'
-        SECRET_KEY: '7f68ed0d-c661-4264-91ba-89c83f585fa5'
-        MEDIA_ROOT: '/app/media'
-        MEDIA_URL: '/media/'
-        STATIC_ROOT: '/app/static'
-        STATIC_URL: '/static/'
-        API_URL: 'https://ovk-dom.ru/api/'
-        BACKEND_API_URL: 'http://main:8000/api/'
-#        STATIC_URL: 'http://localhost.com/'
-#      args:
-#        chdir: /src
-
-    - name: Create images directory
-      delegate_to: 127.0.0.1
-      become: no
-      file:
-        path: images/
-        state: directory
-
-    - name: save docker main
-      delegate_to: 127.0.0.1
-      become: no
-      command: docker save -o images/main.tar ovk-group_backend
-
-    - name: save docker nuxt
-      delegate_to: 127.0.0.1
-      become: no
-      command: docker save -o images/nuxt.tar ovk-group_nuxt
-
-    - name: save docker traefik
-      delegate_to: 127.0.0.1
-      become: no
-      command: docker save -o images/traefik.tar ovk-group_traefik
-
-    - name: save docker nginx
-      delegate_to: 127.0.0.1
-      become: no
-      command: docker save -o images/nginx.tar ovk-group_nginx
-
-    - name: Copy images data
-      synchronize:
-        src: images
-        dest: /ovk-group
-        delete: yes
-        recursive: yes
-        mode: push
-
-
-    - name: load docker main
-      command: docker load -i main.tar
-      args:
-        chdir: /ovk-group/images
-
-    - name: load docker nuxt
-      command: docker load -i nuxt.tar
-      args:
-        chdir: /ovk-group/images
-
-    - name: load docker traefik
-      command: docker load -i traefik.tar
-      args:
-        chdir: /ovk-group/images
-
-    - name: load docker nginx
-      command: docker load -i nginx.tar
-      args:
-        chdir: /ovk-group/images
-
-    - name: Create a network
-      docker_network:
-        name: web
-
-    - name: Run docker-compose up -d
-      command: docker-compose up -d
-      environment:
-        SITE_HOST: 'ovk-dom.ru'
-        POSTGRES_USER: user
-        POSTGRES_PASSWORD: Passw!ord
-        DB: 'postgresql://user:Passw!ord@db:5432/postgres'
-        SALT: '7f68ed0d-c661-4264-91ba-89c83f585fa5'
-        SECRET_KEY: '7f68ed0d-c661-4264-91ba-89c83f585fa5'
-        MEDIA_ROOT: '/app/media'
-        MEDIA_URL: '/media/'
-        STATIC_ROOT: '/app/static'
-        STATIC_URL: '/static/'
-        API_URL: 'https://ovk-dom.ru/api/'
-        BACKEND_API_URL: 'http://main:8000/api/'
-        ADMIN_TOKEN: '96461993-9412-42FD-AA9A-3FB4DCB6AD88'
-      args:
-        chdir: /ovk-group
-#
-#    - firewalld:
-#        service: https
-#        permanent: true
-#        state: enabled
-#
-#    - firewalld:
-#        service: http
-#        permanent: true
-#        state: enabled
-#
-#    - firewalld:
-#        port: 15432/tcp
-#        permanent: true
-#        state: enabled
