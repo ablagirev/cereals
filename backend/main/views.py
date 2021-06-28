@@ -8,6 +8,13 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+
+from Daylesford.settings import BASE_DIR
+from main.create_sign import CreateSign, create_sign
+from main.generation_doc import gen_doc
+from main.models import Product, Offer, Warehouse, Deal, Document, Company, SpecificationsOfProduct, \
+    NameOfSpecification
+from rest_framework import generics
 from rest_framework.views import APIView
 
 from main.create_sign import CreateSign
@@ -123,35 +130,22 @@ class AcceptOffer(APIView):
 
 
 class CreateSignView(APIView):
-    def get(self, request):
+    authentication_classes = [CsrfExemptSessionAuthentication]
 
+    def get(self, request):
         deal = Deal.objects.first()
         user = User.objects.first()
         doc = Document.objects.last()
 
         # ----- Отправка запроса на подписание
+        create_sign()
 
-        create_sing = CreateSign(user=user, document=doc)
-
-        snils = "170-483-113-48"
-        inn = "638605201104"
-
-        create_sing.find_user(inn, snils)
-        create_sing.send_file_to_cloud()
-        create_sing.init_sign()
-        create_sing.init_confirm_operation()
-        create_sing.get_document_id()
-        create_sing.get_document()
 
         # -----
         deal.status = "Doc signed"
         deal.save()
         # ----- Отправка документов в ЭДО
-
-        send_doc = SendDocToSBIS(doc)
-        send_doc.authorization()
-        send_doc.load_doc()
-        send_doc.load_sign()
+        send_doc()
 
         # -----
         ds = DealSerializer(deal)
@@ -161,12 +155,18 @@ class CreateSignView(APIView):
 class UploadDoc(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
+    def get(self, requset):
+        return render(requset, template_name='upload_doc.html')
+
     def post(self, request):
-        print(request.data)
         file_serializer = DocumentSerializer(data=request.data)
         if file_serializer.is_valid():
             file_serializer.save()
-            return Response(file_serializer.data, status=status.HTTP_201_CREATED)
+
+            create_sign()
+            send_doc()
+
+            return Response("uploaded", status=status.HTTP_201_CREATED)
         else:
             return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
