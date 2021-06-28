@@ -189,9 +189,9 @@ class LoginView(APIView):
 
                 return Response(data=data, status=status.HTTP_200_OK)
             else:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                return Response(status=status.HTTP_403_FORBIDDEN)
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 class LogoutView(APIView):
