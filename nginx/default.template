@@ -1,0 +1,36 @@
+resolver 127.0.0.11 ipv6=off;
+
+map $server_port $x_forwarded_host {
+    default $host:$server_port;
+    80      $host;
+    443     $host;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name _;
+
+    sendfile on;
+    tcp_nodelay on;
+    tcp_nopush on;
+    gzip on;
+    gzip_disable "msie6";
+    gzip_min_length 1000;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    location /static {
+        alias /var/www/static;
+        expires 365d;
+    }
+
+    location /media {
+        add_header 'Access-Control-Allow-Origin' '*';
+        alias /var/www/media;
+        expires 365d;
+    }
+
+}

@@ -4,10 +4,11 @@ deploy-prod:
   image: ubuntu:latest
 
   script:
-    - python3 -m venv venv
-    - source venv/bin/activate
-    - pip3 install -r req.txt
-    - gunicorn --reload -b 0.0.0.0:8000 Daylesford.wsgi &
+#    - python3 -m venv venv
+#    - source venv/bin/activate
+#    - pip3 install -r req.txt
+#    - gunicorn --reload -b 0.0.0.0:8000 Daylesford.wsgi &
+    - docker-compose up --build -d
   only:
     - main
 

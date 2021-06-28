@@ -1,0 +1,95 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:12
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 15432:5432
+    networks:
+      - internal
+
+  backend:
+    build: .
+    entrypoint: ./wait-for db:5432 -- ./entrypoint.sh
+    command: cd backend && poetry run gunicorn --timeout 1800 -b 0.0.0.0:8000 shop.wsgi:application
+    environment:
+      - DB=postgresql://postgres:postgres@db:5432/postgres
+      - SECRET_KEY
+      - SITE_HOST
+      - API_HOST
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    volumes:
+      - static:/app/static
+      - media:/app/media
+    labels:
+      - traefik.http.routers.backend.rule=(Host(`${SITE_HOST}`))
+      - traefik.http.routers.web-backend.rule=(Host(`${SITE_HOST}`))
+      - traefik.http.routers.backend.entryPoints=websecure
+      - traefik.http.routers.web-backend.entryPoints=web
+      - traefik.http.routers.backend.tls=true
+      - traefik.http.routers.backend.tls.certresolver=tlsresolver
+      - traefik.http.services.backend.loadbalancer.server.port=8000
+      - traefik.http.services.web-backend.loadbalancer.server.port=8000
+      - traefik.http.middlewares.backendheader.headers.STSIncludeSubdomains=true
+      - traefik.http.middlewares.backendheader.headers.STSSeconds=315360000
+      - traefik.docker.network=web
+    networks:
+      - internal
+
+  nginx:
+    build: ./nginx
+    command: /bin/sh -c "envsubst '$$SITE_HOST $$SITE_PORT' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+    depends_on:
+      - backend
+    environment:
+      - SITE_HOST
+    volumes:
+      - static:/var/www/static:ro
+      - media:/var/www/media:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nginx.rule=Host(`${SITE_HOST}`) && PathPrefix(`/static`, `/media`)
+      - traefik.http.routers.nginx.tls=true
+      - traefik.http.routers.nginx.tls.certresolver=tlsresolver
+      - traefik.http.services.nginx.loadbalancer.server.port=80
+    networks:
+      - internal
+      - web
+
+
+  traefik:
+    build: ./traefik
+    ports:
+      - 80:80
+      - 443:443
+    command:
+      --configFile=./traefik.yaml
+    environment:
+      - SITE_HOST
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${PWD}/traefik:/etc/traefik
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
+      - web
+
+networks:
+  web:
+    external: true
+  internal:
+    external: false
+
+
+volumes:
+  static:
+  media:
+  dbdata:

@@ -81,8 +81,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('status', models.CharField(max_length=250)),
-                ('cars', models.ManyToManyField(to='backend.CarsForShipment')),
-                ('documents', models.ManyToManyField(to='backend.Document')),
+                ('cars', models.ManyToManyField(to='main.CarsForShipment')),
+                ('documents', models.ManyToManyField(to='main.Document')),
             ],
         ),
         migrations.CreateModel(
@@ -98,9 +98,9 @@ class Migration(migrations.Migration):
                 ('period_of_export', models.DateTimeField()),
                 ('creator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='creator', to=settings.AUTH_USER_MODEL)),
                 ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='customer', to=settings.AUTH_USER_MODEL)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='product', to='backend.product')),
+                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='product', to='main.product')),
                 ('provider', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='provider', to=settings.AUTH_USER_MODEL)),
-                ('warehouses', models.ManyToManyField(to='backend.Warehouse')),
+                ('warehouses', models.ManyToManyField(to='main.Warehouse')),
             ],
         ),
         migrations.CreateModel(
@@ -108,12 +108,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('status', models.CharField(max_length=250)),
-                ('control', models.ManyToManyField(to='backend.Сontrol')),
-                ('documents', models.ManyToManyField(to='backend.Document')),
-                ('offer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='offer', to='backend.offer')),
-                ('payment', models.ManyToManyField(to='backend.Payment')),
-                ('quality_control', models.ManyToManyField(to='backend.QualityControl')),
-                ('shipment', models.ManyToManyField(to='backend.Shipment')),
+                ('control', models.ManyToManyField(to='main.Сontrol')),
+                ('documents', models.ManyToManyField(to='main.Document')),
+                ('offer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='offer', to='main.offer')),
+                ('payment', models.ManyToManyField(to='main.Payment')),
+                ('quality_control', models.ManyToManyField(to='main.QualityControl')),
+                ('shipment', models.ManyToManyField(to='main.Shipment')),
             ],
         ),
     ]

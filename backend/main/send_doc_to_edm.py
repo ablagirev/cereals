@@ -3,8 +3,8 @@ import os
 
 import requests
 
-from backend.consts import URL_SBIS
-from backend.utils import read_byte_file
+from main.consts import URL_SBIS
+from main.utils import read_byte_file
 
 
 def send_doc():
@@ -12,37 +12,30 @@ def send_doc():
 
 
 class SendDocToSBIS:
-
     def __init__(self, document):
         self.auth_token = None
         self.document = document
 
     def authorization(self):
-        url = URL_SBIS + 'auth/service/'
+        url = URL_SBIS + "auth/service/"
 
         data = {
             "jsonrpc": "2.0",
             "method": "СБИС.Аутентифицировать",
-            "params": {
-                "Параметр": {
-                    "Логин": "ukostrova",
-                    "Пароль": "ukostrova2021"
-                }
-            },
-            "id": 0
+            "params": {"Параметр": {"Логин": "ukostrova", "Пароль": "ukostrova2021"}},
+            "id": 0,
         }
         res = requests.post(url, json=data)
 
-        self.auth_token = res.json()['result']
+        self.auth_token = res.json()["result"]
         # Получение токена аунтификации
 
-
     def load_doc(self):
-        url = 'https://online.sbis.ru/service/?srv=1'
+        url = "https://online.sbis.ru/service/?srv=1"
 
         raw = read_byte_file(self.document.file.path)
 
-        encoded_data = base64.b64encode(raw).decode('UTF-8')
+        encoded_data = base64.b64encode(raw).decode("UTF-8")
 
         data = {
             "jsonrpc": "2.0",
@@ -51,11 +44,11 @@ class SendDocToSBIS:
                 "Документ": {
                     "Вложение": [
                         {
-                            "Идентификатор": 'e95dac53-1650-4e62-830f-f3456b6319c5',
+                            "Идентификатор": "e95dac53-1650-4e62-830f-f3456b6319c5",
                             "Файл": {
                                 "ДвоичныеДанные": encoded_data,
-                                "Имя": self.document.name
-                            }
+                                "Имя": self.document.name,
+                            },
                         }
                     ],
                     "Дата": "15.06.2021",
@@ -64,7 +57,7 @@ class SendDocToSBIS:
                         "СвЮЛ": {
                             "ИНН": "7727325766",
                             "КПП": "772701001",
-                            "Название": "Тестовый Получатель"
+                            "Название": "Тестовый Получатель",
                         }
                     },
                     # "НашаОрганизация": {
@@ -82,22 +75,19 @@ class SendDocToSBIS:
                     # "Тип": "ДокОтгрИсх"
                 }
             },
-            "id": 0
+            "id": 0,
         }
-        headers = {
-            'X-SBISSessionID': self.auth_token
-        }
+        headers = {"X-SBISSessionID": self.auth_token}
 
         res = requests.post(url, json=data, headers=headers)
         print(res.json())
 
-
     def load_sign(self):
-        url = 'https://online.sbis.ru/service/?srv=1'
+        url = "https://online.sbis.ru/service/?srv=1"
 
         raw = read_byte_file(self.document.sign_file.path)
 
-        encoded_data = base64.b64encode(raw).decode('UTF-8')
+        encoded_data = base64.b64encode(raw).decode("UTF-8")
 
         data = {
             "jsonrpc": "2.0",
@@ -119,7 +109,9 @@ class SendDocToSBIS:
                                     {
                                         "Файл": {
                                             "ДвоичныеДанные": encoded_data,
-                                            "Имя": os.path.basename(self.document.sign_file.path)
+                                            "Имя": os.path.basename(
+                                                self.document.sign_file.path
+                                            ),
                                         }
                                     }
                                 ],
@@ -151,15 +143,13 @@ class SendDocToSBIS:
                         # "Идентификатор": "",
                         # "Название": "Отправка",
                         # "Служебный": "Нет"
-                    }
+                    },
                 }
             },
-            "id": 0
+            "id": 0,
         }
 
-        headers = {
-            'X-SBISSessionID': self.auth_token
-        }
+        headers = {"X-SBISSessionID": self.auth_token}
 
         res = requests.post(url, json=data, headers=headers)
         print(res.json())

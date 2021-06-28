@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('backend', '0005_auto_20210604_1853'),
+        ('main', '0005_auto_20210604_1853'),
     ]
 
     operations = [
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='offer',
             name='warehouses',
-            field=models.ManyToManyField(blank=True, to='backend.Warehouse'),
+            field=models.ManyToManyField(blank=True, to='main.Warehouse'),
         ),
         migrations.AlterField(
             model_name='product',

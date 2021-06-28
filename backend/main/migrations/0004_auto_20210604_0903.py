@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('backend', '0003_alter_product_harvest_year'),
+        ('main', '0003_alter_product_harvest_year'),
     ]
 
     operations = [
@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='offer',
             name='product',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='product', to='backend.product'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='product', to='main.product'),
         ),
         migrations.AlterField(
             model_name='offer',
@@ -61,6 +61,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='offer',
             name='warehouses',
-            field=models.ManyToManyField(blank=True, null=True, to='backend.Warehouse'),
+            field=models.ManyToManyField(blank=True, null=True, to='main.Warehouse'),
         ),
     ]
