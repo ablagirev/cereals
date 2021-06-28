@@ -23,14 +23,16 @@ export const Layout: React.FC<ILayoutProps> = ({ children, navigation }) => {
   return (
     <Flex fillHeight>
       {isAuthenticated && <NavSidebar navigation={navigation} />}
-      <Flex column grow>
-        <PageHeader />
-        {children}
-      </Flex>
+      <ContentWrapper>
+        <Flex column grow>
+          {children}
+        </Flex>
+      </ContentWrapper>
     </Flex>
   );
 };
 
-const PageHeader = styled.div`
-  height: 44px;
+const ContentWrapper = styled.div`
+  margin: 44px;
+  width: 100%;
 `;

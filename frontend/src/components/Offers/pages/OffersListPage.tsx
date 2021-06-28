@@ -9,7 +9,20 @@ import { Button, Flex, Spacer, Tabs, Typography } from "../../../uikit";
 import { Card } from "../../../uikit/Card/Card";
 import { Table } from "../../../uikit/Table/Table";
 import { ITab } from "../../../uikit/Tabs/Tabs";
+import { EMPTY_CHAR } from "../../../utils/consts";
 import { formatDate, formatMoney } from "../../../utils/utils";
+
+// TODO: заменить на i18n
+export const getStatus = (status: string) => {
+  switch (status) {
+    case "active":
+      return "Активные";
+    case "archive":
+      return "Завершенные";
+    default:
+      return EMPTY_CHAR;
+  }
+};
 
 export const OffersListPage: React.FC = () => {
   const { data } = useOffers();
@@ -30,8 +43,9 @@ export const OffersListPage: React.FC = () => {
 
   const renderOfferTab = useCallback(
     (data: IOffer[]): ITab => {
+      const status = getStatus(data?.[0]?.status);
       const tab = {
-        label: `${data?.[0]?.status} - ${data?.length}`,
+        label: status && `${status} - ${data?.length}`,
         items: data?.map((item) => {
           const {
             title,
@@ -47,7 +61,7 @@ export const OffersListPage: React.FC = () => {
 
           const periodOfShippment = `${formatDate(
             date_start_shipment
-          )} — ${formatDate(date_finish_shipment)} (${period_of_export} дней)`;
+          )} — ${formatDate(date_finish_shipment)} (${period_of_export} д.)`;
 
           const dataList = [
             {

@@ -73,6 +73,7 @@ export const AuthPage: React.FC = () => {
                     name="username"
                     label="Имя пользователя"
                     isError={isError}
+                    variant="dark"
                   />
                   <Spacer />
                   <Input
@@ -80,6 +81,7 @@ export const AuthPage: React.FC = () => {
                     name="password"
                     label="Пароль"
                     isError={isError}
+                    variant="dark"
                   />
                   <Spacer space={44} />
                   <Button variant="action" type="submit">
