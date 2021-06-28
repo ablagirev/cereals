@@ -3,7 +3,6 @@ from django.core.files.base import ContentFile
 
 from main.consts import URL_FOR_SIGN, API_PATH
 from main.models import Document
-from main.serializer import DocumentSerializer
 from main.utils import read_byte_file, save_file
 
 
@@ -12,8 +11,8 @@ def create_sign():
 
     create_sing = CreateSign(document=doc)
 
-    snils = '170-483-113-48'
-    inn = '638605201104'
+    snils = "170-483-113-48"
+    inn = "638605201104"
 
     # create_sing.find_user(inn, snils)
     create_sing.send_file_to_cloud()
@@ -22,13 +21,13 @@ def create_sign():
     create_sing.get_document_id()
     create_sing.get_document()
 
-class CreateSign:
 
+class CreateSign:
     def __init__(self, document, user=None):
         self.user = user
         self.document = document
-        self.auth = 'Basic dGVzdGFwaUB0ZXN0LmFwaTpFd08yYXJ6eg=='
-        self.user_req_id = '24bfe02c-1cb7-4221-bbc7-8eacac1c2802'
+        self.auth = "Basic dGVzdGFwaUB0ZXN0LmFwaTpFd08yYXJ6eg=="
+        self.user_req_id = "24bfe02c-1cb7-4221-bbc7-8eacac1c2802"
         self.send_doc_id = None
         self.operation_id = None
         self.signed_document_id = None
@@ -130,7 +129,7 @@ class CreateSign:
         )
 
         headers = {
-            'Authorization': self.auth,
+            "Authorization": self.auth,
         }
 
         req = requests.get(url, headers=headers)

@@ -2,22 +2,16 @@ import base64
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-
-from Daylesford.settings import BASE_DIR
-from main.create_sign import CreateSign, create_sign
-from main.generation_doc import gen_doc
-from main.models import Product, Offer, Warehouse, Deal, Document, Company, SpecificationsOfProduct, \
-    NameOfSpecification
-from rest_framework import generics
 from rest_framework.views import APIView
 
-from main.create_sign import CreateSign
+from main.create_sign import create_sign
 from main.generation_doc import gen_doc
 from main.models import (
     Product,
@@ -28,7 +22,7 @@ from main.models import (
     Company,
     SpecificationsOfProduct,
 )
-from main.send_doc_to_edm import SendDocToSBIS
+from main.send_doc_to_edm import send_doc
 from main.serializer import (
     ProductSerializer,
     OfferSerializer,
@@ -140,7 +134,6 @@ class CreateSignView(APIView):
         # ----- Отправка запроса на подписание
         create_sign()
 
-
         # -----
         deal.status = "Doc signed"
         deal.save()
@@ -156,7 +149,7 @@ class UploadDoc(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def get(self, requset):
-        return render(requset, template_name='upload_doc.html')
+        return render(requset, template_name="upload_doc.html")
 
     def post(self, request):
         file_serializer = DocumentSerializer(data=request.data)

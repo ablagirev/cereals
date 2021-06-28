@@ -24,14 +24,7 @@ from main.views import (
 urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-    path(
-        "",
-        TemplateView.as_view(
-            template_name="swagger_ui.html",
-            extra_context={"schema_url": "openapi-schema"},
-        ),
-        name="swagger-ui",
-    ),
+    path("", TemplateView.as_view(template_name="index.html",), name="index",),
     path("auth/login/", LoginView.as_view(), name="login_view"),
     path("auth/logout/", LogoutView.as_view(), name="logout_view"),
     # API Product

@@ -30,13 +30,8 @@ class SendDocToSBIS:
         data = {
             "jsonrpc": "2.0",
             "method": "СБИС.Аутентифицировать",
-            "params": {
-                "Параметр": {
-                    "Логин": self.login,
-                    "Пароль": self.password
-                }
-            },
-            "id": 0
+            "params": {"Параметр": {"Логин": self.login, "Пароль": self.password}},
+            "id": 0,
         }
         res = requests.post(url, json=data)
 
@@ -48,8 +43,8 @@ class SendDocToSBIS:
 
         raw = read_byte_file(self.document.file.path)
 
-        encoded_data = base64.b64encode(raw).decode('UTF-8')
-        date_today = datetime.date.today().strftime('%d.%m.%Y')
+        encoded_data = base64.b64encode(raw).decode("UTF-8")
+        date_today = datetime.date.today().strftime("%d.%m.%Y")
         data = {
             "jsonrpc": "2.0",
             "method": "СБИС.ЗаписатьДокумент",
@@ -100,8 +95,8 @@ class SendDocToSBIS:
 
         raw = read_byte_file(self.document.sign_file.path)
 
-        encoded_data = base64.b64encode(raw).decode('UTF-8')
-        date_today = datetime.date.today().strftime('%d.%m.%Y')
+        encoded_data = base64.b64encode(raw).decode("UTF-8")
+        date_today = datetime.date.today().strftime("%d.%m.%Y")
         data = {
             "jsonrpc": "2.0",
             "method": "СБИС.ВыполнитьДействие",

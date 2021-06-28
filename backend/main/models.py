@@ -58,17 +58,36 @@ class UnitOfMeasurementOfSpecification(models.Model):
 
 
 class SpecificationsOfProduct(models.Model):
-    name_of_specification = models.ForeignKey(NameOfSpecification, on_delete=models.CASCADE,
-                                              related_name='name_of_specification', blank=True, null=True)
-    type_field = models.ForeignKey(TypeOfSpecification, on_delete=models.CASCADE,
-                                   related_name='type_field', blank=True, null=True)
-    unit_of_measurement = models.ForeignKey(UnitOfMeasurementOfSpecification, on_delete=models.CASCADE,
-                                            related_name='unit_of_measurement', blank=True, null=True)
-    min_value = models.IntegerField('Минимальное значение', blank=True, null=True)
-    is_edit_min_value = models.BooleanField('Редактируемое минимальное значение?', blank=True, null=True)
-    max_value = models.IntegerField('Максимальное значение', blank=True, null=True)
-    is_edit_max_value = models.BooleanField('Редактируемое максимальное значение?', blank=True, null=True)
-    GOST = models.CharField('Тип поля', max_length=250, blank=True, null=True)
+    name_of_specification = models.ForeignKey(
+        NameOfSpecification,
+        on_delete=models.CASCADE,
+        related_name="name_of_specification",
+        blank=True,
+        null=True,
+    )
+    type_field = models.ForeignKey(
+        TypeOfSpecification,
+        on_delete=models.CASCADE,
+        related_name="type_field",
+        blank=True,
+        null=True,
+    )
+    unit_of_measurement = models.ForeignKey(
+        UnitOfMeasurementOfSpecification,
+        on_delete=models.CASCADE,
+        related_name="unit_of_measurement",
+        blank=True,
+        null=True,
+    )
+    min_value = models.IntegerField("Минимальное значение", blank=True, null=True)
+    is_edit_min_value = models.BooleanField(
+        "Редактируемое минимальное значение?", blank=True, null=True
+    )
+    max_value = models.IntegerField("Максимальное значение", blank=True, null=True)
+    is_edit_max_value = models.BooleanField(
+        "Редактируемое максимальное значение?", blank=True, null=True
+    )
+    GOST = models.CharField("Тип поля", max_length=250, blank=True, null=True)
 
 
 class Product(models.Model):
@@ -145,12 +164,20 @@ class Offer(models.Model):
     # offer_lifetime = models.DateTimeField('Время жизни предложения', blank=True, null=True)
     status = models.CharField("Статус", max_length=250, blank=True, null=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    created_at = models.DateTimeField('Создано (время)', auto_now_add=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, blank=True, null=True)
-    date_start_shipment = models.DateTimeField('Дата старта поставки', blank=True, null=True)
-    date_finish_shipment = models.DateTimeField('Дата окончания поставки', blank=True, null=True)
-    cost = models.FloatField('Цена', blank=True, null=True)
+    created_at = models.DateTimeField("Создано (время)", auto_now_add=True)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, blank=True, null=True
+    )
+    warehouse = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, blank=True, null=True
+    )
+    date_start_shipment = models.DateTimeField(
+        "Дата старта поставки", blank=True, null=True
+    )
+    date_finish_shipment = models.DateTimeField(
+        "Дата окончания поставки", blank=True, null=True
+    )
+    cost = models.FloatField("Цена", blank=True, null=True)
 
     @property
     def cost_with_NDS(self):
