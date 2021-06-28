@@ -14,14 +14,6 @@ from main.models import (
 )
 
 
-class OfferSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Offer
-        fields = "__all__"
-
-    cost_with_NDS = serializers.IntegerField(read_only=True)
-    period_of_export = serializers.IntegerField(read_only=True)
-
 
 class WarehouseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -98,3 +90,14 @@ class ProductSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class OfferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Offer
+        fields = "__all__"
+
+    cost_with_NDS = serializers.IntegerField(read_only=True)
+    period_of_export = serializers.IntegerField(read_only=True)
+    product = ProductSerializer()
+    warehouse = WarehouseSerializer()
