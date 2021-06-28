@@ -1,14 +1,20 @@
 import base64
+import datetime
 import os
 
 import requests
 
 from backend.consts import URL_SBIS
+from backend.models import Document
 from backend.utils import read_byte_file
 
 
 def send_doc():
-    pass
+    doc = Document.objects.last()
+    send_doc_to_sbis = SendDocToSBIS(doc)
+    send_doc_to_sbis.authorization()
+    send_doc_to_sbis.load_doc()
+    send_doc_to_sbis.load_sign()
 
 
 class SendDocToSBIS:
@@ -16,6 +22,8 @@ class SendDocToSBIS:
     def __init__(self, document):
         self.auth_token = None
         self.document = document
+        self.login = "ukostrova"
+        self.password = "ukostrova2021"
 
     def authorization(self):
         url = URL_SBIS + 'auth/service/'
@@ -25,8 +33,8 @@ class SendDocToSBIS:
             "method": "СБИС.Аутентифицировать",
             "params": {
                 "Параметр": {
-                    "Логин": "ukostrova",
-                    "Пароль": "ukostrova2021"
+                    "Логин": self.login,
+                    "Пароль": self.password
                 }
             },
             "id": 0
@@ -36,14 +44,13 @@ class SendDocToSBIS:
         self.auth_token = res.json()['result']
         # Получение токена аунтификации
 
-
     def load_doc(self):
         url = 'https://online.sbis.ru/service/?srv=1'
 
         raw = read_byte_file(self.document.file.path)
 
         encoded_data = base64.b64encode(raw).decode('UTF-8')
-
+        date_today = datetime.date.today().strftime('%d.%m.%Y')
         data = {
             "jsonrpc": "2.0",
             "method": "СБИС.ЗаписатьДокумент",
@@ -58,7 +65,7 @@ class SendDocToSBIS:
                             }
                         }
                     ],
-                    "Дата": "15.06.2021",
+                    "Дата": date_today,
                     "Идентификатор": "f2a7c885-269a-44e4-8781-cb928df94163",
                     "Контрагент": {
                         "СвЮЛ": {
@@ -91,14 +98,13 @@ class SendDocToSBIS:
         res = requests.post(url, json=data, headers=headers)
         print(res.json())
 
-
     def load_sign(self):
         url = 'https://online.sbis.ru/service/?srv=1'
 
         raw = read_byte_file(self.document.sign_file.path)
 
         encoded_data = base64.b64encode(raw).decode('UTF-8')
-
+        date_today = datetime.date.today().strftime('%d.%m.%Y')
         data = {
             "jsonrpc": "2.0",
             "method": "СБИС.ВыполнитьДействие",
@@ -109,7 +115,7 @@ class SendDocToSBIS:
                         "Вложение": [
                             {
                                 "ВерсияФормата": "5.02",
-                                "Дата": "15.06.2021",
+                                "Дата": date_today,
                                 "Идентификатор": "e95dac53-1650-4e62-830f-f3456b6319c5",
                                 # "Модифицирован": "Да",
                                 # "Название": "Фактура № 829766305 от 17.04.15 на сумму 1 026 996.48р., без НДС",

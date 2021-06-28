@@ -135,28 +135,14 @@ class CreateSignView(APIView):
         doc = Document.objects.last()
 
         # ----- Отправка запроса на подписание
+        create_sign()
 
-        # create_sing = CreateSign(user=user, document=doc)
-        #
-        # snils = '170-483-113-48'
-        # inn = '638605201104'
-        #
-        # create_sing.find_user(inn, snils)
-        # create_sing.send_file_to_cloud()
-        # create_sing.init_sign()
-        # create_sing.init_confirm_operation()
-        # create_sing.get_document_id()
-        # create_sing.get_document()
 
         # -----
         deal.status = 'Doc signed'
         deal.save()
         # ----- Отправка документов в ЭДО
-
-        send_doc = SendDocToSBIS(doc)
-        send_doc.authorization()
-        send_doc.load_doc()
-        send_doc.load_sign()
+        send_doc()
 
         # -----
         ds = DealSerializer(deal)

@@ -2,21 +2,33 @@ import requests
 from django.core.files.base import ContentFile
 
 from backend.consts import URL_FOR_SIGN, API_PATH
+from backend.models import Document
 from backend.serializer import DocumentSerializer
 from backend.utils import read_byte_file, save_file
 
 
 def create_sign():
-    pass
+    doc = Document.objects.last()
 
+    create_sing = CreateSign(document=doc)
+
+    snils = '170-483-113-48'
+    inn = '638605201104'
+
+    # create_sing.find_user(inn, snils)
+    create_sing.send_file_to_cloud()
+    create_sing.init_sign()
+    create_sing.init_confirm_operation()
+    create_sing.get_document_id()
+    create_sing.get_document()
 
 class CreateSign:
 
-    def __init__(self, user, document):
+    def __init__(self, document, user=None):
         self.user = user
         self.document = document
         self.auth = 'Basic dGVzdGFwaUB0ZXN0LmFwaTpFd08yYXJ6eg=='
-        self.user_req_id = None
+        self.user_req_id = '24bfe02c-1cb7-4221-bbc7-8eacac1c2802'
         self.send_doc_id = None
         self.operation_id = None
         self.signed_document_id = None
@@ -105,7 +117,7 @@ class CreateSign:
         url = URL_FOR_SIGN + API_PATH + self.user_req_id + '/dss/document/' + self.signed_document_id
 
         headers = {
-            'Authorization': 'Basic dGVzdGFwaUB0ZXN0LmFwaTpFd08yYXJ6eg==',
+            'Authorization': self.auth,
         }
 
         req = requests.get(url, headers=headers)
