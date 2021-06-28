@@ -9,7 +9,7 @@ export const navigation: TAppNavSection = {
   items: [
     {
       allowed: [],
-      path: routes.dealings.path,
+      path: routes.orders.path,
       route: {
         exact: true,
         render: () => <div>Страница сделок</div>,

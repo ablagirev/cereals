@@ -81,9 +81,10 @@ const NavSidebarInner = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 33px 0 33px 25px;
+  padding: 33px 25px;
   width: 250px;
   background-color: #e7e2d1;
+  white-space: nowrap;
 `;
 
 const Logo = styled.div`

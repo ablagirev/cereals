@@ -1,8 +1,8 @@
 import { appConfig } from "../config";
 import { POST, GET, PUT } from "../utils/http";
-import { IOffer, IProduct, IWarehouse } from "./models";
+import { IOffer, IOrder, IProduct, IWarehouse } from "./models";
 
-const {auth, offer, product, warehouse} = appConfig.api
+const {auth, offer, product, warehouse, order} = appConfig.api
 
 /**
  * Методы auth-service.
@@ -21,8 +21,12 @@ export const daylesfordService = {
 
      // product
      getProducts: () => GET<IProduct[]>(`${product}/`),
+     editProduct: (request: any) => PUT<any>(`${product}/${request.id}/`, request),
 
      // warehouses
-     getWarehouses: () => GET<IWarehouse[]>(`${warehouse}/`)
+     getWarehouses: () => GET<IWarehouse[]>(`${warehouse}/`),
+
+     //orders
+     getOrderList: () => GET<IOrder[]>(`${order}/`)
 };
  
