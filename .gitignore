@@ -1,5 +1,28 @@
+#main
 db.sqlite3
 venv
 temp_file
 media
 .idea
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/frontend/node_modules/
+.vscode
+
+# production
+/frontend/build/
+
+# misc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+*.log
+
+package-lock.json
+yarn.lock
+
+.env

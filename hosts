@@ -1,0 +1,8 @@
+[main]
+cp.c025prts.one
+
+[main:vars]
+ansible_connection=ssh
+ansible_user=root
+ansible_ssh_pass=dcbff4557GKIUBWX
+ansible_ssh_port=55022
