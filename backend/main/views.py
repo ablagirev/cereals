@@ -134,6 +134,7 @@ class CreateSignView(APIView):
         # ----- Отправка запроса на подписание
         create_sign()
 
+
         # -----
         deal.status = "Doc signed"
         deal.save()
