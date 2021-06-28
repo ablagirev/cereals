@@ -10,7 +10,7 @@ deploy-prod:
 #    - source venv/bin/activate
 #    - pip3 install -r req.txt
 #    - gunicorn --reload -b 0.0.0.0:8000 Daylesford.wsgi &
-    - pip install docker-compose
+    - pip3 install docker-compose
     - docker-compose up --build -d
   only:
     - main
