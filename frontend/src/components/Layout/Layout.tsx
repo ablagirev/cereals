@@ -21,18 +21,22 @@ interface ILayoutProps {
 export const Layout: React.FC<ILayoutProps> = ({ children, navigation }) => {
   const { isAuthenticated } = useAuthContext();
   return (
-    <Flex fillHeight>
+    <Wrapper>
       {isAuthenticated && <NavSidebar navigation={navigation} />}
-      <ContentWrapper>
-        <Flex column grow>
-          {children}
-        </Flex>
-      </ContentWrapper>
-    </Flex>
+      <Content column grow isAuthenticated={isAuthenticated}>
+        {children}
+      </Content>
+    </Wrapper>
   );
 };
 
-const ContentWrapper = styled.div`
-  margin: 44px;
-  width: 100%;
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  position: relative;
+`;
+
+const Content = styled<any>(Flex)`
+  margin-left: ${({ isAuthenticated }) => isAuthenticated && 300}px;
+  padding: 44px;
 `;
