@@ -101,5 +101,16 @@ class OfferSerializer(WritableNestedModelSerializer):
 
     cost_with_NDS = serializers.IntegerField(read_only=True)
     period_of_export = serializers.IntegerField(read_only=True)
-    product = ProductSerializer()
-    warehouse = WarehouseSerializer()
+    product = ProductSerializer(allow_null=True)
+    warehouse = WarehouseSerializer(allow_null=True)
+
+
+class OfferPostSerializer(WritableNestedModelSerializer):
+    class Meta:
+        model = Offer
+        fields = "__all__"
+
+    cost_with_NDS = serializers.IntegerField(read_only=True)
+    period_of_export = serializers.IntegerField(read_only=True)
+    # product = ProductSerializer(allow_null=True)
+    # warehouse = WarehouseSerializer(allow_null=True)
