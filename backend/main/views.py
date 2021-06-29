@@ -148,6 +148,7 @@ class CreateSignView(APIView):
 
 
 class UploadDoc(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
     parser_classes = (MultiPartParser, FormParser)
 
     def get(self, requset):
