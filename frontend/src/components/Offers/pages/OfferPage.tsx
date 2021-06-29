@@ -37,7 +37,7 @@ export const OfferPage: React.FC = () => {
     date_finish_shipment,
     date_start_shipment,
     volume,
-    cost_with_NDS,
+    cost,
     product: offerProduct,
     warehouse: offerWarehouse,
   } = offerData || {};
@@ -95,7 +95,7 @@ export const OfferPage: React.FC = () => {
   const initialValues = useMemo(() => {
     return {
       volume,
-      cost_with_NDS, // TODO: уточнить должно ли отправляться с НДС или без
+      cost, // TODO: уточнить должно ли отправляться с НДС или без
       product: getProduct(chosenProductId || offerProductId),
       warehouse: warehouseOptions?.find(
         (option) => option?.value === offerWarehouseId
@@ -128,9 +128,10 @@ export const OfferPage: React.FC = () => {
   ]);
 
   const handleSubmit = (values: any) => {
-    const { product, warehouse, specifications } = values || {};
+    const { product, warehouse, specifications, cost } = values || {};
     setOfferFormData({
       ...values,
+      cost: Number(cost),
       product: { id: product?.value },
       warehouse: { id: warehouse?.value },
       id: Number(paramId),
