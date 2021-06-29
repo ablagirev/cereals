@@ -8,11 +8,15 @@ export interface IOffer {
     description: string;
     id: number;
     period_of_export: number;
-    product: number;
+    product: {
+      id: number;
+    };
     status: string;
     title: string;
     volume: number;
-    warehouse: number;
+    warehouse: {
+      id: number;
+    };
 }
 
 export interface IProduct {

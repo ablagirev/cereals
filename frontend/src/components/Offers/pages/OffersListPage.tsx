@@ -81,7 +81,7 @@ export const OffersListPage: React.FC = () => {
             },
             {
               title: "Порт",
-              content: [getWareHouseName(warehouse)],
+              content: [getWareHouseName(warehouse?.id)],
             },
           ];
           return (
