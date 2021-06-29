@@ -10,6 +10,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.http import HttpResponse
 
 from main.create_sign import create_sign
 from main.generation_doc import gen_doc
@@ -153,14 +154,15 @@ class UploadDoc(APIView):
         return render(requset, template_name="upload_doc.html")
 
     def post(self, request):
+        request.data['name'] = request.data['file'].name
         file_serializer = DocumentSerializer(data=request.data)
         if file_serializer.is_valid():
             file_serializer.save()
 
             create_sign()
-            send_doc()
+            link_to_cabinet = send_doc()
 
-            return Response("uploaded", status=status.HTTP_201_CREATED)
+            return HttpResponse(link_to_cabinet, status=status.HTTP_201_CREATED)
         else:
             return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

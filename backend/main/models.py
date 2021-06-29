@@ -94,7 +94,7 @@ class Product(models.Model):
     title = models.CharField("Название", max_length=250)
     description = models.TextField("Описание", blank=True, null=True)
     specifications = models.ManyToManyField(
-        SpecificationsOfProduct, blank=True, related_name="specifications"
+        SpecificationsOfProduct, blank=True, related_name="specifications", null=True
     )
     # amount_of_gluten = models.IntegerField('Количество клейковины', blank=True, null=True)
     # vitreous = models.IntegerField('Стекловидность', blank=True, null=True)
