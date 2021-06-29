@@ -172,7 +172,7 @@ export const OfferPage: React.FC = () => {
   useEffect(() => {
     const specs = getProductSpecsById(chosenProductId || offerProductId);
     specs && setProductSpecifications(specs);
-  }, [chosenProductId, offerProductId]);
+  }, [chosenProductId, offerProductId, productsData]);
 
   return (
     <Flex column>
@@ -202,10 +202,10 @@ export const OfferPage: React.FC = () => {
                     name="cost_with_NDS"
                     title="Цена CNCPT на воротах порта, ₽/т"
                   >
-                    <Input name="cost_with_NDS" variant="dark" />
+                    <Input name="cost_with_NDS" variant="light" />
                   </FormikField>
                   <FormikField name="volume" title="Объем, т">
-                    <Input name="volume" variant="dark" />
+                    <Input name="volume" variant="light" />
                   </FormikField>
                   <FormikField name="period_shipment" title="Период поставки">
                     <DatePickerField
@@ -219,7 +219,7 @@ export const OfferPage: React.FC = () => {
                     />
                   </FormikField>
                   <FormikField name="warehouse" title="Порт">
-                    <Select options={warehouseOptions} />
+                    <Select options={warehouseOptions} variant="light" />
                   </FormikField>
                 </MainFormWrapper>
                 <Spacer width={250} />

@@ -1,6 +1,7 @@
 import React from "react";
 import { useCallback } from "react";
 import { generatePath, useHistory } from "react-router-dom";
+import styled from "styled-components";
 import { useOffers } from "../../../hooks/useOffers";
 import { useWarehouses } from "../../../hooks/useWarehouses";
 import { routes } from "../../../routes/consts";
@@ -71,8 +72,16 @@ export const OffersListPage: React.FC = () => {
             {
               title: "Цена покупателя, руб",
               content: [
-                `${formatMoney(cost)} без НДС / CNCPT`,
-                `${formatMoney(cost_with_NDS)} с НДС / CVCPT`,
+                <Flex>
+                  <span>{formatMoney(cost)}</span>
+                  <Spacer width={18} />
+                  <TaxPresence>без НДС / CNCPT</TaxPresence>
+                </Flex>,
+                <Flex>
+                  <span>{formatMoney(cost_with_NDS)}</span>
+                  <Spacer width={18} />
+                  <TaxPresence>с НДС / CVCPT</TaxPresence>
+                </Flex>,
               ],
             },
             {
@@ -85,7 +94,11 @@ export const OffersListPage: React.FC = () => {
             },
           ];
           return (
-            <Card title={title} onClick={() => handleOfferClick(id)}>
+            <Card
+              title={title}
+              statusText={`#${id}`}
+              onClick={() => handleOfferClick(id)}
+            >
               <Spacer space={30} />
               <Table data={dataList} />
             </Card>
@@ -118,3 +131,8 @@ export const OffersListPage: React.FC = () => {
     </Flex>
   );
 };
+
+const TaxPresence = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+`;

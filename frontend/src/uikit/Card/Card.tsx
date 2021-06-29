@@ -26,7 +26,7 @@ export const Card: React.FC<IProps> = ({
           </Typography>
         </Flex>
         {statusText && (
-          <Typography size="sm" color={theme.palette.common.colors.purple}>
+          <Typography size="sm" color="#918F89">
             {statusText}
           </Typography>
         )}
