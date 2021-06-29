@@ -34,7 +34,7 @@ class SendDocToSBIS:
             "params": {"Параметр": {"Логин": self.login, "Пароль": self.password}},
             "id": 0,
         }
-        res = requests.post(url, json=data)
+        res = requests.post(url, json=data, verify=False)
 
         self.auth_token = res.json()["result"]
         # Получение токена аунтификации
@@ -88,7 +88,7 @@ class SendDocToSBIS:
         }
         headers = {"X-SBISSessionID": self.auth_token}
 
-        res = requests.post(url, json=data, headers=headers)
+        res = requests.post(url, json=data, headers=headers, verify=False)
         print(res.json())
         return res.json().get('result').get('Вложение')[0].get('СсылкаВКабинет')
 
@@ -161,5 +161,5 @@ class SendDocToSBIS:
 
         headers = {"X-SBISSessionID": self.auth_token}
 
-        res = requests.post(url, json=data, headers=headers)
+        res = requests.post(url, json=data, headers=headers, verify=False)
         print(res.json())

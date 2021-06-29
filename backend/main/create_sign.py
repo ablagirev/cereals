@@ -49,7 +49,7 @@ class CreateSign:
         headers = {
             "Authorization": self.auth,
         }
-        req = requests.get(url, headers=headers)
+        req = requests.get(url, headers=headers, verify=False)
         self.user_req_id = req.json()[0]["RequestId"]
         # Возвращаем ИД запроса пользователя
         return self.user_req_id
@@ -66,7 +66,7 @@ class CreateSign:
 
         content_file = read_byte_file(self.document.file.path)
 
-        req = requests.post(url, headers=headers, data=content_file)
+        req = requests.post(url, headers=headers, data=content_file, verify=False)
         self.send_doc_id = req.json()
         # Возвращаем ИД загрузки документа в облако
         return self.send_doc_id
@@ -83,7 +83,7 @@ class CreateSign:
             "Authorization": self.auth,
         }
 
-        req = requests.post(url, headers=headers, json=data)
+        req = requests.post(url, headers=headers, json=data, verify=False)
         self.operation_id = req.json()["Id"]
         # Возвращаем ИД операции подписания
         return self.operation_id
@@ -103,7 +103,7 @@ class CreateSign:
             "Authorization": self.auth,
         }
 
-        requests.post(url, headers=headers)
+        requests.post(url, headers=headers, verify=False)
         # Ничего не возвращает
     #
     # def check_status_create_sign(self):
@@ -143,7 +143,7 @@ class CreateSign:
             "Authorization": self.auth,
         }
 
-        req = requests.get(url, headers=headers)
+        req = requests.get(url, headers=headers, verify=False)
         if req.json().get('Status') == "Completed":
             self.signed_document_id = req.json()["Result"]["ProcessedDocuments"][0]["RefId"]
             return True
@@ -165,7 +165,7 @@ class CreateSign:
             "Authorization": self.auth,
         }
 
-        req = requests.get(url, headers=headers)
+        req = requests.get(url, headers=headers, verify=False)
 
         save_file(req.content, self.path + self.document.name + self.endswith_sign)
         # self.document.sign_file = self.document.file.url + self.endswith_sign
