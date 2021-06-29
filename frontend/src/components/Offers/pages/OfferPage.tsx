@@ -199,10 +199,10 @@ export const OfferPage: React.FC = () => {
                     />
                   </FormikField>
                   <FormikField
-                    name="cost_with_NDS"
+                    name="cost"
                     title="Цена CNCPT на воротах порта, ₽/т"
                   >
-                    <Input name="cost_with_NDS" variant="light" />
+                    <Input name="" variant="light" />
                   </FormikField>
                   <FormikField name="volume" title="Объем, т">
                     <Input name="volume" variant="light" />
