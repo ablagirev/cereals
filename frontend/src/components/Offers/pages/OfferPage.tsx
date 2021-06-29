@@ -14,7 +14,7 @@ import { IProductSpecs } from "../../../services/models";
 import { Button, Flex, Input, Spacer, Typography } from "../../../uikit";
 import { FormikField } from "../../../uikit/Field";
 import { Select } from "../../../uikit/Selects";
-import { BLANK_CHAR, EMPTY_CHAR } from "../../../utils/consts";
+import { EMPTY_CHAR } from "../../../utils/consts";
 import { IRouteParams } from "../../../utils/models";
 import { DatePickerField } from "../../../uikit/Datepicker/Datepicker";
 
@@ -38,9 +38,12 @@ export const OfferPage: React.FC = () => {
     date_start_shipment,
     volume,
     cost_with_NDS,
-    product: offerProductId,
+    product: offerProduct,
     warehouse: offerWarehouse,
   } = offerData || {};
+
+  const offerProductId = offerProduct?.id;
+  const offerWarehouseId = offerWarehouse?.id;
 
   const { isSuccess: isProductEditSuccess, refetch: refetchProductEdit } =
     useProductEdit({
@@ -95,7 +98,7 @@ export const OfferPage: React.FC = () => {
       cost_with_NDS, // TODO: уточнить должно ли отправляться с НДС или без
       product: getProduct(chosenProductId || offerProductId),
       warehouse: warehouseOptions?.find(
-        (option) => option?.value === offerWarehouse
+        (option) => option?.value === offerWarehouseId
       ),
       specifications: productSpecifications?.map((spec) => {
         const {
@@ -115,15 +118,22 @@ export const OfferPage: React.FC = () => {
         };
       }),
     };
-  }, [offerData, warehouseOptions, productSpecifications, chosenProductId]);
+  }, [
+    offerData,
+    warehouseOptions,
+    productSpecifications,
+    chosenProductId,
+    offerProductId,
+    productOptions,
+  ]);
 
   const handleSubmit = (values: any) => {
     const { product, warehouse, specifications } = values || {};
     setOfferFormData({
       ...values,
-      product: product?.value,
-      warehouse: warehouse?.value,
-      id: paramId,
+      product: { id: product?.value },
+      warehouse: { id: warehouse?.value },
+      id: Number(paramId),
       specifications: undefined,
     });
     setSpecificationsFormData(
