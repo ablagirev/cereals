@@ -1,5 +1,5 @@
 
-const DEALINGS = 'dealings'
+const ORDERS = 'orders'
 const OFFERS = 'offers'
 
 /**
@@ -10,10 +10,17 @@ export const routes = {
         key: 'root',
         path: '/',
     },
-    dealings: {
-        key: DEALINGS,
-        path: `/${DEALINGS}`,
-        
+    orders: {
+        key: ORDERS,
+        path: `/${ORDERS}`,  
+        list: {
+            key: 'list',
+            path: `/${ORDERS}/list`,
+        },
+        orderTimeline: {
+            key: 'order-timeline',
+            path: `/${OFFERS}/order/:id`,
+        },
     },
     offers: {
         key: OFFERS,

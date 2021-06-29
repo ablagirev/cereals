@@ -1,8 +1,8 @@
 import { appConfig } from "../config";
-import { POST, GET, PUT } from "../utils/http";
-import { IOffer, IProduct, IWarehouse } from "./models";
+import { POST, GET, PATCH } from "../utils/http";
+import { IOffer, IOrder, IProduct, IWarehouse } from "./models";
 
-const {auth, offer, product, warehouse} = appConfig.api
+const {auth, offer, product, warehouse, order} = appConfig.api
 
 /**
  * Методы auth-service.
@@ -16,13 +16,17 @@ export const daylesfordService = {
      // offers
      getOfferList: () => GET<IOffer[]>(`${offer}/`),
      getOffer: (id: string) => GET<IOffer>(`${offer}/${id}/`),
-     editOffer: (request: IOffer) => PUT<IOffer>(`${offer}/${request.id}/`, request),
+     editOffer: (request: IOffer) => PATCH<IOffer>(`${offer}/${request.id}/`, request),
      createOffer: (request: IOffer) => POST<IOffer>(`${offer}/`, request),
 
      // product
      getProducts: () => GET<IProduct[]>(`${product}/`),
+     editProduct: (request: any) => PATCH<any>(`${product}/${request.id}/`, request),
 
      // warehouses
-     getWarehouses: () => GET<IWarehouse[]>(`${warehouse}/`)
+     getWarehouses: () => GET<IWarehouse[]>(`${warehouse}/`),
+
+     //orders
+     getOrderList: () => GET<IOrder[]>(`${order}/`)
 };
  

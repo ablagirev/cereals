@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useFormikContext } from "formik";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Flex } from "../../uikit";
+import { Flex } from "..";
 import styled from "styled-components";
 
 interface IProps {
@@ -31,9 +31,9 @@ export const DatePickerField: React.FC<IProps> = ({
     setFieldValue(startFieldName, startDate);
     setFieldValue(endFieldName, endDate);
     setDays(
-      Math.floor(
+      Math.round(
         (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-      )
+      ) + 1
     );
   }, [startDate, endDate]);
 
@@ -63,12 +63,7 @@ export const DatePickerField: React.FC<IProps> = ({
           minDate={startDate}
         />
       </StyledFlex>
-      {hasCounter && (
-        <DaysCounter
-          fillWidth
-          vAlignContent="center"
-        >{`${days} дней`}</DaysCounter>
-      )}
+      {hasCounter && <DaysCounter>{`${days} д.`}</DaysCounter>}
     </Flex>
   );
 };
@@ -78,9 +73,12 @@ const StyledFlex = styled(Flex)`
   justify-content: space-between;
 `;
 
-const DaysCounter = styled(Flex)`
+const DaysCounter = styled.div`
+  display: flex;
   margin-left: 28px;
   height: 50px;
+  min-width: 55px;
+  align-items: center;
 `;
 
 const StyledDatePicker = styled(DatePicker)`

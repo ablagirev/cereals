@@ -10,6 +10,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.http import HttpResponse
+from rest_framework.settings import api_settings
 
 from main.create_sign import create_sign
 from main.generation_doc import gen_doc
@@ -31,6 +33,7 @@ from main.serializer import (
     DocumentSerializer,
     CompanySerializer,
     SpecificationsOfProductSerializer,
+    OfferPostSerializer,
 )
 
 
@@ -68,6 +71,25 @@ class OfferListView(generics.ListCreateAPIView):
 
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        serializer = OfferPostSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def get_success_headers(self, data):
+        try:
+            return {'Location': str(data[api_settings.URL_FIELD_NAME])}
+        except (TypeError, KeyError):
+            return {}
 
 
 class OfferUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -146,20 +168,22 @@ class CreateSignView(APIView):
 
 
 class UploadDoc(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
     parser_classes = (MultiPartParser, FormParser)
 
     def get(self, requset):
         return render(requset, template_name="upload_doc.html")
 
     def post(self, request):
+        request.data['name'] = request.data['file'].name
         file_serializer = DocumentSerializer(data=request.data)
         if file_serializer.is_valid():
             file_serializer.save()
 
             create_sign()
-            send_doc()
+            link_to_cabinet = send_doc()
 
-            return Response("uploaded", status=status.HTTP_201_CREATED)
+            return HttpResponse(link_to_cabinet, status=status.HTTP_201_CREATED)
         else:
             return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

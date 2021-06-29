@@ -2,8 +2,7 @@ import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
     html,
-    body,
-    #root {
+    body {
         height: 100%;
     }
 
@@ -15,7 +14,7 @@ export const GlobalStyle = createGlobalStyle`
         margin: 0;
         background-color: #EFEBDE;
         font-family: Rubik;
-        font-style: normal;
+        font-style: 400;
         font-weight: normal;
         font-size: 14px;
         color: #191919;

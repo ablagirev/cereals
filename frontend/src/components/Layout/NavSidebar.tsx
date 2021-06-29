@@ -61,6 +61,7 @@ export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
           <Spacer width={theme.spacings.s} />
         </Flex>
       </div>
+      <Spacer space={216} />
       <StyledNavLink exact to={routes.root.path} onClick={handleLogout}>
         <span>Выйти</span>
       </StyledNavLink>
@@ -78,12 +79,15 @@ const NavList = styled.ul`
 `;
 
 const NavSidebarInner = styled.div`
+  height: 100%;
+  position: fixed;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 33px 0 33px 25px;
+  padding: 33px 25px;
   width: 250px;
   background-color: #e7e2d1;
+  white-space: nowrap;
+  z-index: 1;
 `;
 
 const Logo = styled.div`

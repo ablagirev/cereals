@@ -8,19 +8,25 @@ export interface IOffer {
     description: string;
     id: number;
     period_of_export: number;
-    product: number;
+    product: {
+      id: number;
+    };
     status: string;
     title: string;
     volume: number;
-    warehouse: number;
+    warehouse: {
+      id: number;
+    };
 }
 
 export interface IProduct {
     id: number,
     title: string,
     description: string,
-    specifications: [
-      {
+    specifications: IProductSpecs[]
+  }
+
+  export interface IProductSpecs {
         id: number,
         min_value: number,
         is_edit_min_value: boolean,
@@ -39,8 +45,6 @@ export interface IProduct {
           id: number,
           unit: string
         }
-      }
-    ]
   }
 
   export interface IWarehouse {
@@ -48,4 +52,11 @@ export interface IProduct {
     title: string,
     address: string,
     owner: number
+  }
+  
+  export interface IOrder {
+    title: string,
+    id: number,
+    status: string
+    // TODO: добавить интерфейс
   }

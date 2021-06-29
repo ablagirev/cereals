@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import styled from "styled-components";
 import { Flex, Spacer, Typography } from "..";
 
-type TContentItem = ReactNode | string | number;
+type TContentItem = ReactNode | string | number | JSX.Element;
 export interface ITableRow {
   title: string;
   content: TContentItem[];

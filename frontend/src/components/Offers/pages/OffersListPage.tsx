@@ -1,6 +1,7 @@
 import React from "react";
 import { useCallback } from "react";
 import { generatePath, useHistory } from "react-router-dom";
+import styled from "styled-components";
 import { useOffers } from "../../../hooks/useOffers";
 import { useWarehouses } from "../../../hooks/useWarehouses";
 import { routes } from "../../../routes/consts";
@@ -9,7 +10,20 @@ import { Button, Flex, Spacer, Tabs, Typography } from "../../../uikit";
 import { Card } from "../../../uikit/Card/Card";
 import { Table } from "../../../uikit/Table/Table";
 import { ITab } from "../../../uikit/Tabs/Tabs";
+import { EMPTY_CHAR } from "../../../utils/consts";
 import { formatDate, formatMoney } from "../../../utils/utils";
+
+// TODO: заменить на i18n
+export const getStatus = (status: string) => {
+  switch (status) {
+    case "active":
+      return "Активные";
+    case "archive":
+      return "Завершенные";
+    default:
+      return EMPTY_CHAR;
+  }
+};
 
 export const OffersListPage: React.FC = () => {
   const { data } = useOffers();
@@ -30,8 +44,9 @@ export const OffersListPage: React.FC = () => {
 
   const renderOfferTab = useCallback(
     (data: IOffer[]): ITab => {
+      const status = getStatus(data?.[0]?.status);
       const tab = {
-        label: `${data?.[0]?.status} - ${data?.length}`,
+        label: status && `${status} - ${data?.length}`,
         items: data?.map((item) => {
           const {
             title,
@@ -47,7 +62,7 @@ export const OffersListPage: React.FC = () => {
 
           const periodOfShippment = `${formatDate(
             date_start_shipment
-          )} — ${formatDate(date_finish_shipment)} (${period_of_export} дней)`;
+          )} — ${formatDate(date_finish_shipment)} (${period_of_export} д.)`;
 
           const dataList = [
             {
@@ -57,8 +72,16 @@ export const OffersListPage: React.FC = () => {
             {
               title: "Цена покупателя, руб",
               content: [
-                `${formatMoney(cost)} без НДС / CNCPT`,
-                `${formatMoney(cost_with_NDS)} с НДС / CVCPT`,
+                <Flex>
+                  <span>{formatMoney(cost)}</span>
+                  <Spacer width={18} />
+                  <TaxPresence>без НДС / CNCPT</TaxPresence>
+                </Flex>,
+                <Flex>
+                  <span>{formatMoney(cost_with_NDS)}</span>
+                  <Spacer width={18} />
+                  <TaxPresence>с НДС / CVCPT</TaxPresence>
+                </Flex>,
               ],
             },
             {
@@ -67,11 +90,15 @@ export const OffersListPage: React.FC = () => {
             },
             {
               title: "Порт",
-              content: [getWareHouseName(warehouse)],
+              content: [getWareHouseName(warehouse?.id)],
             },
           ];
           return (
-            <Card title={title} onClick={() => handleOfferClick(id)}>
+            <Card
+              title={title}
+              statusText={`#${id}`}
+              onClick={() => handleOfferClick(id)}
+            >
               <Spacer space={30} />
               <Table data={dataList} />
             </Card>
@@ -104,3 +131,8 @@ export const OffersListPage: React.FC = () => {
     </Flex>
   );
 };
+
+const TaxPresence = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+`;
