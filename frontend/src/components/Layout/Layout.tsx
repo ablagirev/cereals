@@ -37,5 +37,5 @@ const Wrapper = styled.div`
 `;
 
 const Content = styled<any>(Flex)`
-  margin-left: ${({ isAuthenticated }) => isAuthenticated && 300}px;
+  margin-left: ${({ isAuthenticated }) => isAuthenticated && 250}px;
 `;

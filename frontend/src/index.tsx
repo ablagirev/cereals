@@ -11,6 +11,7 @@ import { GlobalStyle } from "./globalStyles";
 import { useAuth } from "./hooks";
 import { AuthContext } from "./context";
 import { BrowserRouter } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 /**
  * Инициализация кеша react-query.
