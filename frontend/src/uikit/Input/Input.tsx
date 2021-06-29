@@ -55,20 +55,21 @@ export const Input: React.FC<IProps> = ({
         <Spacer space={4} />
       </>
     )}
-    <StyledField
-      id={name}
-      name={name}
-      placeholder={placeholder}
-      type={type}
-      disabled={disabled}
-      isError={isError}
-      variant={variant}
-      size={size}
-    />
+    <FieldWrapper isError={isError} variant={variant} size={size}>
+      <StyledField
+        id={name}
+        name={name}
+        placeholder={placeholder}
+        type={type}
+        disabled={disabled}
+      />
+    </FieldWrapper>
   </>
 );
 
-const StyledField = styled(Field)`
+const FieldWrapper = styled.div<any>`
+  overflow: hidden;
+  text-align: ${({ size }) => size === "sm" && "center"};
   width: ${({ size }) => getWidth(size)}px;
   height: 50px;
   border: 0px;
@@ -76,5 +77,14 @@ const StyledField = styled(Field)`
     ${({ isError }) => (isError ? theme.palette.common.colors.red : "none")};
   background-color: ${({ variant }) => getBgColor(variant)};
   border-radius: 6px;
+`;
+
+const StyledField = styled(Field)`
+  padding-left: ${({ size }) => size !== "sm" && 20}px;
+  width: ${({ size }) => getWidth(size) - 20}px;
+  height: 50px;
+  border: 0px;
+  outline: none;
+  background-color: transparent;
   color: #333333;
 `;

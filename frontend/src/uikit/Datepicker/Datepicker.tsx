@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Flex } from "..";
 import styled from "styled-components";
+import format from "date-fns/esm/format";
 
 interface IProps {
   initialValues: {
@@ -53,6 +54,7 @@ export const DatePickerField: React.FC<IProps> = ({
           selectsStart
           startDate={startDate}
           endDate={endDate}
+          dateFormat="dd.MM.yyyy"
         />
         <StyledDatePicker
           selected={endDate}
@@ -61,6 +63,7 @@ export const DatePickerField: React.FC<IProps> = ({
           startDate={startDate}
           endDate={endDate}
           minDate={startDate}
+          dateFormat="dd.MM.yyyy"
         />
       </StyledFlex>
       {hasCounter && <DaysCounter>{`${days} д.`}</DaysCounter>}

@@ -25,7 +25,7 @@ const getWidth = (size?: string) => {
       return 55;
     case "md":
       return 192;
-    default:
+    case "lg":
       return 345;
   }
 };
@@ -45,7 +45,7 @@ const preset = {
   },
   link: {
     backgroundColor: "transparent",
-    color: "#407EF5",
+    color: "#918F89",
     borderColor: "transparent",
     shadow: "none",
   },
