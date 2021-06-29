@@ -83,7 +83,7 @@ const showError = (url: string, error: any, auxMsg?: string) => {
  * @param {'POST' | 'GET' | 'PUT' | 'DELETE'} method Метод.
  * @param {IRequestMethodFactoryParams} params Параметры запроса.
  */
-const requestMethodFactory = <TResponse>(method: 'POST' | 'GET' | 'PUT' | 'DELETE', params: IRequestMethodFactoryParams) =>
+const requestMethodFactory = <TResponse>(method: 'POST' | 'GET' | 'PUT' | 'DELETE' | 'PATCH', params: IRequestMethodFactoryParams) =>
     new Promise<TResponse>((resolve, reject) => {
         const {data, queryParams, url} = params;
         const req = request(method, `${url}`)
@@ -144,3 +144,14 @@ export const POST = <TResponse = any>(url: string, data?: object, queryParams?: 
  */
 export const PUT = <TResponse = any>(url: string, data?: object, queryParams?: object) =>
     requestMethodFactory<TResponse>('PUT', {url, data, queryParams});
+
+
+    /**
+ * Произвести PATCH-запрос к серверу по указанному URL.
+ *
+ * @param {string} url URL.
+ * @param {object} [data] Данные для передачи в теле запроса.
+ * @param {object} [queryParams] Данные для передачи в строке запроса.
+ */
+export const PATCH = <TResponse = any>(url: string, data?: object, queryParams?: object) =>
+    requestMethodFactory<TResponse>('PATCH', {url, data, queryParams});
