@@ -83,7 +83,7 @@ WSGI_APPLICATION = "Daylesford.wsgi.application"
 DATABASES = {}
 
 DATABASES["default"] = dj_database_url.config(
-    default=f"sqlite://./db.sqlite3", env="DB"
+    default=f"sqlite://./backend/db.sqlite3", env="DB"
 )
 
 

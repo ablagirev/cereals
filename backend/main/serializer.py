@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from drf_writable_nested.serializers import WritableNestedModelSerializer, \
+    NestedCreateMixin
 
 from main.models import (
     Product,
@@ -58,7 +60,7 @@ class UnitOfMeasurementOfSpecificationSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class SpecificationsOfProductSerializer(serializers.ModelSerializer):
+class SpecificationsOfProductSerializer(WritableNestedModelSerializer):
     class Meta:
         model = SpecificationsOfProduct
         fields = "__all__"
@@ -68,31 +70,31 @@ class SpecificationsOfProductSerializer(serializers.ModelSerializer):
     unit_of_measurement = UnitOfMeasurementOfSpecificationSerializer()
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(WritableNestedModelSerializer):
     specifications = SpecificationsOfProductSerializer(many=True)
 
     class Meta:
         model = Product
         fields = "__all__"
 
-    def update(self, instance, validated_data):
-        specifications_data = validated_data.pop("specifications")
+    # def update(self, instance, validated_data):
+    #     specifications_data = validated_data.pop("specifications")
+    #
+    #     instance.title = validated_data.get("title")
+    #     instance.description = validated_data.get("description")
+    #     instance.harvest_year = validated_data.get("harvest_year")
+    #     instance.harvest_type = validated_data.get("harvest_type")
+    #
+    #     for index, specification in enumerate(instance.specifications.all()):
+    #         specification.min_value = specifications_data[index].get("min_value")
+    #         specification.max_value = specifications_data[index].get("max_value")
+    #         specification.save()
+    #
+    #     instance.save()
+    #     return instance
 
-        instance.title = validated_data.get("title")
-        instance.description = validated_data.get("description")
-        instance.harvest_year = validated_data.get("harvest_year")
-        instance.harvest_type = validated_data.get("harvest_type")
 
-        for index, specification in enumerate(instance.specifications.all()):
-            specification.min_value = specifications_data[index].get("min_value")
-            specification.max_value = specifications_data[index].get("max_value")
-            specification.save()
-
-        instance.save()
-        return instance
-
-
-class OfferSerializer(serializers.ModelSerializer):
+class OfferSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Offer
         fields = "__all__"
