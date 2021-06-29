@@ -6,6 +6,7 @@ const OFFER_LIST_DATA_QUERY_KEY = "OFFER_LIST_DATA_QUERY_KEY";
 const OFFER__DATA_QUERY_KEY = "OFFER__DATA_QUERY_KEY";
 const OFFER_EDIT_DATA_QUERY_KEY = "OFFER_EDIT_DATA_QUERY_KEY";
 const OFFER_CREATE_DATA_QUERY_KEY = "OFFER_CREATE_DATA_QUERY_KEY";
+const OFFER_DELETE_DATA_QUERY_KEY = "OFFER_DELETE_DATA_QUERY_KEY";
 
 export const useOffers = () => {
   const result = useQuery(
@@ -53,6 +54,21 @@ export const useOfferCreate = (request: any) => {
   const result = useQuery(
     [OFFER_CREATE_DATA_QUERY_KEY],
     () => daylesfordService.createOffer(request),
+    {
+      enabled: false,
+      refetchOnWindowFocus: false,
+      retry: false,
+      cacheTime: 0,
+    }
+  );
+
+  return result;
+};
+
+export const useOfferDelete = (id: string) => {
+  const result = useQuery(
+    [OFFER_DELETE_DATA_QUERY_KEY],
+    () => daylesfordService.deleteOffer(id),
     {
       enabled: false,
       refetchOnWindowFocus: false,

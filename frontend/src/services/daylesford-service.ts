@@ -1,5 +1,5 @@
 import { appConfig } from "../config";
-import { POST, GET, PATCH } from "../utils/http";
+import { POST, GET, PATCH, DELETE } from "../utils/http";
 import { IOffer, IOrder, IProduct, IWarehouse } from "./models";
 
 const {auth, offer, product, warehouse, order} = appConfig.api
@@ -18,6 +18,7 @@ export const daylesfordService = {
      getOffer: (id: string) => GET<IOffer>(`${offer}/${id}/`),
      editOffer: (request: IOffer) => PATCH<IOffer>(`${offer}/${request.id}/`, request),
      createOffer: (request: IOffer) => POST<IOffer>(`${offer}/`, request),
+     deleteOffer: (id: string) => DELETE(`${offer}/${id}/`),
 
      // product
      getProducts: () => GET<IProduct[]>(`${product}/`),
