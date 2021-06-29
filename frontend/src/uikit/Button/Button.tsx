@@ -3,22 +3,44 @@ import styled from "styled-components";
 import { darken } from "polished";
 import { theme } from "../../theme";
 
-export declare type ButtonVariant = "action" | "link" | "base" | "icon";
+export declare type ButtonVariant =
+  | "action"
+  | "link"
+  | "base"
+  | "icon"
+  | "baseRed";
 
 export interface IButtonProps {
   onClick?: (e: any) => void;
-  size?: "sm" | "lg";
+  size?: "sm" | "lg" | "md";
   type?: "submit" | "button" | "reset";
   variant: ButtonVariant;
   disabled?: boolean;
   children?: ReactNode;
 }
 
+const getWidth = (size?: string) => {
+  switch (size) {
+    case "sm":
+      return 55;
+    case "md":
+      return 192;
+    default:
+      return 345;
+  }
+};
+
 const preset = {
   base: {
     backgroundColor: "rgba(255, 255, 255, 0.2)",
     color: "#407EF5",
     borderColor: "#407EF5",
+    shadow: "none",
+  },
+  baseRed: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    color: theme.palette.common.colors.red,
+    borderColor: theme.palette.common.colors.red,
     shadow: "none",
   },
   link: {
@@ -46,12 +68,14 @@ export const Button: React.FC<IButtonProps> = ({
   onClick,
   variant,
   disabled,
+  size,
   ...rest
 }) => (
   <StyledButton
     onClick={onClick}
     variant={variant}
     disabled={disabled}
+    size={size}
     {...rest}
   >
     {children}
@@ -59,7 +83,7 @@ export const Button: React.FC<IButtonProps> = ({
 );
 
 const StyledButton = styled.button<IButtonProps>`
-  width: 345px;
+  width: ${({ size }) => getWidth(size)}px;
   height: 50px;
   cursor: pointer;
   background-color: ${({ variant }) => preset[variant].backgroundColor};

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
@@ -24,7 +24,6 @@ from main.views import (
 urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-    path("", TemplateView.as_view(template_name="index.html",), name="index",),
     path("auth/login/", LoginView.as_view(), name="login_view"),
     path("auth/logout/", LogoutView.as_view(), name="logout_view"),
     # API Product
@@ -76,4 +75,5 @@ urlpatterns = [
     # API CreateSign
     path("create_sign/", CreateSignView.as_view(), name="create_sign_view"),
     path("upload_doc/", UploadDoc.as_view(), name="upload_doc_view"),
+    re_path(".*", TemplateView.as_view(template_name="index.html",), name="index",),
 ]

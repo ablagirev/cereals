@@ -65,6 +65,10 @@ export const OfferPage: React.FC = () => {
     setChosenProductId(product.value);
   };
 
+  const handleCancel = () => {
+    history.push(generatePath(routes.offers.list.path));
+  };
+
   const productOptions = useMemo(() => {
     return (
       productsData?.map((product) => {
@@ -128,17 +132,17 @@ export const OfferPage: React.FC = () => {
   ]);
 
   const handleSubmit = (values: any) => {
-    const { product, warehouse, specifications, cost } = values || {};
     setOfferFormData({
       ...values,
-      cost: Number(cost),
-      product: { id: product?.value },
-      warehouse: { id: warehouse?.value },
-      id: Number(paramId),
+      volume: Number(values?.volume),
+      cost: Number(values?.cost),
+      product: { id: values?.product?.value },
+      warehouse: { id: values?.warehouse?.value },
+      id: paramId ? Number(paramId) : undefined,
       specifications: undefined,
     });
     setSpecificationsFormData(
-      specifications?.map(({ max_value, id: specId }: any) => {
+      values?.specifications?.map(({ max_value, id: specId }: any) => {
         return {
           id: specId,
           max_value,
@@ -286,10 +290,16 @@ export const OfferPage: React.FC = () => {
                   />
                 </Indicators>
               </Flex>
-              <Button variant="base" type="submit">
-                {isEdit ? "Сохранить" : "Опубликовать"}
-              </Button>
-              <Spacer />
+              <Flex>
+                <Button variant="base" type="submit" size="md">
+                  {isEdit ? "Сохранить" : "Опубликовать"}
+                </Button>
+                <Spacer width={8} />
+                <Button variant="baseRed" size="md" onClick={handleCancel}>
+                  Отменить
+                </Button>
+                <Spacer />
+              </Flex>
             </Form>
           );
         }}
