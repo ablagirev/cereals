@@ -1,7 +1,8 @@
-import { EMPTY_CHAR } from "./consts";
+import { EMPTY_CHAR, SPACE_CHAR } from "./consts";
 import parseISO from 'date-fns/esm/parseISO';
 import format from 'date-fns/esm/format';
 import isValid from 'date-fns/esm/isValid';
+import isString from 'lodash-es/isString';
 
 /**
  * Формат даты для отображения
@@ -38,3 +39,18 @@ export const formatMoney = (value: MoneyValueType) => {
 
     return isValid(parsedDate) ? format(parsedDate, displayFormat) : '';
 };
+
+/**
+ * Возвращает текст только с одинарными пробеламы внутри. Исключает null и undefined
+ *
+ * @param {string} value Исходный текст.
+ */
+ export const getTrimText = (value: string) =>
+ isString(value)
+     ? value
+           .replace(/null|undefined/g, EMPTY_CHAR)
+           .replace(/\s+/g, SPACE_CHAR)
+           .replace('()', EMPTY_CHAR)
+           .trim()
+     : EMPTY_CHAR;
+     

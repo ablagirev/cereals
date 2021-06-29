@@ -12,7 +12,31 @@ interface IProps {
   type?: string;
   disabled?: boolean;
   isError?: boolean;
+  variant?: "light" | "dark" | "blank";
+  size?: "lg" | "md" | "sm";
 }
+
+const getBgColor = (variant: Pick<IProps, "variant">) => {
+  switch (variant) {
+    case "light":
+      return "#F5F2EA";
+    case "dark":
+      return "#e7e2d4";
+    default:
+      return "transparent";
+  }
+};
+
+const getWidth = (size: Pick<IProps, "size">) => {
+  switch (size) {
+    case "sm":
+      return 55;
+    case "md":
+      return 192;
+    default:
+      return 345;
+  }
+};
 
 export const Input: React.FC<IProps> = ({
   name,
@@ -21,6 +45,8 @@ export const Input: React.FC<IProps> = ({
   type,
   disabled,
   isError,
+  variant,
+  size,
 }) => (
   <>
     {label && (
@@ -36,17 +62,19 @@ export const Input: React.FC<IProps> = ({
       type={type}
       disabled={disabled}
       isError={isError}
+      variant={variant}
+      size={size}
     />
   </>
 );
 
 const StyledField = styled(Field)`
-  width: 345px;
+  width: ${({ size }) => getWidth(size)}px;
   height: 50px;
   border: 0px;
   border: 1px solid
     ${({ isError }) => (isError ? theme.palette.common.colors.red : "none")};
-  background-color: #e7e2d4;
+  background-color: ${({ variant }) => getBgColor(variant)};
   border-radius: 6px;
   color: #333333;
 `;

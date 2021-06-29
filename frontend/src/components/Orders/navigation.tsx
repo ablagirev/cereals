@@ -5,40 +5,31 @@ import { TAppNavItem } from "../../routes/models";
 import { ProtectedRoute } from "../../routes/ProtectedRoute";
 import { RedirectToFirstAvailable } from "../../routes/RedirectToFirstAvailable";
 import { IRouteParams } from "../../utils/models";
-import { OfferPage } from "./pages/OfferPage";
-import { OffersListPage } from "./pages/OffersListPage";
+import { OrdersListPage } from "./pages";
 
-export const getOffersNavigation = ({ id }: IRouteParams): TAppNavItem[] => [
+export const getOrdersNavigation = ({ id }: IRouteParams): TAppNavItem[] => [
   {
     allowed: [],
-    path: routes.offers.list.path,
+    path: routes.orders.list.path,
     route: {
       exact: true,
-      render: () => <OffersListPage />,
+      render: () => <OrdersListPage />,
     },
   },
   {
     allowed: [],
-    path: routes.offers.create.path,
-    route: {
-      exact: true,
-      render: () => <OfferPage />,
-    },
-  },
-  {
-    allowed: [],
-    path: routes.offers.edit.path,
+    path: routes.orders.orderTimeline.path,
     linkTo: id
-      ? generatePath(routes.offers.edit.path, { id })
-      : routes.offers.list.path,
+      ? generatePath(routes.orders.orderTimeline.path, { id })
+      : routes.orders.list.path,
     route: {
-      render: () => <OfferPage />,
+      render: () => <div>Страница предложения (таймлайн)</div>,
     },
   },
 ];
 
-export const getOffersRoutes = ({ id }: IRouteParams) => {
-  const dealingsNavigation = getOffersNavigation({ id });
+export const getOrdersRoutes = ({ id }: IRouteParams) => {
+  const dealingsNavigation = getOrdersNavigation({ id });
 
   return (
     <Switch>

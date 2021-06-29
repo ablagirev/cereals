@@ -11,6 +11,7 @@ interface ISelect {
 interface IProps {
   variant?: "light" | "dark";
   options: ISelect[];
+  onChange?: (value: any | any[]) => void;
 }
 
 const getBgColor = (variant: "light" | "dark") =>
@@ -19,6 +20,7 @@ const getBgColor = (variant: "light" | "dark") =>
 export const Select: React.FC<IProps> = ({
   options,
   variant = "dark",
+  onChange,
   ...rest
 }) => (
   <StyledReactSelect
@@ -26,6 +28,7 @@ export const Select: React.FC<IProps> = ({
     options={options}
     variant={variant}
     placeholder="Выберите . . ."
+    onChange={onChange}
     {...rest}
   />
 );
