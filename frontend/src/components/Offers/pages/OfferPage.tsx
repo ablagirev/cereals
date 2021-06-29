@@ -50,13 +50,9 @@ export const OfferPage: React.FC = () => {
   const offerProductId = offerProduct?.id;
   const offerWarehouseId = offerWarehouse?.id;
 
-  const { isSuccess: isProductEditSuccess, refetch: refetchProductEdit } =
-    useProductEdit({
-      id: chosenProductId || offerProductId,
-      specifications: specificationsFormData,
-    });
   const { isSuccess: isCreateSuccess, refetch: refetchOfferCreate } =
     useOfferCreate(offerFormData);
+
   const isEdit = !!paramId;
 
   const getProductSpecsById = (productId?: number) => {
@@ -118,6 +114,12 @@ export const OfferPage: React.FC = () => {
     [chosenProductId, offerProductId, productOptions]
   );
 
+  const { isSuccess: isProductEditSuccess, refetch: refetchProductEdit } =
+    useProductEdit({
+      id: actualProductId,
+      specifications: specificationsFormData,
+    });
+
   const initialValues = useMemo(() => {
     return {
       volume,
@@ -153,7 +155,7 @@ export const OfferPage: React.FC = () => {
     productOptions,
   ]);
 
-  const handleSubmit = (values: any) => {
+  const onSubmit = (values: any) => {
     setOfferFormData({
       ...values,
       volume: Number(values?.volume),
@@ -173,6 +175,33 @@ export const OfferPage: React.FC = () => {
     );
   };
 
+  const renderModal = () => (
+    <StyledModal
+      show={showModalState}
+      onHide={handleModalClose}
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton />
+      <ModalContent>
+        <Flex column vAlignContent="center" hAlignContent="center">
+          <Typography bold size="lg">
+            Удалить предложение?
+          </Typography>
+          <Spacer space={15} />
+          <Typography>Вы не сможете восстановить его обратно</Typography>
+          <Spacer space={25} />
+          <Button variant="baseRed" size="lg" onClick={handleDelete}>
+            Да, удалить
+          </Button>
+          <Button variant="link" size="lg" onClick={handleModalClose}>
+            Нет, отменить
+          </Button>
+        </Flex>
+      </ModalContent>
+    </StyledModal>
+  );
+
   useEffect(() => {
     isEdit ? refetchOfferEdit() : refetchOfferCreate();
   }, [offerFormData]);
@@ -183,17 +212,13 @@ export const OfferPage: React.FC = () => {
 
   useEffect(() => {
     const isFormSuccess =
-      (isProductEditSuccess || isCreateSuccess) && isOfferEditSuccess;
-    const hasFormData = offerFormData && specificationsFormData;
-    (hasFormData && isFormSuccess) ||
-      (isOfferDeleteSuccess &&
-        history.push(generatePath(routes.offers.list.path)));
+      isProductEditSuccess && (isCreateSuccess || isOfferEditSuccess);
+    (isFormSuccess || isOfferDeleteSuccess) &&
+      history.push(generatePath(routes.offers.list.path));
   }, [
     isOfferEditSuccess,
     isCreateSuccess,
     isProductEditSuccess,
-    specificationsFormData,
-    offerFormData,
     isOfferDeleteSuccess,
   ]);
 
@@ -203,181 +228,161 @@ export const OfferPage: React.FC = () => {
   }, [actualProductId, productsData]);
 
   return (
-    <>
-      <Flex column>
-        <FormWrapper>
-          <Flex column>
-            <Typography size="lg2" bold>
-              {`${isEdit ? "Редактировать" : "Создать"} предложение`}
-            </Typography>
-            <Spacer space={28} />
+    <Flex column>
+      <Heading size="lg2" bold>
+        {`${isEdit ? "Редактировать" : "Создать"} предложение`}
+      </Heading>
+      <Spacer space={28} />
 
-            <Formik
-              enableReinitialize
-              initialValues={initialValues}
-              onSubmit={handleSubmit}
-            >
-              {({ values }: any) => {
-                return (
-                  <Form>
-                    <Flex>
-                      <MainFormWrapper>
-                        <FormikField name="product" title="Культура">
-                          <Select
-                            variant="light"
-                            options={productOptions}
-                            onChange={handleProductChange}
-                          />
-                        </FormikField>
-                        <FormikField
-                          name="cost"
-                          title="Цена CNCPT на воротах порта, ₽/т"
-                        >
-                          <Input name="" variant="light" type="number" />
-                        </FormikField>
-                        <FormikField name="volume" title="Объем, т">
-                          <Input name="volume" variant="light" type="number" />
-                        </FormikField>
-                        <FormikField
-                          name="period_shipment"
-                          title="Период поставки"
-                        >
-                          <DatePickerField
-                            initialValues={{
-                              start: date_start_shipment,
-                              end: date_finish_shipment,
-                            }}
-                            startFieldName="date_start_shipment"
-                            endFieldName="date_finish_shipment"
-                            hasCounter
-                          />
-                        </FormikField>
-                        <FormikField name="warehouse" title="Порт">
-                          <Select options={warehouseOptions} variant="light" />
-                        </FormikField>
-                      </MainFormWrapper>
-                      <Spacer width={250} />
-                      <Indicators>
-                        <FieldArray
-                          name="specifications"
-                          render={() => (
-                            <>
-                              {values?.specifications?.map(
-                                (
-                                  _specification: IProductSpecs,
-                                  idx: number
-                                ) => {
-                                  return (
-                                    <Fragment key={idx}>
-                                      <Flex>
-                                        <Flex column>
-                                          {idx === 0 && (
-                                            <Typography color="#918F88">
-                                              Показатели зерна
-                                            </Typography>
-                                          )}
-                                          <Spacer space={10} />
-                                          <Input
-                                            disabled
-                                            name={`specifications[${idx}].name_of_specification`}
-                                            variant="light"
-                                            size="md"
-                                          />
-                                        </Flex>
-                                        <Spacer width={15} />
-                                        <Flex column>
-                                          {idx === 0 && (
-                                            <Typography color="#918F88">
-                                              Min
-                                            </Typography>
-                                          )}
-                                          <Spacer space={10} />
-                                          <Input
-                                            disabled
-                                            name={`specifications[${idx}].min_value`}
-                                            size="sm"
-                                          />
-                                        </Flex>
-                                        <Spacer width={15} />
-                                        <Flex column>
-                                          {idx === 0 && (
-                                            <Typography color="#918F88">
-                                              Max
-                                            </Typography>
-                                          )}
-                                          <Spacer space={10} />
-                                          <Input
-                                            name={`specifications[${idx}].max_value`}
-                                            variant="light"
-                                            size="sm"
-                                          />
-                                        </Flex>
-                                      </Flex>
-                                    </Fragment>
-                                  );
-                                }
-                              )}
-                            </>
-                          )}
-                        />
-                      </Indicators>
-                    </Flex>
-                  </Form>
-                );
-              }}
-            </Formik>
-          </Flex>
-        </FormWrapper>
-        <ActionsWrapper>
-          <Flex column>
-            <Typography bold size="lg">
-              {isEdit ? "Сохранить изменения?" : "Опубликовать предложение?"}
-            </Typography>
-            <Spacer />
-            <Flex>
-              <Button variant="base" type="submit" size="lg">
-                {isEdit ? "Сохранить" : "Опубликовать"}
-              </Button>
-              <Spacer width={16} />
-              <Button variant="baseRed" size="lg" onClick={handleCancel}>
-                Отменить
-              </Button>
-              <Spacer width={16} />
-              {isEdit && (
-                <Button variant="link" onClick={handleModalOpen}>
-                  Удалить
-                </Button>
-              )}
-              <Spacer />
-            </Flex>
-          </Flex>
-        </ActionsWrapper>
-      </Flex>
-      <StyledModal
-        show={showModalState}
-        onHide={handleModalClose}
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
+      <Formik
+        enableReinitialize
+        initialValues={initialValues}
+        onSubmit={onSubmit}
       >
-        <Modal.Header closeButton />
-        <ModalContent>
-          <Flex column vAlignContent="center" hAlignContent="center">
-            <Typography bold size="lg">
-              Удалить предложение?
-            </Typography>
-            <Spacer space={15} />
-            <Typography>Вы не сможете восстановить его обратно</Typography>
-            <Spacer space={25} />
-            <Button variant="baseRed" size="lg" onClick={handleDelete}>
-              Да, удалить
-            </Button>
-            <Button variant="link" size="lg" onClick={handleModalClose}>
-              Нет, отменить
-            </Button>
-          </Flex>
-        </ModalContent>
-      </StyledModal>
-    </>
+        {({ values, handleSubmit }: any) => {
+          return (
+            <>
+              <Form>
+                <FormInnerWrapper>
+                  <MainFormWrapper>
+                    <FormikField name="product" title="Культура">
+                      <Select
+                        variant="light"
+                        options={productOptions}
+                        onChange={handleProductChange}
+                      />
+                    </FormikField>
+                    <FormikField
+                      name="cost"
+                      title="Цена CNCPT на воротах порта, ₽/т"
+                    >
+                      <Input name="" variant="light" type="number" />
+                    </FormikField>
+                    <FormikField name="volume" title="Объем, т">
+                      <Input name="volume" variant="light" type="number" />
+                    </FormikField>
+                    <FormikField name="period_shipment" title="Период поставки">
+                      <DatePickerField
+                        initialValues={{
+                          start: date_start_shipment,
+                          end: date_finish_shipment,
+                        }}
+                        startFieldName="date_start_shipment"
+                        endFieldName="date_finish_shipment"
+                        hasCounter
+                      />
+                    </FormikField>
+                    <FormikField name="warehouse" title="Порт">
+                      <Select options={warehouseOptions} variant="light" />
+                    </FormikField>
+                  </MainFormWrapper>
+                  <Spacer width={250} />
+                  <Indicators>
+                    <FieldArray
+                      name="specifications"
+                      render={() => (
+                        <>
+                          {values?.specifications?.map(
+                            (_specification: IProductSpecs, idx: number) => {
+                              return (
+                                <Fragment key={idx}>
+                                  <Flex>
+                                    <Flex column>
+                                      {idx === 0 && (
+                                        <Typography color="#918F88">
+                                          Показатели зерна
+                                        </Typography>
+                                      )}
+                                      <Spacer space={10} />
+                                      <Input
+                                        disabled
+                                        name={`specifications[${idx}].name_of_specification`}
+                                        variant="light"
+                                        size="md"
+                                      />
+                                    </Flex>
+                                    <Spacer width={15} />
+                                    <Flex column>
+                                      {idx === 0 && (
+                                        <Typography color="#918F88">
+                                          Min
+                                        </Typography>
+                                      )}
+                                      <Spacer space={10} />
+                                      <Input
+                                        disabled
+                                        name={`specifications[${idx}].min_value`}
+                                        size="sm"
+                                      />
+                                    </Flex>
+                                    <Spacer width={15} />
+                                    <Flex column>
+                                      {idx === 0 && (
+                                        <Typography color="#918F88">
+                                          Max
+                                        </Typography>
+                                      )}
+                                      <Spacer space={10} />
+                                      <Input
+                                        name={`specifications[${idx}].max_value`}
+                                        variant="light"
+                                        size="sm"
+                                      />
+                                    </Flex>
+                                  </Flex>
+                                </Fragment>
+                              );
+                            }
+                          )}
+                        </>
+                      )}
+                    />
+                  </Indicators>
+                </FormInnerWrapper>
+              </Form>
+              <ActionsWrapper>
+                <Flex column>
+                  <Typography bold size="lg">
+                    {isEdit
+                      ? "Сохранить изменения?"
+                      : "Опубликовать предложение?"}
+                  </Typography>
+                  <Spacer />
+                  <Flex>
+                    <Button
+                      variant="base"
+                      size="lg"
+                      onClick={handleSubmit as () => void}
+                    >
+                      {isEdit ? "Сохранить" : "Опубликовать"}
+                    </Button>
+                    <Spacer width={16} />
+                    <Button
+                      variant="baseRed"
+                      size="lg"
+                      onClick={handleCancel as () => void}
+                    >
+                      Отменить
+                    </Button>
+                    <Spacer width={16} />
+                    {isEdit && (
+                      <Button
+                        variant="link"
+                        onClick={handleModalOpen as () => void}
+                      >
+                        Удалить
+                      </Button>
+                    )}
+                    <Spacer />
+                  </Flex>
+                </Flex>
+              </ActionsWrapper>
+            </>
+          );
+        }}
+      </Formik>
+      {renderModal()}
+    </Flex>
   );
 };
 
@@ -386,10 +391,6 @@ const Indicators = styled.div``;
 const MainFormWrapper = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const FormWrapper = styled.div`
-  padding: 44px;
 `;
 
 const ActionsWrapper = styled.div`
@@ -426,4 +427,12 @@ const ModalContent = styled.div`
   padding: 47px;
   background-color: #f9f6ed;
   border-radius: 10px;
+`;
+
+const FormInnerWrapper = styled(Flex)`
+  padding-left: 44px;
+`;
+
+const Heading = styled(Typography)`
+  padding: 44px 0 0 44px;
 `;
