@@ -11,6 +11,7 @@ interface ISelect {
 interface IProps {
   variant?: "light" | "dark";
   options: ISelect[];
+  disabled?: boolean;
   onChange?: (value: any | any[]) => void;
 }
 
@@ -21,6 +22,7 @@ export const Select: React.FC<IProps> = ({
   options,
   variant = "dark",
   onChange,
+  disabled,
   ...rest
 }) => (
   <StyledReactSelect
@@ -29,6 +31,7 @@ export const Select: React.FC<IProps> = ({
     variant={variant}
     placeholder="Выберите . . ."
     onChange={onChange}
+    isDisabled={disabled}
     {...rest}
   />
 );
@@ -48,6 +51,7 @@ const StyledReactSelect = styled(ReactSelect)`
     height: 50px;
     background-color: ${({ variant }) => getBgColor(variant)};
     border-radius: 6px;
+    border: 1px solid #e7e2d1;
   }
 
   .Select__indicator-separator {
@@ -65,7 +69,7 @@ const StyledReactSelect = styled(ReactSelect)`
     cursor: pointer;
 
     &:hover {
-      background-color: ${({ variant }) => darken(0.03, getBgColor(variant))};
+      background-color: ${({ variant }) => darken(0.06, getBgColor(variant))};
     }
   }
 `;

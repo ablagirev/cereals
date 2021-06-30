@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useFormikContext } from "formik";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Flex } from "..";
 import styled from "styled-components";
-import format from "date-fns/esm/format";
+import ru from "date-fns/locale/ru";
+import { darken } from "polished";
+
+registerLocale("ru", ru);
 
 interface IProps {
   initialValues: {
@@ -14,6 +17,7 @@ interface IProps {
   startFieldName: string;
   endFieldName: string;
   hasCounter?: boolean;
+  disabled?: boolean;
 }
 
 export const DatePickerField: React.FC<IProps> = ({
@@ -21,6 +25,7 @@ export const DatePickerField: React.FC<IProps> = ({
   startFieldName,
   endFieldName,
   hasCounter = false,
+  disabled,
 }) => {
   const { start, end } = initialValues;
   const [startDate, setStartDate] = useState(new Date());
@@ -43,11 +48,9 @@ export const DatePickerField: React.FC<IProps> = ({
     end && setEndDate(new Date(end));
   }, [start, end]);
 
-  console.log();
-
   return (
     <Flex>
-      <StyledFlex fillWidth>
+      <DatePickerWrapper fillWidth>
         <StyledDatePicker
           selected={startDate}
           onChange={(date: Date) => setStartDate(date)}
@@ -55,6 +58,8 @@ export const DatePickerField: React.FC<IProps> = ({
           startDate={startDate}
           endDate={endDate}
           dateFormat="dd.MM.yyyy"
+          disabled={disabled}
+          locale="ru"
         />
         <StyledDatePicker
           selected={endDate}
@@ -64,16 +69,84 @@ export const DatePickerField: React.FC<IProps> = ({
           endDate={endDate}
           minDate={startDate}
           dateFormat="dd.MM.yyyy"
+          disabled={disabled}
+          locale="ru"
         />
-      </StyledFlex>
+      </DatePickerWrapper>
       {hasCounter && <DaysCounter>{`${days} д.`}</DaysCounter>}
     </Flex>
   );
 };
 
-const StyledFlex = styled(Flex)`
+const DatePickerWrapper = styled(Flex)`
   min-width: 345px !important;
   justify-content: space-between;
+
+  .react-datepicker {
+    border: 1px solid #e7e7e7;
+  }
+
+  .react-datepicker__month-container,
+  .react-datepicker__header {
+    background-color: #f2efe5;
+  }
+
+  .react-datepicker__header {
+    border-bottom: 1px solid #e7e7e7;
+  }
+
+  .react-datepicker__triangle {
+    display: none;
+  }
+
+  .react-datepicker__day--selected,
+  .react-datepicker__day--in-range,
+  .react-datepicker__day--in-selecting-range,
+  .react-datepicker__month-text--selected,
+  .react-datepicker__month-text--in-selecting-range,
+  .react-datepicker__month-text--in-range,
+  .react-datepicker__month-text--in-selecting-range,
+  .react-datepicker__month-text--in-range,
+  .react-datepicker__quarter-text--selected,
+  .react-datepicker__quarter-text--in-selecting-range,
+  .react-datepicker__quarter-text--in-range,
+  .react-datepicker__year-text--selected,
+  .react-datepicker__year-text--in-selecting-range,
+  .react-datepicker__year-text--in-range {
+    background-color: #407ef5;
+  }
+
+  .react-datepicker__day--selected:hover,
+  .react-datepicker__day--in-range:hover,
+  .react-datepicker__day--in-selecting-range:hover,
+  .react-datepicker__month-text--selected:hover,
+  .react-datepicker__month-text--in-selecting-range:hover,
+  .react-datepicker__month-text--in-range:hover,
+  .react-datepicker__month-text--in-selecting-range:hover,
+  .react-datepicker__month-text--in-range:hover,
+  .react-datepicker__quarter-text--selected:hover,
+  .react-datepicker__quarter-text--in-selecting-range:hover,
+  .react-datepicker__quarter-text--in-range:hover,
+  .react-datepicker__year-text--selected:hover,
+  .react-datepicker__year-text--in-selecting-range:hover,
+  .react-datepicker__year-text--in-range:hover {
+    background-color: #918f89;
+  }
+
+  .react-datepicker__month--selecting-range .react-datepicker__day--in-range,
+  .react-datepicker__month--selecting-range
+    .react-datepicker__month-text--in-range,
+  .react-datepicker__month--selecting-range
+    .react-datepicker__quarter-text--in-range,
+  .react-datepicker__month--selecting-range
+    .react-datepicker__year-text--in-range {
+    background-color: #407ef5;
+    color: #f2efe5;
+  }
+
+  .react-datepicker__day-name {
+    color: #918f89;
+  }
 `;
 
 const DaysCounter = styled.div`
