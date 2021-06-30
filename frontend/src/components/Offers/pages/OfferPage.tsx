@@ -19,6 +19,7 @@ import { EMPTY_CHAR } from "../../../utils/consts";
 import { IRouteParams } from "../../../utils/models";
 import { DatePickerField } from "../../../uikit/Datepicker/Datepicker";
 import Modal from "react-bootstrap/esm/Modal";
+import { getTrimText } from "../../../utils/utils";
 
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
@@ -45,6 +46,7 @@ export const OfferPage: React.FC = () => {
     cost,
     product: offerProduct,
     warehouse: offerWarehouse,
+    status: offerStatus,
   } = offerData || {};
 
   const offerProductId = offerProduct?.id;
@@ -54,6 +56,7 @@ export const OfferPage: React.FC = () => {
     useOfferCreate(offerFormData);
 
   const isEdit = !!paramId;
+  const isArchived = offerStatus === "archive";
 
   const getProductSpecsById = (productId?: number) => {
     return (
@@ -141,8 +144,9 @@ export const OfferPage: React.FC = () => {
           max_value: max_value || EMPTY_CHAR,
           min_value: min_value || EMPTY_CHAR,
           name_of_specification:
-            `${name_of_specification?.name}, ${unit_of_measurement?.unit}` ||
-            EMPTY_CHAR,
+            getTrimText(
+              `${name_of_specification?.name}, ${unit_of_measurement?.unit}`
+            ) || EMPTY_CHAR,
           id: specId || EMPTY_CHAR,
         };
       }),
@@ -230,7 +234,9 @@ export const OfferPage: React.FC = () => {
   return (
     <Flex column>
       <Heading size="lg2" bold>
-        {`${isEdit ? "Редактировать" : "Создать"} предложение`}
+        {`${
+          isArchived ? "Завершенное" : isEdit ? "Редактировать" : "Создать"
+        } предложение`}
       </Heading>
       <Spacer space={28} />
 
@@ -250,16 +256,27 @@ export const OfferPage: React.FC = () => {
                         variant="light"
                         options={productOptions}
                         onChange={handleProductChange}
+                        disabled={isArchived}
                       />
                     </FormikField>
                     <FormikField
                       name="cost"
                       title="Цена CNCPT на воротах порта, ₽/т"
                     >
-                      <Input name="" variant="light" type="number" />
+                      <Input
+                        name=""
+                        variant="light"
+                        type="number"
+                        disabled={isArchived}
+                      />
                     </FormikField>
                     <FormikField name="volume" title="Объем, т">
-                      <Input name="volume" variant="light" type="number" />
+                      <Input
+                        name="volume"
+                        variant="light"
+                        type="number"
+                        disabled={isArchived}
+                      />
                     </FormikField>
                     <FormikField name="period_shipment" title="Период поставки">
                       <DatePickerField
@@ -270,10 +287,15 @@ export const OfferPage: React.FC = () => {
                         startFieldName="date_start_shipment"
                         endFieldName="date_finish_shipment"
                         hasCounter
+                        disabled={isArchived}
                       />
                     </FormikField>
                     <FormikField name="warehouse" title="Порт">
-                      <Select options={warehouseOptions} variant="light" />
+                      <Select
+                        options={warehouseOptions}
+                        variant="light"
+                        disabled={isArchived}
+                      />
                     </FormikField>
                   </MainFormWrapper>
                   <Spacer width={250} />
@@ -283,7 +305,8 @@ export const OfferPage: React.FC = () => {
                       render={() => (
                         <>
                           {values?.specifications?.map(
-                            (_specification: IProductSpecs, idx: number) => {
+                            (specification: IProductSpecs, idx: number) => {
+                              const { GOST } = specification || {};
                               return (
                                 <Fragment key={idx}>
                                   <Flex>
@@ -297,8 +320,10 @@ export const OfferPage: React.FC = () => {
                                       <Input
                                         disabled
                                         name={`specifications[${idx}].name_of_specification`}
-                                        variant="light"
-                                        size="md"
+                                        variant="blank"
+                                        size="lg"
+                                        tooltipContent={GOST}
+                                        tooltipPlacement="left-start"
                                       />
                                     </Flex>
                                     <Spacer width={15} />
@@ -327,6 +352,7 @@ export const OfferPage: React.FC = () => {
                                         name={`specifications[${idx}].max_value`}
                                         variant="light"
                                         size="sm"
+                                        disabled={isArchived}
                                       />
                                     </Flex>
                                   </Flex>
@@ -342,30 +368,54 @@ export const OfferPage: React.FC = () => {
               </Form>
               <ActionsWrapper>
                 <Flex column>
-                  <Typography bold size="lg">
-                    {isEdit
-                      ? "Сохранить изменения?"
-                      : "Опубликовать предложение?"}
-                  </Typography>
-                  <Spacer />
+                  {!isArchived && (
+                    <>
+                      <Typography bold size="lg">
+                        {isEdit
+                          ? "Сохранить изменения?"
+                          : "Опубликовать предложение?"}
+                      </Typography>
+                      <Spacer />
+                    </>
+                  )}
                   <Flex>
-                    <Button
-                      variant="base"
-                      size="lg"
-                      onClick={handleSubmit as () => void}
-                    >
-                      {isEdit ? "Сохранить" : "Опубликовать"}
-                    </Button>
-                    <Spacer width={16} />
-                    <Button
-                      variant="baseRed"
-                      size="lg"
-                      onClick={handleCancel as () => void}
-                    >
-                      Отменить
-                    </Button>
-                    <Spacer width={16} />
-                    {isEdit && (
+                    {!isArchived && (
+                      <>
+                        <Button
+                          variant="base"
+                          size="lg"
+                          onClick={handleSubmit as () => void}
+                        >
+                          {isEdit ? "Сохранить" : "Опубликовать"}
+                        </Button>
+                        <Spacer width={16} />
+                      </>
+                    )}
+                    {!isArchived && (
+                      <>
+                        <Button
+                          variant="baseRed"
+                          size="lg"
+                          onClick={handleCancel as () => void}
+                        >
+                          Отменить
+                        </Button>
+                        <Spacer width={16} />
+                      </>
+                    )}
+                    {isArchived && (
+                      <>
+                        <Button
+                          variant="base"
+                          size="lg"
+                          onClick={handleCancel as () => void}
+                        >
+                          Назад
+                        </Button>
+                        <Spacer width={16} />
+                      </>
+                    )}
+                    {isEdit && !isArchived && (
                       <Button
                         variant="link"
                         onClick={handleModalOpen as () => void}
@@ -430,7 +480,7 @@ const ModalContent = styled.div`
 `;
 
 const FormInnerWrapper = styled(Flex)`
-  padding-left: 44px;
+  padding: 0 44px;
 `;
 
 const Heading = styled(Typography)`

@@ -13,7 +13,7 @@ export const GlobalStyle = createGlobalStyle`
     body {
         margin: 0;
         background-color: #EFEBDE;
-        font-family: Rubik;
+        font-family: Rubik !important;
         font-style: 400;
         font-weight: normal;
         font-size: 14px;
@@ -25,6 +25,10 @@ export const GlobalStyle = createGlobalStyle`
         list-style: none;
         margin: 0;
         padding: 0;
+    }
+
+    a:hover {
+        text-decoration: none;
     }
 
 

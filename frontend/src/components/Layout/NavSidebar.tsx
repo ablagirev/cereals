@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { useLogout } from "../../hooks/useAuth";
@@ -9,7 +9,6 @@ import { TAppNavItem, TAppNavSection } from "../../routes/models";
 import { theme } from "../../theme";
 import { Flex, Spacer } from "../../uikit";
 import { hasPermissions } from "../../utils";
-import { EMPTY_CHAR } from "../../utils/consts";
 import { NavSidebarItem } from "./NavSidebarItem";
 
 /**
@@ -70,7 +69,6 @@ export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
 
 const StyledNavLink = styled(NavLink)`
   color: #191919;
-  text-decoration: none;
   margin-bottom: 150px;
 `;
 
