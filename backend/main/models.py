@@ -48,13 +48,22 @@ class Company(models.Model):
 class NameOfSpecification(models.Model):
     name = models.CharField("Название характеристики", max_length=250)
 
+    def __str__(self):
+        return self.name
+
 
 class TypeOfSpecification(models.Model):
     type = models.CharField("Тип поля", max_length=250)
 
+    def __str__(self):
+        return self.type
+
 
 class UnitOfMeasurementOfSpecification(models.Model):
     unit = models.CharField("Единица измерения", max_length=250)
+
+    def __str__(self):
+        return self.unit
 
 
 class SpecificationsOfProduct(models.Model):
@@ -89,9 +98,12 @@ class SpecificationsOfProduct(models.Model):
     )
     GOST = models.CharField("Тип поля", max_length=250, blank=True, null=True)
 
+    def __str__(self):
+        return self.name_of_specification
+
 
 class Product(models.Model):
-    title = models.CharField("Название", max_length=250)
+    title = models.CharField("Название", max_length=250, null=True)
     description = models.TextField("Описание", blank=True, null=True)
     specifications = models.ManyToManyField(
         SpecificationsOfProduct, blank=True, related_name="specifications", null=True
@@ -148,7 +160,7 @@ class Product(models.Model):
 
 class Warehouse(models.Model):
     title = models.CharField("Название", max_length=250, default="")
-    address = models.CharField("Адрес", max_length=250)
+    address = models.CharField("Адрес", max_length=250, null=True)
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="owner"
     )  # TODO
