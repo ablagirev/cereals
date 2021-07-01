@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { useLogout } from "../../hooks/useAuth";
@@ -9,7 +9,6 @@ import { TAppNavItem, TAppNavSection } from "../../routes/models";
 import { theme } from "../../theme";
 import { Flex, Spacer } from "../../uikit";
 import { hasPermissions } from "../../utils";
-import { EMPTY_CHAR } from "../../utils/consts";
 import { NavSidebarItem } from "./NavSidebarItem";
 
 /**
@@ -44,7 +43,7 @@ export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
 
   return (
     <NavSidebarInner>
-      <div key={label}>
+      <div>
         <Logo>{navigation.label}</Logo>
         <Flex fillWidth>
           <NavList>
@@ -61,7 +60,6 @@ export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
           <Spacer width={theme.spacings.s} />
         </Flex>
       </div>
-      <Spacer space={216} />
       <StyledNavLink exact to={routes.root.path} onClick={handleLogout}>
         <span>Выйти</span>
       </StyledNavLink>
@@ -71,7 +69,7 @@ export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
 
 const StyledNavLink = styled(NavLink)`
   color: #191919;
-  text-decoration: none;
+  margin-bottom: 150px;
 `;
 
 const NavList = styled.ul`
@@ -88,6 +86,7 @@ const NavSidebarInner = styled.div`
   background-color: #e7e2d1;
   white-space: nowrap;
   z-index: 1;
+  justify-content: space-between;
 `;
 
 const Logo = styled.div`

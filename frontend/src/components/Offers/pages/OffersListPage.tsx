@@ -118,21 +118,27 @@ export const OffersListPage: React.FC = () => {
   );
 
   return (
-    <Flex column>
-      <Typography size="lg2" bold>
-        Мои предложения
-      </Typography>
-      <Spacer space={28} />
-      <Button variant="base" onClick={handleCreateOffer}>
-        Создать предложение
-      </Button>
-      <Spacer space={28} />
-      <Tabs tabs={[activeData, archiveData]} />
-    </Flex>
+    <Wrapper>
+      <Flex column>
+        <Typography size="lg2" bold>
+          Мои предложения
+        </Typography>
+        <Spacer space={28} />
+        <Button variant="base" size="lg" onClick={handleCreateOffer}>
+          Создать предложение
+        </Button>
+        <Spacer space={28} />
+        <Tabs tabs={[activeData, archiveData]} />
+      </Flex>
+    </Wrapper>
   );
 };
 
 const TaxPresence = styled.div`
   font-weight: 700;
   font-size: 16px;
+`;
+
+const Wrapper = styled.div`
+  padding: 44px;
 `;

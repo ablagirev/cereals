@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import { TAppNavSection } from "../../routes/models";
-import { Flex } from "../../uikit";
+import { Flex, Spacer } from "../../uikit";
 
 import { NavSidebar } from "./NavSidebar";
 
@@ -37,6 +37,5 @@ const Wrapper = styled.div`
 `;
 
 const Content = styled<any>(Flex)`
-  margin-left: ${({ isAuthenticated }) => isAuthenticated && 300}px;
-  padding: 44px;
+  margin-left: ${({ isAuthenticated }) => isAuthenticated && 250}px;
 `;
