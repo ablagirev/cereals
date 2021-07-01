@@ -117,6 +117,7 @@ const FieldWrapper = styled.div<any>`
     ${({ isError }) => (isError ? theme.palette.common.colors.red : "#E7E2D1")};
   background-color: ${({ variant }) => getBgColor(variant)};
   border-radius: 6px;
+  overflow: hidden;
 `;
 
 const StyledField = styled(Field)`
@@ -125,7 +126,7 @@ const StyledField = styled(Field)`
   height: 50px;
   border: 0px;
   outline: none;
-  background-color: transparent;
+  background-color: #f5f2ea;
   color: #333333;
 `;
 

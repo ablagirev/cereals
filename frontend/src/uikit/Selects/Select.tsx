@@ -63,6 +63,11 @@ const StyledReactSelect = styled(ReactSelect)`
     width: 345px;
   }
 
+  .Select__menu-list {
+    padding: 0;
+    border-radius: 4px;
+  }
+
   .Select__option {
     color: #333333;
     background-color: ${({ variant }) => getBgColor(variant)};

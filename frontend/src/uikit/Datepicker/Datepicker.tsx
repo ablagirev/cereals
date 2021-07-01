@@ -54,9 +54,6 @@ export const DatePickerField: React.FC<IProps> = ({
         <StyledDatePicker
           selected={startDate}
           onChange={(date: Date) => setStartDate(date)}
-          selectsStart
-          startDate={startDate}
-          endDate={endDate}
           dateFormat="dd.MM.yyyy"
           disabled={disabled}
           locale="ru"
@@ -64,9 +61,7 @@ export const DatePickerField: React.FC<IProps> = ({
         <StyledDatePicker
           selected={endDate}
           onChange={(date: Date) => setEndDate(date)}
-          selectsEnd
           startDate={startDate}
-          endDate={endDate}
           minDate={startDate}
           dateFormat="dd.MM.yyyy"
           disabled={disabled}
@@ -116,6 +111,10 @@ const DatePickerWrapper = styled(Flex)`
     background-color: #407ef5;
   }
 
+  .react-datepicker__day:hover,
+  .react-datepicker__month-text:hover,
+  .react-datepicker__quarter-text:hover,
+  .react-datepicker__year-text:hover,
   .react-datepicker__day--selected:hover,
   .react-datepicker__day--in-range:hover,
   .react-datepicker__day--in-selecting-range:hover,
@@ -131,21 +130,6 @@ const DatePickerWrapper = styled(Flex)`
   .react-datepicker__year-text--in-selecting-range:hover,
   .react-datepicker__year-text--in-range:hover {
     background-color: #918f89;
-  }
-
-  .react-datepicker__month--selecting-range .react-datepicker__day--in-range,
-  .react-datepicker__month--selecting-range
-    .react-datepicker__month-text--in-range,
-  .react-datepicker__month--selecting-range
-    .react-datepicker__quarter-text--in-range,
-  .react-datepicker__month--selecting-range
-    .react-datepicker__year-text--in-range {
-    background-color: #407ef5;
-    color: #f2efe5;
-  }
-
-  .react-datepicker__day-name {
-    color: #918f89;
   }
 `;
 
