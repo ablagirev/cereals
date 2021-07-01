@@ -88,6 +88,7 @@ class SpecificationsOfProduct(models.Model):
         blank=True,
         null=True,
     )
+    description = models.TextField("Описание", blank=True, null=True)
     min_value = models.IntegerField("Минимальное значение", blank=True, null=True)
     is_edit_min_value = models.BooleanField(
         "Редактируемое минимальное значение?", blank=True, null=True
@@ -96,7 +97,8 @@ class SpecificationsOfProduct(models.Model):
     is_edit_max_value = models.BooleanField(
         "Редактируемое максимальное значение?", blank=True, null=True
     )
-    GOST = models.CharField("Тип поля", max_length=250, blank=True, null=True)
+    GOST = models.CharField("ГОСТ", max_length=250, blank=True, null=True)
+
 
     def __str__(self):
         return self.name_of_specification
