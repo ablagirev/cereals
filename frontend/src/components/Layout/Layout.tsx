@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import { TAppNavSection } from "../../routes/models";
-import { Flex, Spacer } from "../../uikit";
+import { Flex } from "../../uikit";
 
 import { NavSidebar } from "./NavSidebar";
 
@@ -31,6 +31,7 @@ export const Layout: React.FC<ILayoutProps> = ({ children, navigation }) => {
 };
 
 const Wrapper = styled.div`
+  height: 100vh;
   display: flex;
   flex-direction: row;
   position: relative;

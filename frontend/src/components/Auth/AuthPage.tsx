@@ -8,6 +8,7 @@ import { useLogin } from "../../hooks/useAuth";
 import { Button, Flex, Input, Spacer, Typography } from "../../uikit";
 import styled from "styled-components";
 import { theme } from "../../theme";
+import { Loader } from "../../uikit/Loader";
 
 interface ILoginValues {
   username: string;
@@ -17,7 +18,12 @@ interface ILoginValues {
 export const AuthPage: React.FC = () => {
   const auth = useContext(AuthContext);
   const [userCredentials, setUserCredentials] = useState<ILoginValues>();
-  const { data, isError, refetch: fetchUserData } = useLogin(userCredentials);
+  const {
+    data,
+    isError,
+    refetch: fetchUserData,
+    isFetching,
+  } = useLogin(userCredentials);
   const { token, type } = data || {};
 
   const handleLogin = (values: ILoginValues) => {
@@ -36,7 +42,9 @@ export const AuthPage: React.FC = () => {
     hasData && fetchUserData();
   }, [userCredentials]);
 
-  return (
+  return isFetching ? (
+    <Loader />
+  ) : (
     <>
       <Spacer space={180} />
       <Flex hAlignContent="center">

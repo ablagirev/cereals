@@ -20,13 +20,15 @@ import { IRouteParams } from "../../../utils/models";
 import { DatePickerField } from "../../../uikit/Datepicker/Datepicker";
 import Modal from "react-bootstrap/esm/Modal";
 import { getTrimText } from "../../../utils/utils";
+import { Loader } from "../../../uikit/Loader";
 
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
   const history = useHistory();
-  const { data: productsData } = useProducts();
-  const { data: warehouseData } = useWarehouses();
-  const { data: offerData } = useOffer(paramId);
+  const { data: productsData, isFetching: isProductsFetching } = useProducts();
+  const { data: warehouseData, isFetching: isWarehousesFetching } =
+    useWarehouses();
+  const { data: offerData, isFetching: isOfferFetching } = useOffer(paramId);
   const [offerFormData, setOfferFormData] = useState();
   const [specificationsFormData, setSpecificationsFormData] =
     useState<IProductSpecs[]>();
@@ -38,6 +40,9 @@ export const OfferPage: React.FC = () => {
   const { isSuccess: isOfferDeleteSuccess, refetch: refetchOfferDelete } =
     useOfferDelete(paramId);
   const [showModalState, setShowModalState] = useState(false);
+
+  const isFetching =
+    isProductsFetching || isWarehousesFetching || isOfferFetching;
 
   const {
     date_finish_shipment,
@@ -231,7 +236,9 @@ export const OfferPage: React.FC = () => {
     specs && setProductSpecifications(specs);
   }, [actualProductId, productsData]);
 
-  return (
+  return isFetching ? (
+    <Loader />
+  ) : (
     <Flex column>
       <Heading size="lg2" bold>
         {`${

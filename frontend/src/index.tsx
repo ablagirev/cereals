@@ -12,6 +12,7 @@ import { useAuth } from "./hooks";
 import { AuthContext } from "./context";
 import { BrowserRouter } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Loader } from "./uikit/Loader";
 
 /**
  * Инициализация кеша react-query.
@@ -40,7 +41,7 @@ const App: React.FC = () => {
             </BrowserRouter>
           </AuthContext.Provider>
         ) : (
-          "Loading . . ." // TODO: воткнуть лоадер
+          <Loader />
         )}
       </ErrorBoundary>
     </QueryClientProvider>

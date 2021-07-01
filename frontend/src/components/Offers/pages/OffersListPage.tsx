@@ -8,6 +8,7 @@ import { routes } from "../../../routes/consts";
 import { IOffer } from "../../../services/models";
 import { Button, Flex, Spacer, Tabs, Typography } from "../../../uikit";
 import { Card } from "../../../uikit/Card/Card";
+import { Loader } from "../../../uikit/Loader";
 import { Table } from "../../../uikit/Table/Table";
 import { ITab } from "../../../uikit/Tabs/Tabs";
 import { EMPTY_CHAR } from "../../../utils/consts";
@@ -26,10 +27,13 @@ export const getStatus = (status: string) => {
 };
 
 export const OffersListPage: React.FC = () => {
-  const { data } = useOffers();
+  const { data, isFetching: isOffersFetching } = useOffers();
   const history = useHistory();
-  const { data: warehouseData } = useWarehouses();
+  const { data: warehouseData, isFetching: isWarehousesFetching } =
+    useWarehouses();
   const offerData = data || [];
+
+  const isFetching = isOffersFetching || isWarehousesFetching;
 
   const handleOfferClick = (id: string | number) => {
     history.push(generatePath(routes.offers.edit.path, { id }));
@@ -117,7 +121,9 @@ export const OffersListPage: React.FC = () => {
     offerData?.filter((el) => el.status === "archive")
   );
 
-  return (
+  return isFetching ? (
+    <Loader />
+  ) : (
     <Wrapper>
       <Flex column>
         <Typography size="lg2" bold>
