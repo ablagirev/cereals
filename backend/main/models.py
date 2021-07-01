@@ -101,7 +101,7 @@ class SpecificationsOfProduct(models.Model):
 
 
     def __str__(self):
-        return self.name_of_specification
+        return 'Спецификация "{0}"'.format(self.name_of_specification.name)
 
 
 class Product(models.Model):
