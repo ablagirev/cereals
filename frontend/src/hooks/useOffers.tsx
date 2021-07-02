@@ -14,6 +14,7 @@ export const useOffers = () => {
     () => daylesfordService.getOfferList(),
     {
       enabled: true,
+      refetchOnWindowFocus: false,
       retry: true,
     }
   );

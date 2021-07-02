@@ -5,7 +5,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Flex } from "..";
 import styled from "styled-components";
 import ru from "date-fns/locale/ru";
-import { darken } from "polished";
 
 registerLocale("ru", ru);
 

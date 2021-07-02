@@ -49,6 +49,6 @@ const StyledNavLink = styled(NavLink)<NavLinkProps>`
   transition: 0.3s;
 
   &.active {
-    color: #8e66fe;
+    color: #407ef5;
   }
 `;

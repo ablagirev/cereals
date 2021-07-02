@@ -54,3 +54,7 @@ export const formatMoney = (value: MoneyValueType) => {
            .trim()
      : EMPTY_CHAR;
      
+
+export const numberWithSeparators = (x: string | number) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
