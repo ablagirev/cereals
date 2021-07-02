@@ -1,13 +1,13 @@
 export interface IOffer {
     cost: number;
-    cost_with_NDS: number;
-    created_at: string;
+    costWith_NDS: number;
+    createdAt: string;
     creator: number;
-    date_finish_shipment: string;
-    date_start_shipment: string;
+    dateFinishShipment: string;
+    dateStartShipment: string;
     description: string;
     id: number;
-    period_of_export: number;
+    periodOfExport: number;
     product: {
       id: number;
     };
@@ -28,20 +28,20 @@ export interface IProduct {
 
   export interface IProductSpecs {
         id: number,
-        min_value: number,
-        is_edit_min_value: boolean,
-        max_value: number,
-        is_edit_max_value: boolean,
+        minValue: number,
+        isEditMinValue: boolean,
+        maxValue: number,
+        isEditMaxValue: boolean,
         GOST: string,
-        name_of_specification: {
+        nameOfSpecification: {
           id: number,
           name: string
         },
-        type_field: {
+        typeField: {
           id: number,
           type: string
         },
-        unit_of_measurement: {
+        unitOfMeasurement: {
           id: number,
           unit: string
         }

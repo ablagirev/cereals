@@ -24,7 +24,7 @@ export const AuthPage: React.FC = () => {
     refetch: fetchUserData,
     isFetching,
   } = useLogin(userCredentials);
-  const { token, type } = data || {};
+  const { token, type = "Bearer" } = data || {};
 
   const handleLogin = (values: ILoginValues) => {
     setUserCredentials(values);
@@ -92,7 +92,7 @@ export const AuthPage: React.FC = () => {
                     variant="dark"
                   />
                   <Spacer space={44} />
-                  <Button variant="action" type="submit">
+                  <Button variant="base" type="submit">
                     Отправить
                   </Button>
                   <Spacer />

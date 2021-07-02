@@ -4,19 +4,40 @@ import { EMPTY_CHAR } from "../../utils/consts";
 import styled from "styled-components";
 import { Spacer } from "..";
 import { theme } from "../../theme";
-import Tooltip from "react-bootstrap/Tooltip";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import isNil from "lodash-es/isNil";
 
-interface IProps {
+import { IMaskInput } from "react-imask";
+import { Tooltip } from "../Tooltip";
+
+const configBlocks = {
+  blocks: {
+    numberInput: {
+      mask: Number,
+      radix: ".", // fractional delimiter
+      scale: 2, // digits after point, 0 for integers
+      signed: true, // disallow negative
+      thousandsSeparator: " ", // any single char
+      padFractionalZeros: false, // if true, then pads zeros at end to the length of scale
+      normalizeZeros: true, // appends or removes zeros at ends
+      value: "",
+      unmask: true, // true|false|'typed'
+    },
+  },
+  mask: "numberInput",
+};
+
+export interface IInputProps {
   name: string;
   placeholder?: string;
   label?: string;
   type?: string;
   disabled?: boolean;
   isError?: boolean;
+  value?: any;
+  onChange?: any;
   variant?: "light" | "dark" | "blank";
   size?: "lg" | "md" | "sm";
-  tooltipContent?: string | number | JSX.Element;
+  tooltipContent?: string | number | JSX.Element | null | false;
   tooltipPlacement?:
     | "auto-start"
     | "auto"
@@ -35,18 +56,18 @@ interface IProps {
     | "left-start";
 }
 
-const getBgColor = (variant: Pick<IProps, "variant">) => {
+const getBgColor = (variant: Pick<IInputProps, "variant">) => {
   switch (variant) {
     case "light":
       return "#F5F2EA";
     case "dark":
       return "#e7e2d4";
     default:
-      return "transparent";
+      return "#EFEBDE";
   }
 };
 
-const getWidth = (size: Pick<IProps, "size">) => {
+const getWidth = (size: Pick<IInputProps, "size">) => {
   switch (size) {
     case "sm":
       return 55;
@@ -57,7 +78,7 @@ const getWidth = (size: Pick<IProps, "size">) => {
   }
 };
 
-export const Input: React.FC<IProps> = ({
+export const Input: React.FC<IInputProps> = ({
   name,
   placeholder = EMPTY_CHAR,
   label,
@@ -68,16 +89,44 @@ export const Input: React.FC<IProps> = ({
   size,
   tooltipContent,
   tooltipPlacement = "auto",
+  value,
+  onChange,
+  ...restProps
 }) => {
   const renderInput = () => (
-    <FieldWrapper isError={isError} variant={variant} size={size}>
-      <StyledField
-        id={name}
-        name={name}
-        placeholder={placeholder}
-        type={type}
-        disabled={disabled}
-      />
+    <FieldWrapper
+      isError={isError}
+      variant={variant}
+      size={size}
+      disabled={disabled}
+    >
+      {type === "masked" ? (
+        <StyledIMaskInput
+          {...configBlocks}
+          id={name}
+          name={name}
+          placeholder={placeholder}
+          disabled={disabled}
+          variant={variant}
+          size={size}
+          value={!isNil(value) ? String(value) : null}
+          onAccept={onChange}
+          mask="numberInput" // enable number mask
+          autoComplete="off"
+          {...restProps}
+        />
+      ) : (
+        <StyledField
+          id={name}
+          name={name}
+          placeholder={placeholder}
+          type={type}
+          disabled={disabled}
+          variant={variant}
+          size={size}
+          autoComplete="off"
+        />
+      )}
     </FieldWrapper>
   );
   return (
@@ -89,18 +138,13 @@ export const Input: React.FC<IProps> = ({
         </>
       )}
       {!!tooltipContent ? (
-        <OverlayTrigger
-          delay={{ hide: 450, show: 300 }}
-          placement={tooltipPlacement}
-          trigger="hover"
-          overlay={(props) => (
-            <StyledTooltip id={`${name}-${type}`} {...props}>
-              {tooltipContent}
-            </StyledTooltip>
-          )}
+        <Tooltip
+          tooltipContent={tooltipContent}
+          tooltipPlacement={tooltipPlacement}
+          id={`${name}-${type}`}
         >
           {renderInput()}
-        </OverlayTrigger>
+        </Tooltip>
       ) : (
         renderInput()
       )}
@@ -118,15 +162,20 @@ const FieldWrapper = styled.div<any>`
   background-color: ${({ variant }) => getBgColor(variant)};
   border-radius: 6px;
   overflow: hidden;
+
+  &:hover {
+    border-color: ${({ disabled }) => !disabled && "#407ef5"};
+  }
 `;
 
-const StyledField = styled(Field)`
+const StyledField = styled<any>(Field)`
+  text-align: ${({ size }) => size === "sm" && "center"};
   padding-left: ${({ size }) => size !== "sm" && 20}px;
   width: ${({ size }) => getWidth(size) - 20}px;
   height: 50px;
   border: 0px;
   outline: none;
-  background-color: #f5f2ea;
+  background-color: ${({ variant }) => getBgColor(variant)};
   color: #333333;
 `;
 
@@ -143,4 +192,15 @@ const StyledTooltip = styled(Tooltip)`
   .bs-tooltip-bottom .arrow::before {
     display: none;
   }
+`;
+
+const StyledIMaskInput = styled<any>(IMaskInput)`
+  text-align: ${({ size }) => size === "sm" && "center"};
+  padding-left: ${({ size }) => size !== "sm" && 20}px;
+  width: ${({ size }) => getWidth(size) - 20}px;
+  height: 50px;
+  border: 0px;
+  outline: none;
+  background-color: ${({ variant }) => getBgColor(variant)};
+  color: #333333;
 `;

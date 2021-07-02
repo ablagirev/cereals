@@ -12,7 +12,11 @@ import { Loader } from "../../../uikit/Loader";
 import { Table } from "../../../uikit/Table/Table";
 import { ITab } from "../../../uikit/Tabs/Tabs";
 import { EMPTY_CHAR } from "../../../utils/consts";
-import { formatDate, formatMoney } from "../../../utils/utils";
+import {
+  formatDate,
+  formatMoney,
+  numberWithSeparators,
+} from "../../../utils/utils";
 
 // TODO: заменить на i18n
 export const getStatus = (status: string) => {
@@ -55,23 +59,23 @@ export const OffersListPage: React.FC = () => {
           const {
             title,
             volume,
-            cost_with_NDS,
+            costWith_NDS,
             cost,
-            period_of_export,
-            date_finish_shipment,
-            date_start_shipment,
+            periodOfExport,
+            dateFinishShipment,
+            dateStartShipment,
             warehouse,
             id,
           } = item || {};
 
           const periodOfShippment = `${formatDate(
-            date_start_shipment
-          )} — ${formatDate(date_finish_shipment)} (${period_of_export} д.)`;
+            dateStartShipment
+          )} — ${formatDate(dateFinishShipment)} (${periodOfExport} д.)`;
 
           const dataList = [
             {
               title: "Объем, т",
-              content: [volume],
+              content: [numberWithSeparators(volume)],
             },
             {
               title: "Цена покупателя, руб",
@@ -82,7 +86,7 @@ export const OffersListPage: React.FC = () => {
                   <TaxPresence>без НДС / CNCPT</TaxPresence>
                 </Flex>,
                 <Flex>
-                  <span>{formatMoney(cost_with_NDS)}</span>
+                  <span>{formatMoney(costWith_NDS)}</span>
                   <Spacer width={18} />
                   <TaxPresence>с НДС / CVCPT</TaxPresence>
                 </Flex>,

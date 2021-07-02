@@ -11,7 +11,7 @@ import {
 import { useProductEdit, useProducts } from "../../../hooks/useProducts";
 import { useWarehouses } from "../../../hooks/useWarehouses";
 import { routes } from "../../../routes/consts";
-import { IProductSpecs } from "../../../services/models";
+import { IOffer, IProductSpecs } from "../../../services/models";
 import { Button, Flex, Input, Spacer, Typography } from "../../../uikit";
 import { FormikField } from "../../../uikit/Field";
 import { Select } from "../../../uikit/Selects";
@@ -19,8 +19,9 @@ import { EMPTY_CHAR } from "../../../utils/consts";
 import { IRouteParams } from "../../../utils/models";
 import { DatePickerField } from "../../../uikit/Datepicker/Datepicker";
 import Modal from "react-bootstrap/esm/Modal";
-import { getTrimText } from "../../../utils/utils";
 import { Loader } from "../../../uikit/Loader";
+import isNumber from "lodash-es/isNumber";
+import { Tooltip } from "../../../uikit/Tooltip";
 
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
@@ -29,7 +30,7 @@ export const OfferPage: React.FC = () => {
   const { data: warehouseData, isFetching: isWarehousesFetching } =
     useWarehouses();
   const { data: offerData, isFetching: isOfferFetching } = useOffer(paramId);
-  const [offerFormData, setOfferFormData] = useState();
+  const [offerFormData, setOfferFormData] = useState<any>();
   const [specificationsFormData, setSpecificationsFormData] =
     useState<IProductSpecs[]>();
   const [chosenProductId, setChosenProductId] = useState<number>();
@@ -45,8 +46,8 @@ export const OfferPage: React.FC = () => {
     isProductsFetching || isWarehousesFetching || isOfferFetching;
 
   const {
-    date_finish_shipment,
-    date_start_shipment,
+    dateFinishShipment,
+    dateStartShipment,
     volume,
     cost,
     product: offerProduct,
@@ -128,6 +129,25 @@ export const OfferPage: React.FC = () => {
       specifications: specificationsFormData,
     });
 
+  const getMinMaxValues = (minValue?: number, maxValue?: number) => {
+    if (maxValue && !minValue) {
+      return {
+        minValue: "≤",
+        maxValue,
+      };
+    } else if (!maxValue && minValue) {
+      return {
+        minValue: "≥",
+        maxValue: minValue,
+      };
+    } else {
+      return {
+        minValue,
+        maxValue,
+      };
+    }
+  };
+
   const initialValues = useMemo(() => {
     return {
       volume,
@@ -139,19 +159,26 @@ export const OfferPage: React.FC = () => {
         ) || warehouseOptions?.[0],
       specifications: productSpecifications?.map((spec) => {
         const {
-          max_value,
-          min_value,
-          unit_of_measurement,
-          name_of_specification,
+          maxValue,
+          minValue,
+          unitOfMeasurement,
+          nameOfSpecification,
           id: specId,
+          GOST,
+          isEditMaxValue,
+          isEditMinValue,
         } = spec;
+
+        const minMaxValues = getMinMaxValues(minValue, maxValue);
+
         return {
-          max_value: max_value || EMPTY_CHAR,
-          min_value: min_value || EMPTY_CHAR,
-          name_of_specification:
-            getTrimText(
-              `${name_of_specification?.name}, ${unit_of_measurement?.unit}`
-            ) || EMPTY_CHAR,
+          ...minMaxValues,
+          GOST,
+          isEditMaxValue,
+          isEditMinValue,
+          nameOfSpecification: unitOfMeasurement?.unit
+            ? `${nameOfSpecification?.name}, ${unitOfMeasurement?.unit}`
+            : nameOfSpecification?.name || EMPTY_CHAR,
           id: specId || EMPTY_CHAR,
         };
       }),
@@ -164,21 +191,30 @@ export const OfferPage: React.FC = () => {
     productOptions,
   ]);
 
-  const onSubmit = (values: any) => {
+  const convertToNumber = (value: any) => {
+    return typeof value === "string"
+      ? Number(value?.split(" ").join(""))
+      : value;
+  };
+
+  const handleSubmitForm = (values: any) => {
+    const { volume, cost, product, warehouse } = values || {};
+
     setOfferFormData({
       ...values,
-      volume: Number(values?.volume),
-      cost: Number(values?.cost),
-      product: { id: values?.product?.value },
-      warehouse: { id: values?.warehouse?.value },
+      volume: convertToNumber(volume),
+      cost: convertToNumber(cost),
+      product: { id: product?.value },
+      warehouse: { id: warehouse?.value },
       id: paramId ? Number(paramId) : undefined,
       specifications: undefined,
     });
+
     setSpecificationsFormData(
-      values?.specifications?.map(({ max_value, id: specId }: any) => {
+      values?.specifications?.map(({ maxValue, id: specId }: any) => {
         return {
           id: specId,
-          max_value,
+          maxValue,
         };
       })
     );
@@ -210,6 +246,42 @@ export const OfferPage: React.FC = () => {
       </ModalContent>
     </StyledModal>
   );
+
+  interface ISpecTooltip {
+    max: number;
+    min?: number;
+  }
+
+  const renderMaxTooltip = ({ max, min }: ISpecTooltip) => {
+    return (
+      max && (
+        <Flex column>
+          <Typography size="sm">По умолчанию:</Typography>
+          <Flex>
+            {isNumber(min) ? (
+              <>
+                <Typography size="sm">от</Typography>
+                <Spacer width={4} />
+                <Typography size="sm" color="#407ef5">
+                  {min}
+                </Typography>
+                <Spacer width={4} />
+                <Typography size="sm">до</Typography>
+              </>
+            ) : (
+              <Typography size="sm">
+                {min === "≤" ? "не более" : min === "≥" ? "не менее" : null}
+              </Typography>
+            )}
+            <Spacer width={4} />
+            <Typography size="sm" color="#407ef5">
+              {max}
+            </Typography>
+          </Flex>
+        </Flex>
+      )
+    );
+  };
 
   useEffect(() => {
     isEdit ? refetchOfferEdit() : refetchOfferCreate();
@@ -250,7 +322,7 @@ export const OfferPage: React.FC = () => {
       <Formik
         enableReinitialize
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleSubmitForm}
       >
         {({ values, handleSubmit }: any) => {
           return (
@@ -271,9 +343,9 @@ export const OfferPage: React.FC = () => {
                       title="Цена CNCPT на воротах порта, ₽/т"
                     >
                       <Input
-                        name=""
+                        name="cost"
                         variant="light"
-                        type="number"
+                        type="masked"
                         disabled={isArchived}
                       />
                     </FormikField>
@@ -281,18 +353,18 @@ export const OfferPage: React.FC = () => {
                       <Input
                         name="volume"
                         variant="light"
-                        type="number"
+                        type="masked"
                         disabled={isArchived}
                       />
                     </FormikField>
-                    <FormikField name="period_shipment" title="Период поставки">
+                    <FormikField name="periodShipment" title="Период поставки">
                       <DatePickerField
                         initialValues={{
-                          start: date_start_shipment,
-                          end: date_finish_shipment,
+                          start: dateStartShipment,
+                          end: dateFinishShipment,
                         }}
-                        startFieldName="date_start_shipment"
-                        endFieldName="date_finish_shipment"
+                        startFieldName="dateStartShipment"
+                        endFieldName="dateFinishShipment"
                         hasCounter
                         disabled={isArchived}
                       />
@@ -305,72 +377,137 @@ export const OfferPage: React.FC = () => {
                       />
                     </FormikField>
                   </MainFormWrapper>
-                  <Spacer width={250} />
-                  <Indicators>
-                    <FieldArray
-                      name="specifications"
-                      render={() => (
-                        <>
-                          {values?.specifications?.map(
-                            (specification: IProductSpecs, idx: number) => {
-                              const { GOST } = specification || {};
-                              return (
-                                <Fragment key={idx}>
-                                  <Flex>
-                                    <Flex column>
-                                      {idx === 0 && (
-                                        <Typography color="#918F88">
-                                          Показатели зерна
-                                        </Typography>
+                  <IndicatorsWrapper>
+                    <Indicators>
+                      <FieldArray
+                        name="specifications"
+                        render={() => (
+                          <>
+                            {values?.specifications?.map(
+                              (specification: IProductSpecs, idx: number) => {
+                                const {
+                                  GOST,
+                                  maxValue,
+                                  minValue,
+                                  isEditMaxValue,
+                                  isEditMinValue,
+                                } = specification || {};
+
+                                const hasSpecsValues = !!maxValue || !!minValue;
+
+                                return (
+                                  <Fragment key={idx}>
+                                    <Flex>
+                                      <Flex column>
+                                        {idx === 0 && (
+                                          <Typography color="#918F88">
+                                            Показатели зерна
+                                          </Typography>
+                                        )}
+                                        <Spacer space={10} />
+                                        <Input
+                                          disabled
+                                          name={`specifications[${idx}].nameOfSpecification`}
+                                          variant="blank"
+                                          size="lg"
+                                          tooltipContent={GOST && `${GOST}`}
+                                          tooltipPlacement="left-start"
+                                        />
+                                      </Flex>
+                                      <Spacer width={15} />
+                                      {hasSpecsValues ? (
+                                        <>
+                                          <Flex column>
+                                            <Spacer
+                                              space={idx === 0 ? 30 : 10}
+                                            />
+                                            <Input
+                                              variant={
+                                                isArchived ||
+                                                !isEditMinValue ||
+                                                !isNumber(minValue)
+                                                  ? "blank"
+                                                  : "light"
+                                              }
+                                              disabled={
+                                                isArchived ||
+                                                !isEditMinValue ||
+                                                !isNumber(minValue)
+                                              }
+                                              name={`specifications[${idx}].minValue`}
+                                              size="sm"
+                                              tooltipContent={
+                                                !isArchived &&
+                                                isEditMinValue &&
+                                                isNumber(minValue) &&
+                                                renderMaxTooltip({
+                                                  max: maxValue,
+                                                  min: minValue,
+                                                })
+                                              }
+                                            />
+                                          </Flex>
+                                          <Spacer width={15} />
+                                          <Flex column>
+                                            <Spacer
+                                              space={idx === 0 ? 30 : 10}
+                                            />
+                                            <Input
+                                              name={`specifications[${idx}].maxValue`}
+                                              variant={
+                                                isArchived ||
+                                                !isEditMaxValue ||
+                                                !isNumber(maxValue)
+                                                  ? "blank"
+                                                  : "light"
+                                              }
+                                              size="sm"
+                                              disabled={
+                                                isArchived ||
+                                                !isEditMaxValue ||
+                                                !isNumber(maxValue)
+                                              }
+                                              tooltipContent={
+                                                !isArchived &&
+                                                isEditMaxValue &&
+                                                isNumber(maxValue) &&
+                                                renderMaxTooltip({
+                                                  max: maxValue,
+                                                  min: minValue,
+                                                })
+                                              }
+                                            />
+                                          </Flex>
+                                        </>
+                                      ) : (
+                                        <Tooltip
+                                          tooltipContent={
+                                            GOST &&
+                                            `Остальные показатели качества должны соответствовать ${GOST}`
+                                          }
+                                          id={`Absent-${GOST}-${maxValue}-${minValue}`}
+                                        >
+                                          <Flex
+                                            vAlignContent="center"
+                                            hAlignContent="center"
+                                          >
+                                            <Typography size="sm">
+                                              Не допускается...
+                                            </Typography>
+                                          </Flex>
+                                        </Tooltip>
                                       )}
-                                      <Spacer space={10} />
-                                      <Input
-                                        disabled
-                                        name={`specifications[${idx}].name_of_specification`}
-                                        variant="blank"
-                                        size="lg"
-                                        tooltipContent={GOST}
-                                        tooltipPlacement="left-start"
-                                      />
                                     </Flex>
-                                    <Spacer width={15} />
-                                    <Flex column>
-                                      {idx === 0 && (
-                                        <Typography color="#918F88">
-                                          Min
-                                        </Typography>
-                                      )}
-                                      <Spacer space={10} />
-                                      <Input
-                                        disabled
-                                        name={`specifications[${idx}].min_value`}
-                                        size="sm"
-                                      />
-                                    </Flex>
-                                    <Spacer width={15} />
-                                    <Flex column>
-                                      {idx === 0 && (
-                                        <Typography color="#918F88">
-                                          Max
-                                        </Typography>
-                                      )}
-                                      <Spacer space={10} />
-                                      <Input
-                                        name={`specifications[${idx}].max_value`}
-                                        variant="light"
-                                        size="sm"
-                                        disabled={isArchived}
-                                      />
-                                    </Flex>
-                                  </Flex>
-                                </Fragment>
-                              );
-                            }
-                          )}
-                        </>
-                      )}
-                    />
-                  </Indicators>
+                                  </Fragment>
+                                );
+                              }
+                            )}
+                          </>
+                        )}
+                      />
+                      <Spacer />
+                    </Indicators>
+                  </IndicatorsWrapper>
                 </FormInnerWrapper>
               </Form>
               <ActionsWrapper>
@@ -391,6 +528,7 @@ export const OfferPage: React.FC = () => {
                         <Button
                           variant="base"
                           size="lg"
+                          type="submit"
                           onClick={handleSubmit as () => void}
                         >
                           {isEdit ? "Сохранить" : "Опубликовать"}
@@ -443,7 +581,12 @@ export const OfferPage: React.FC = () => {
   );
 };
 
-const Indicators = styled.div``;
+const Indicators = styled.div`
+  height: 700px;
+  overflow: scroll;
+  padding-right: 20px;
+  border-bottom: 1px solid #dad8d1;
+`;
 
 const MainFormWrapper = styled.div`
   display: flex;
@@ -456,6 +599,7 @@ const ActionsWrapper = styled.div`
   height: 150px;
   width: 100%;
   display: flex;
+  background-color: #efebde;
   align-items: center;
   padding-left: 46px;
   border-top: 1px solid #918f89;
@@ -488,8 +632,15 @@ const ModalContent = styled.div`
 
 const FormInnerWrapper = styled(Flex)`
   padding: 0 44px;
+  justify-content: space-between;
 `;
 
 const Heading = styled(Typography)`
   padding: 44px 0 0 44px;
+`;
+
+const IndicatorsWrapper = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
 `;

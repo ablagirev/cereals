@@ -26,7 +26,7 @@ interface IProps {
 export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
   const { logout } = useAuthContext();
   const userPermissions = usePermissions();
-  const { refetch: triggerLogout } = useLogout();
+  // const { refetch: triggerLogout } = useLogout();
 
   const { items, label } = navigation;
 
@@ -38,7 +38,7 @@ export const NavSidebar: React.FC<IProps> = ({ navigation }) => {
   );
 
   const handleLogout = () => {
-    triggerLogout() && logout();
+    logout();
   };
 
   return (
