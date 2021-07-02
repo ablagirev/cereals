@@ -11,7 +11,7 @@ import {
 import { useProductEdit, useProducts } from "../../../hooks/useProducts";
 import { useWarehouses } from "../../../hooks/useWarehouses";
 import { routes } from "../../../routes/consts";
-import { IOffer, IProductSpecs } from "../../../services/models";
+import { IProductSpecs } from "../../../services/models";
 import { Button, Flex, Input, Spacer, Typography } from "../../../uikit";
 import { FormikField } from "../../../uikit/Field";
 import { Select } from "../../../uikit/Selects";
@@ -26,7 +26,11 @@ import { Tooltip } from "../../../uikit/Tooltip";
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
   const history = useHistory();
-  const { data: productsData, isFetching: isProductsFetching } = useProducts();
+  const {
+    data: productsData,
+    isFetching: isProductsFetching,
+    refetch: refetchProducts,
+  } = useProducts();
   const { data: warehouseData, isFetching: isWarehousesFetching } =
     useWarehouses();
   const { data: offerData, isFetching: isOfferFetching } = useOffer(paramId);
@@ -167,6 +171,7 @@ export const OfferPage: React.FC = () => {
           GOST,
           isEditMaxValue,
           isEditMinValue,
+          description,
         } = spec;
 
         const minMaxValues = getMinMaxValues(minValue, maxValue);
@@ -174,6 +179,7 @@ export const OfferPage: React.FC = () => {
         return {
           ...minMaxValues,
           GOST,
+          description,
           isEditMaxValue,
           isEditMinValue,
           nameOfSpecification: unitOfMeasurement?.unit
@@ -197,6 +203,10 @@ export const OfferPage: React.FC = () => {
       : value;
   };
 
+  const isSymbol = (val: string | number) =>
+    typeof val === "string" &&
+    (val.toString() === "≤" || val.toString() === "≥");
+
   const handleSubmitForm = (values: any) => {
     const { volume, cost, product, warehouse } = values || {};
 
@@ -211,10 +221,11 @@ export const OfferPage: React.FC = () => {
     });
 
     setSpecificationsFormData(
-      values?.specifications?.map(({ maxValue, id: specId }: any) => {
+      values?.specifications?.map(({ maxValue, minValue, id: specId }: any) => {
         return {
           id: specId,
-          maxValue,
+          maxValue: parseInt(maxValue),
+          minValue: !isSymbol(minValue) ? parseInt(minValue) : undefined,
         };
       })
     );
@@ -283,6 +294,13 @@ export const OfferPage: React.FC = () => {
     );
   };
 
+  const truncateText = (text: string, limit: number) => {
+    text = text.trim();
+    if (text.length <= limit) return text;
+    text = text.slice(0, limit);
+    return text.trim() + "...";
+  };
+
   useEffect(() => {
     isEdit ? refetchOfferEdit() : refetchOfferCreate();
   }, [offerFormData]);
@@ -295,6 +313,7 @@ export const OfferPage: React.FC = () => {
     const isFormSuccess =
       isProductEditSuccess && (isCreateSuccess || isOfferEditSuccess);
     (isFormSuccess || isOfferDeleteSuccess) &&
+      refetchProducts() &&
       history.push(generatePath(routes.offers.list.path));
   }, [
     isOfferEditSuccess,
@@ -383,17 +402,19 @@ export const OfferPage: React.FC = () => {
                         name="specifications"
                         render={() => (
                           <>
-                            {values?.specifications?.map(
-                              (specification: IProductSpecs, idx: number) => {
+                            {initialValues?.specifications?.map(
+                              (specification: any, idx: number) => {
                                 const {
                                   GOST,
                                   maxValue,
                                   minValue,
                                   isEditMaxValue,
                                   isEditMinValue,
+                                  description,
                                 } = specification || {};
 
-                                const hasSpecsValues = !!maxValue || !!minValue;
+                                const isSpecValuesEditable =
+                                  isEditMaxValue || isEditMinValue;
 
                                 return (
                                   <Fragment key={idx}>
@@ -415,7 +436,7 @@ export const OfferPage: React.FC = () => {
                                         />
                                       </Flex>
                                       <Spacer width={15} />
-                                      {hasSpecsValues ? (
+                                      {isSpecValuesEditable ? (
                                         <>
                                           <Flex column>
                                             <Spacer
@@ -425,14 +446,14 @@ export const OfferPage: React.FC = () => {
                                               variant={
                                                 isArchived ||
                                                 !isEditMinValue ||
-                                                !isNumber(minValue)
+                                                isSymbol(minValue)
                                                   ? "blank"
                                                   : "light"
                                               }
                                               disabled={
                                                 isArchived ||
                                                 !isEditMinValue ||
-                                                !isNumber(minValue)
+                                                isSymbol(minValue)
                                               }
                                               name={`specifications[${idx}].minValue`}
                                               size="sm"
@@ -455,17 +476,13 @@ export const OfferPage: React.FC = () => {
                                             <Input
                                               name={`specifications[${idx}].maxValue`}
                                               variant={
-                                                isArchived ||
-                                                !isEditMaxValue ||
-                                                !isNumber(maxValue)
+                                                isArchived || !isEditMaxValue
                                                   ? "blank"
                                                   : "light"
                                               }
                                               size="sm"
                                               disabled={
-                                                isArchived ||
-                                                !isEditMaxValue ||
-                                                !isNumber(maxValue)
+                                                isArchived || !isEditMaxValue
                                               }
                                               tooltipContent={
                                                 !isArchived &&
@@ -481,19 +498,16 @@ export const OfferPage: React.FC = () => {
                                         </>
                                       ) : (
                                         <Tooltip
-                                          tooltipContent={
-                                            GOST &&
-                                            `Остальные показатели качества должны соответствовать ${GOST}`
-                                          }
-                                          id={`Absent-${GOST}-${maxValue}-${minValue}`}
+                                          tooltipContent={description}
+                                          id={`${GOST}-${description}-${maxValue}-${minValue}`}
                                         >
                                           <Flex
                                             vAlignContent="center"
                                             hAlignContent="center"
                                           >
-                                            <Typography size="sm">
-                                              Не допускается...
-                                            </Typography>
+                                            <TruncatedText size="sm">
+                                              {truncateText(description, 14)}
+                                            </TruncatedText>
                                           </Flex>
                                         </Tooltip>
                                       )}
@@ -581,11 +595,13 @@ export const OfferPage: React.FC = () => {
   );
 };
 
+const TruncatedText = styled(Typography)`
+  overflow: hidden;
+  max-width: 120px;
+`;
+
 const Indicators = styled.div`
-  height: 700px;
-  overflow: scroll;
-  padding-right: 20px;
-  border-bottom: 1px solid #dad8d1;
+  margin-bottom: 160px;
 `;
 
 const MainFormWrapper = styled.div`
@@ -631,7 +647,7 @@ const ModalContent = styled.div`
 `;
 
 const FormInnerWrapper = styled(Flex)`
-  padding: 0 44px;
+  padding: 44px;
   justify-content: space-between;
 `;
 
