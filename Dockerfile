@@ -15,3 +15,4 @@ RUN mkdir -p /app/static/ && mkdir -p /app/media/ && mkdir -p /app/backend/media
 #COPY ./frontend/src/  /app/frontend/src/
 RUN chmod a+x ./entrypoint.sh ./wait-for
 RUN npm --prefix frontend install && npm --prefix run build
+COPY ./openssl.cnf /etc/openssl/
