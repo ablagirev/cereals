@@ -1,6 +1,11 @@
+from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
-from drf_writable_nested.serializers import WritableNestedModelSerializer, \
-    NestedCreateMixin
+from rest_framework.serializers import Serializer
+
+
+def inline_serializer(name: str, fields: dict[str, object]) -> type:
+    return type(name, (Serializer,), fields)
+
 
 from main.models import (
     Product,
@@ -14,7 +19,6 @@ from main.models import (
     TypeOfSpecification,
     UnitOfMeasurementOfSpecification,
 )
-
 
 
 class WarehouseSerializer(serializers.ModelSerializer):
@@ -114,3 +118,11 @@ class OfferPostSerializer(WritableNestedModelSerializer):
     period_of_export = serializers.IntegerField(read_only=True)
     # product = ProductSerializer(allow_null=True)
     # warehouse = WarehouseSerializer(allow_null=True)
+
+
+class LoginOut(serializers.Serializer):
+    token = serializers.CharField()
+
+
+class DetailOut(serializers.Serializer):
+    detail = serializers.CharField()

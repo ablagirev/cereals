@@ -1,17 +1,17 @@
-import base64
-
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import render
-from rest_framework import generics
+from drf_spectacular.utils import extend_schema
+from rest_framework import generics, serializers
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from django.http import HttpResponse
 from rest_framework.settings import api_settings
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from main.create_sign import create_sign
 from main.generation_doc import gen_doc
@@ -34,6 +34,9 @@ from main.serializer import (
     CompanySerializer,
     SpecificationsOfProductSerializer,
     OfferPostSerializer,
+    LoginOut,
+    inline_serializer,
+    DetailOut,
 )
 
 
@@ -80,14 +83,16 @@ class OfferListView(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
     def perform_create(self, serializer):
         serializer.save()
 
     def get_success_headers(self, data):
         try:
-            return {'Location': str(data[api_settings.URL_FIELD_NAME])}
+            return {"Location": str(data[api_settings.URL_FIELD_NAME])}
         except (TypeError, KeyError):
             return {}
 
@@ -175,7 +180,7 @@ class UploadDoc(APIView):
         return render(requset, template_name="upload_doc.html")
 
     def post(self, request):
-        request.data['name'] = request.data['file'].name
+        request.data["name"] = request.data["file"].name
         file_serializer = DocumentSerializer(data=request.data)
         if file_serializer.is_valid():
             file_serializer.save()
@@ -191,37 +196,31 @@ class UploadDoc(APIView):
 class LoginView(APIView):
     authentication_classes = [CsrfExemptSessionAuthentication]
     permission_classes = [AllowAny]
+    input_serializer = inline_serializer(
+        "LoginSerializer",
+        {
+            "username": serializers.CharField(required=True),
+            "password": serializers.CharField(required=True),
+        },
+    )
 
+    @extend_schema(responses={200: LoginOut, 403: DetailOut}, request=input_serializer)
     def post(self, request, format=None):
-        data = request.data
-
-        username = data.get("username", None)
-        password = data.get("password", None)
-
+        serializer = self.input_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(status=400, data=serializer.errors)
+        username = serializer.validated_data["username"]
+        password = serializer.validated_data["password"]
         user = authenticate(username=username, password=password)
-
         if user is not None:
             if user.is_active:
-                login(request, user)
-
-                data = {
-                    "type": "Basic",
-                    "token": base64.b64encode(
-                        "{0}:{1}".format(username, password).encode("ascii")
-                    ),
-                }
-
-                return Response(data=data, status=status.HTTP_200_OK)
-            else:
-                return Response(status=status.HTTP_403_FORBIDDEN)
-        else:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-
-class LogoutView(APIView):
-    def get(self, request):
-        logout(request)
-        return Response(status=status.HTTP_200_OK)
+                token = RefreshToken.for_user(user)
+                return Response(
+                    data={"token": str(token.access_token)}, status=status.HTTP_200_OK
+                )
+        return Response(
+            status=status.HTTP_403_FORBIDDEN, data={"detail": "Доступ запрещен"}
+        )
 
 
 class SpecificationsOfProductListView(generics.ListCreateAPIView):

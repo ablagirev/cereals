@@ -14,7 +14,6 @@ from main.views import (
     CompanyListView,
     CompanyUpdateDestroyView,
     LoginView,
-    LogoutView,
     ProductUpdateDestroyView,
     SpecificationsOfProductUpdateDestroyView,
     SpecificationsOfProductListView,
@@ -25,7 +24,6 @@ urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("auth/login/", LoginView.as_view(), name="login_view"),
-    path("auth/logout/", LogoutView.as_view(), name="logout_view"),
     # API Product
     path("product/", ProductListView.as_view(), name="product_view_set"),
     path(
