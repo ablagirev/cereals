@@ -28,6 +28,7 @@ export interface IProduct {
 
   export interface IProductSpecs {
         id: number,
+        description: string,
         minValue: number,
         isEditMinValue: boolean,
         maxValue: number,
