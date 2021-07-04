@@ -46,7 +46,6 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 
 class ProductListView(generics.ListCreateAPIView):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = [IsAuthenticated]
 
     queryset = Product.objects.all()
@@ -54,13 +53,11 @@ class ProductListView(generics.ListCreateAPIView):
 
 
 class ProductUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
 class ProductSpecificationsListView(generics.ListAPIView):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = [IsAuthenticated]
 
     queryset = Product.objects.all()
@@ -73,7 +70,6 @@ class ProductSpecificationsListView(generics.ListAPIView):
 
 
 class OfferListView(generics.ListCreateAPIView):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = [IsAuthenticated]
 
     queryset = Offer.objects.all()
@@ -102,7 +98,6 @@ class OfferListView(generics.ListCreateAPIView):
 
 
 class OfferUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
 
