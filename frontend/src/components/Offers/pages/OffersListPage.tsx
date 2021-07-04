@@ -11,7 +11,7 @@ import { Card } from "../../../uikit/Card/Card";
 import { Loader } from "../../../uikit/Loader";
 import { Table } from "../../../uikit/Table/Table";
 import { ITab } from "../../../uikit/Tabs/Tabs";
-import { EMPTY_CHAR } from "../../../utils/consts";
+import { BLANK_CHAR, EMPTY_CHAR } from "../../../utils/consts";
 import {
   formatDate,
   formatMoney,
@@ -70,7 +70,9 @@ export const OffersListPage: React.FC = () => {
 
           const periodOfShippment = `${formatDate(
             dateStartShipment
-          )} — ${formatDate(dateFinishShipment)} (${periodOfExport} д.)`;
+          )} ${BLANK_CHAR} ${formatDate(
+            dateFinishShipment
+          )} (${periodOfExport} д.)`;
 
           const dataList = [
             {
