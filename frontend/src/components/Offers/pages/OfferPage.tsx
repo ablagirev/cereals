@@ -15,7 +15,7 @@ import { IProductSpecs } from "../../../services/models";
 import { Button, Flex, Input, Spacer, Typography } from "../../../uikit";
 import { FormikField } from "../../../uikit/Field";
 import { Select } from "../../../uikit/Selects";
-import { EMPTY_CHAR } from "../../../utils/consts";
+import { BLANK_CHAR, EMPTY_CHAR } from "../../../utils/consts";
 import { IRouteParams } from "../../../utils/models";
 import { DatePickerField } from "../../../uikit/Datepicker/Datepicker";
 import Modal from "react-bootstrap/esm/Modal";
@@ -133,25 +133,6 @@ export const OfferPage: React.FC = () => {
       specifications: specificationsFormData,
     });
 
-  const getMinMaxValues = (minValue?: number, maxValue?: number) => {
-    if (maxValue && !minValue) {
-      return {
-        minValue: "≤",
-        maxValue,
-      };
-    } else if (!maxValue && minValue) {
-      return {
-        minValue: "≥",
-        maxValue: minValue,
-      };
-    } else {
-      return {
-        minValue,
-        maxValue,
-      };
-    }
-  };
-
   const initialValues = useMemo(() => {
     return {
       volume,
@@ -174,10 +155,9 @@ export const OfferPage: React.FC = () => {
           description,
         } = spec;
 
-        const minMaxValues = getMinMaxValues(minValue, maxValue);
-
         return {
-          ...minMaxValues,
+          maxValue: maxValue || BLANK_CHAR,
+          minValue: minValue || BLANK_CHAR,
           GOST,
           description,
           isEditMaxValue,
@@ -203,10 +183,6 @@ export const OfferPage: React.FC = () => {
       : value;
   };
 
-  const isSymbol = (val: string | number) =>
-    typeof val === "string" &&
-    (val.toString() === "≤" || val.toString() === "≥");
-
   const handleSubmitForm = (values: any) => {
     const { volume, cost, product, warehouse } = values || {};
 
@@ -224,8 +200,8 @@ export const OfferPage: React.FC = () => {
       values?.specifications?.map(({ maxValue, minValue, id: specId }: any) => {
         return {
           id: specId,
-          maxValue: parseInt(maxValue),
-          minValue: !isSymbol(minValue) ? parseInt(minValue) : undefined,
+          maxValue: parseInt(maxValue) || undefined,
+          minValue: parseInt(minValue) || undefined,
         };
       })
     );
@@ -439,21 +415,24 @@ export const OfferPage: React.FC = () => {
                                       {isSpecValuesEditable ? (
                                         <>
                                           <Flex column>
-                                            <Spacer
-                                              space={idx === 0 ? 30 : 10}
-                                            />
+                                            {idx === 0 && (
+                                              <Typography color="#918F88">
+                                                min
+                                              </Typography>
+                                            )}
+                                            <Spacer space={10} />
                                             <Input
                                               variant={
                                                 isArchived ||
                                                 !isEditMinValue ||
-                                                isSymbol(minValue)
+                                                !isNumber(minValue)
                                                   ? "blank"
                                                   : "light"
                                               }
                                               disabled={
                                                 isArchived ||
                                                 !isEditMinValue ||
-                                                isSymbol(minValue)
+                                                !isNumber(minValue)
                                               }
                                               name={`specifications[${idx}].minValue`}
                                               size="sm"
@@ -470,19 +449,26 @@ export const OfferPage: React.FC = () => {
                                           </Flex>
                                           <Spacer width={15} />
                                           <Flex column>
-                                            <Spacer
-                                              space={idx === 0 ? 30 : 10}
-                                            />
+                                            {idx === 0 && (
+                                              <Typography color="#918F88">
+                                                max
+                                              </Typography>
+                                            )}
+                                            <Spacer space={10} />
                                             <Input
                                               name={`specifications[${idx}].maxValue`}
                                               variant={
-                                                isArchived || !isEditMaxValue
+                                                isArchived ||
+                                                !isEditMaxValue ||
+                                                !isNumber(maxValue)
                                                   ? "blank"
                                                   : "light"
                                               }
                                               size="sm"
                                               disabled={
-                                                isArchived || !isEditMaxValue
+                                                isArchived ||
+                                                !isEditMaxValue ||
+                                                !isNumber(maxValue)
                                               }
                                               tooltipContent={
                                                 !isArchived &&
