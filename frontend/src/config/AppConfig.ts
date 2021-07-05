@@ -9,7 +9,7 @@ const apiNames = {
 };
 
 const buildEndpoint = (name: string) => {
-    return `/${name}`
+    return `/api/${name}`
 }
 
 /**
