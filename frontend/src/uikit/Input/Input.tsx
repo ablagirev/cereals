@@ -177,21 +177,7 @@ const StyledField = styled<any>(Field)`
   outline: none;
   background-color: ${({ variant }) => getBgColor(variant)};
   color: #333333;
-`;
-
-const StyledTooltip = styled(Tooltip)`
-  .tooltip-inner {
-    background: #f2efe5;
-    box-shadow: 0px 1px 5px rgba(104, 104, 104, 0.1);
-    border-radius: 6px;
-    color: #333333;
-    min-height: 30px;
-  }
-
-  .arrow::before,
-  .bs-tooltip-bottom .arrow::before {
-    display: none;
-  }
+  -webkit-box-shadow: 0 0 0 30px ${({ variant }) => getBgColor(variant)} inset !important;
 `;
 
 const StyledIMaskInput = styled<any>(IMaskInput)`
@@ -203,4 +189,5 @@ const StyledIMaskInput = styled<any>(IMaskInput)`
   outline: none;
   background-color: ${({ variant }) => getBgColor(variant)};
   color: #333333;
+  -webkit-box-shadow: 0 0 0 30px ${({ variant }) => getBgColor(variant)} inset !important;
 `;
