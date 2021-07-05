@@ -18,6 +18,7 @@ from main.views import (
     SpecificationsOfProductUpdateDestroyView,
     SpecificationsOfProductListView,
     ProductSpecificationsListView,
+    SettingsView
 )
 
 urlpatterns = [
@@ -73,5 +74,7 @@ urlpatterns = [
     # API CreateSign
     path("create_sign/", CreateSignView.as_view(), name="create_sign_view"),
     path("upload_doc/", UploadDoc.as_view(), name="upload_doc_view"),
+    # API Settings
+    path("settings/", SettingsView.as_view(), name="settings_view"),
     re_path(".*", TemplateView.as_view(template_name="index.html",), name="index",),
 ]
