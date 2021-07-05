@@ -18,6 +18,8 @@ from main.models import (
     NameOfSpecification,
     TypeOfSpecification,
     UnitOfMeasurementOfSpecification,
+    CoefficientOfDistance,
+    BaseRateForDelivery
 )
 
 
@@ -126,3 +128,23 @@ class LoginOut(serializers.Serializer):
 
 class DetailOut(serializers.Serializer):
     detail = serializers.CharField()
+
+
+class CoefficientOfDistanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CoefficientOfDistance
+        fields = "__all__"
+
+
+class BaseRateForDeliverySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BaseRateForDelivery
+        fields = "__all__"
+
+
+class SettingsSerializer(serializers.Serializer):
+    coefficients = CoefficientOfDistanceSerializer(many=True)
+    base_rate = BaseRateForDeliverySerializer()
+    warehouses = WarehouseSerializer(many=True)
+
+

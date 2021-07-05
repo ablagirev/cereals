@@ -165,7 +165,7 @@ class Warehouse(models.Model):
     address = models.CharField("Адрес", max_length=250, null=True)
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="owner"
-    )  # TODO
+    )
 
     def __str__(self):
         return self.title
@@ -297,3 +297,27 @@ class Deal(models.Model):
         "Дата окончания экспорта", blank=True, null=True
     )
     amount_of_NDS = models.IntegerField("Размер НДС", blank=True, null=True)
+
+
+class CoefficientOfDistance(models.Model):
+    min_distance = models.IntegerField(
+        "Дистанция от", blank=True, null=True
+    )
+    max_distance = models.IntegerField(
+        "Дистанция до", blank=True, null=True
+    )
+    coefficient = models.FloatField(
+        "Коэффициент умножения", blank=True, null=True
+    )
+
+    def __str__(self):
+        return 'От {0} до {1}'.format(self.min_distance, self.max_distance)
+
+
+class BaseRateForDelivery(models.Model):
+    cost_per_tonne = models.IntegerField(
+        "Стоимость за 1 тонну", blank=True, null=True
+    )
+
+    def __str__(self):
+        return '{}р за 1 тонну'.format(self.cost_per_tonne)
