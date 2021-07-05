@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.viewsets import GenericViewSet
 
 from main import models
 from main.serializer import (
@@ -16,7 +16,7 @@ from main.serializer import (
 
 
 @extend_schema(tags=["settings"])
-class SettingsViewSet(ViewSet):
+class SettingsViewSet(GenericViewSet):
     serializer_class = SettingsSerializer
     permission_classes = [IsAuthenticated]
 
@@ -32,12 +32,13 @@ class SettingsViewSet(ViewSet):
         return data
 
     @extend_schema(responses={200: SettingsSerializer, 403: DetailOut})
-    @action(methods=["GET"], detail=False)
+    @action(methods=["GET"], detail=False, url_path="")
     def get(self, request, *args, **kwargs):
         serializer = SettingsSerializer(self.get_data(request.user))
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+    @action(methods=["PATCH"], detail=False, url_path="")
     def patch(self, request, *args, **kwargs):
         base_rate = request.data.get("base_rate")
         if base_rate:
