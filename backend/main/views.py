@@ -243,10 +243,10 @@ class SpecificationsOfProductUpdateDestroyView(generics.RetrieveUpdateDestroyAPI
 class SettingsView(APIView):
     serializer_class = SettingsSerializer
 
-    def get_data(self):
+    def get_data(self, user):
         coefficients = CoefficientOfDistance.objects.all()
         base_rate = BaseRateForDelivery.objects.first()
-        warehouses = Warehouse.objects.filter(owner__is_staff=True)
+        warehouses = Warehouse.objects.filter(owner=user)
         data = {
             "coefficients": coefficients,
             "base_rate": base_rate,
@@ -255,7 +255,7 @@ class SettingsView(APIView):
         return data
 
     def get(self, request):
-        serializer = SettingsSerializer(self.get_data())
+        serializer = SettingsSerializer(self.get_data(request.user))
 
         return Response(
             data=serializer.data,
@@ -301,7 +301,7 @@ class SettingsView(APIView):
                 if serializer.is_valid():
                     serializer.save()
 
-        out_serializer = SettingsSerializer(self.get_data())
+        out_serializer = SettingsSerializer(self.get_data(request.user))
         return Response(
             data=out_serializer.data,
             status=status.HTTP_200_OK
