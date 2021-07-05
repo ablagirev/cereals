@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from main.consts import NDS
+from main.managers.offer import OfferManager
 
 
 class Company(models.Model):
@@ -99,7 +100,6 @@ class SpecificationsOfProduct(models.Model):
     )
     GOST = models.CharField("ГОСТ", max_length=250, blank=True, null=True)
 
-
     def __str__(self):
         return 'Спецификация "{0}"'.format(self.name_of_specification.name)
 
@@ -163,9 +163,7 @@ class Product(models.Model):
 class Warehouse(models.Model):
     title = models.CharField("Название", max_length=250, default="")
     address = models.CharField("Адрес", max_length=250, null=True)
-    owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="owner"
-    )
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
 
     def __str__(self):
         return self.title
@@ -192,6 +190,9 @@ class Offer(models.Model):
         "Дата окончания поставки", blank=True, null=True
     )
     cost = models.FloatField("Цена", blank=True, null=True)
+
+    objects = models.Manager()
+    service = OfferManager()
 
     @property
     def cost_with_NDS(self):
@@ -300,24 +301,16 @@ class Deal(models.Model):
 
 
 class CoefficientOfDistance(models.Model):
-    min_distance = models.IntegerField(
-        "Дистанция от", blank=True, null=True
-    )
-    max_distance = models.IntegerField(
-        "Дистанция до", blank=True, null=True
-    )
-    coefficient = models.FloatField(
-        "Коэффициент умножения", blank=True, null=True
-    )
+    min_distance = models.IntegerField("Дистанция от", blank=True, null=True)
+    max_distance = models.IntegerField("Дистанция до", blank=True, null=True)
+    coefficient = models.FloatField("Коэффициент умножения", blank=True, null=True)
 
     def __str__(self):
-        return 'От {0} до {1}'.format(self.min_distance, self.max_distance)
+        return "От {0} до {1}".format(self.min_distance, self.max_distance)
 
 
 class BaseRateForDelivery(models.Model):
-    cost_per_tonne = models.IntegerField(
-        "Стоимость за 1 тонну", blank=True, null=True
-    )
+    cost_per_tonne = models.IntegerField("Стоимость за 1 тонну", blank=True, null=True)
 
     def __str__(self):
-        return '{}р за 1 тонну'.format(self.cost_per_tonne)
+        return "{}р за 1 тонну".format(self.cost_per_tonne)

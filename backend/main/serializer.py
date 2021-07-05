@@ -19,7 +19,7 @@ from main.models import (
     TypeOfSpecification,
     UnitOfMeasurementOfSpecification,
     CoefficientOfDistance,
-    BaseRateForDelivery
+    BaseRateForDelivery,
 )
 
 
@@ -146,5 +146,3 @@ class SettingsSerializer(serializers.Serializer):
     coefficients = CoefficientOfDistanceSerializer(many=True)
     base_rate = BaseRateForDeliverySerializer()
     warehouses = WarehouseSerializer(many=True)
-
-
