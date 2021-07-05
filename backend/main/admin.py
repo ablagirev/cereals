@@ -5,6 +5,8 @@ from main.models import *
 
 myModels = [Company, NameOfSpecification, TypeOfSpecification,
             UnitOfMeasurementOfSpecification, SpecificationsOfProduct,
-            Product, Warehouse, Offer, Document, Deal]
+            Product, Warehouse, Offer, Document, Deal, CoefficientOfDistance,
+            BaseRateForDelivery
+            ]
 
 admin.site.register(myModels)

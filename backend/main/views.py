@@ -11,6 +11,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
+from rest_framework.mixins import UpdateModelMixin
+from rest_framework.generics import GenericAPIView, UpdateAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from main.create_sign import create_sign
@@ -23,6 +25,8 @@ from main.models import (
     Document,
     Company,
     SpecificationsOfProduct,
+    CoefficientOfDistance,
+    BaseRateForDelivery
 )
 from main.send_doc_to_edm import send_doc
 from main.serializer import (
@@ -37,6 +41,9 @@ from main.serializer import (
     LoginOut,
     inline_serializer,
     DetailOut,
+    SettingsSerializer,
+    BaseRateForDeliverySerializer,
+    CoefficientOfDistanceSerializer,
 )
 
 
@@ -176,8 +183,8 @@ class UploadDoc(APIView):
     authentication_classes = [CsrfExemptSessionAuthentication]
     parser_classes = (MultiPartParser, FormParser)
 
-    def get(self, requset):
-        return render(requset, template_name="upload_doc.html")
+    def get(self, request):
+        return render(request, template_name="upload_doc.html")
 
     def post(self, request):
         request.data["name"] = request.data["file"].name
@@ -231,3 +238,71 @@ class SpecificationsOfProductListView(generics.ListCreateAPIView):
 class SpecificationsOfProductUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SpecificationsOfProduct.objects.all()
     serializer_class = SpecificationsOfProductSerializer
+
+
+class SettingsView(APIView):
+    serializer_class = SettingsSerializer
+
+    def get_data(self):
+        coefficients = CoefficientOfDistance.objects.all()
+        base_rate = BaseRateForDelivery.objects.first()
+        warehouses = Warehouse.objects.filter(owner__is_staff=True)
+        data = {
+            "coefficients": coefficients,
+            "base_rate": base_rate,
+            "warehouses": warehouses,
+        }
+        return data
+
+    def get(self, request):
+        serializer = SettingsSerializer(self.get_data())
+
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_200_OK
+        )
+
+    def patch(self, request):
+        base_rate = request.data.get('base_rate')
+        if base_rate:
+            obj_base_rate = BaseRateForDelivery.objects.get(
+                id=base_rate.get('id')
+            )
+            serializer = BaseRateForDeliverySerializer(
+                obj_base_rate,
+                data=base_rate
+            )
+            if serializer.is_valid():
+                serializer.save()
+
+        coefficients = request.data.get('coefficients')
+        if coefficients:
+            for coefficient in coefficients:
+                obj_coefficient = CoefficientOfDistance.objects.get(
+                    id=coefficient.get('id')
+                )
+                serializer = CoefficientOfDistanceSerializer(
+                    obj_coefficient,
+                    data=coefficient
+                )
+                if serializer.is_valid():
+                    serializer.save()
+
+        warehouses = request.data.get('warehouses')
+        if warehouses:
+            for warehouse in warehouses:
+                obj_warehouses = Warehouse.objects.get(
+                    id=warehouse.get('id')
+                )
+                serializer = WarehouseSerializer(
+                    obj_warehouses,
+                    data=warehouse
+                )
+                if serializer.is_valid():
+                    serializer.save()
+
+        out_serializer = SettingsSerializer(self.get_data())
+        return Response(
+            data=out_serializer.data,
+            status=status.HTTP_200_OK
+        )
