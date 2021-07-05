@@ -22,10 +22,12 @@ import Modal from "react-bootstrap/esm/Modal";
 import { Loader } from "../../../uikit/Loader";
 import isNumber from "lodash-es/isNumber";
 import { Tooltip } from "../../../uikit/Tooltip";
+import { PushContext } from "../../../context";
 
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
   const history = useHistory();
+  const pushContext = React.useContext(PushContext);
   const {
     data: productsData,
     isFetching: isProductsFetching,
@@ -288,9 +290,17 @@ export const OfferPage: React.FC = () => {
   useEffect(() => {
     const isFormSuccess =
       isProductEditSuccess && (isCreateSuccess || isOfferEditSuccess);
-    (isFormSuccess || isOfferDeleteSuccess) &&
-      refetchProducts() &&
+
+    if ((isFormSuccess || isOfferDeleteSuccess) && refetchProducts()) {
+      pushContext.setPushContext({
+        text: isCreateSuccess
+          ? "Предложене успешно создано"
+          : isOfferEditSuccess
+          ? "Предложение успешно отредактировано"
+          : "Предложение успешно удалено",
+      });
       history.push(generatePath(routes.offers.list.path));
+    }
   }, [
     isOfferEditSuccess,
     isCreateSuccess,
@@ -319,7 +329,7 @@ export const OfferPage: React.FC = () => {
         initialValues={initialValues}
         onSubmit={handleSubmitForm}
       >
-        {({ values, handleSubmit }: any) => {
+        {({ handleSubmit }: any) => {
           return (
             <>
               <Form>
