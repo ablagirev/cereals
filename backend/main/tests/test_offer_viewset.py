@@ -18,6 +18,7 @@ def test_offer_creating(client, admin_token, products):
         reverse("offer-list"),
         content_type="application/json",
         data=json.dumps({"cost": 100, "volume": 10}),
+        HTTP_AUTHORIZATION=f"Bearer {admin_token}",
     )
     assert response.status_code == 201
     assert response.json()
@@ -33,6 +34,7 @@ def test_offer_creating(client, admin_token, products):
                 "product": {"id": models.Product.objects.first().id},
             }
         ),
+        HTTP_AUTHORIZATION=f"Bearer {admin_token}",
     )
     assert response.status_code == 201
     assert response.json()
@@ -40,11 +42,12 @@ def test_offer_creating(client, admin_token, products):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_offer_patching(client, offer: models.Offer, products):
+def test_offer_patching(client, offer: models.Offer, products, admin_token):
     response = client.patch(
         reverse("offer-detail", kwargs={"pk": offer.id}),
         content_type="application/json",
         data=json.dumps({"product": {"id": models.Product.objects.first().id}}),
+        HTTP_AUTHORIZATION=f"Bearer {admin_token}",
     )
     assert response.status_code == 200
     assert response.json()
@@ -54,5 +57,7 @@ def test_offer_patching(client, offer: models.Offer, products):
 
 @pytest.mark.django_db(transaction=True)
 def test_offer_grouped(client, offer_groping_case, admin_token):
-    res = client.get(reverse("offer-grouped"))
+    res = client.get(
+        reverse("offer-grouped"), HTTP_AUTHORIZATION=f"Bearer {admin_token}",
+    )
     assert res.status_code == 200
