@@ -1,6 +1,6 @@
 export interface IOffer {
     cost: number;
-    costWith_NDS: number;
+    costWithNds: number;
     createdAt: string;
     creator: number;
     dateFinishShipment: string;
@@ -10,6 +10,9 @@ export interface IOffer {
     periodOfExport: number;
     product: {
       id: number;
+      harvestType: string;
+      harvestYear: string;
+      title: string;
     };
     status: string;
     title: string;

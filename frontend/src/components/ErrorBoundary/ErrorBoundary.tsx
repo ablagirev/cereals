@@ -7,7 +7,7 @@ export const ErrorBoundary: React.FC = ({ children }) => {
   return (
     <>
       {didCatch ? (
-        <p>An error has been catched: {error.message}</p> //TODO: воткнуть пуш
+        <p>An error has been catched: {error.message}</p>
       ) : (
         <ErrBoudary>{children}</ErrBoudary>
       )}
