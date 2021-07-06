@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -167,6 +167,7 @@ class Warehouse(models.Model):
     title = models.CharField("Название", max_length=250, default="")
     address = models.CharField("Адрес", max_length=250, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
+    distance = models.IntegerField("Расстояние", blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -219,7 +220,7 @@ class Offer(models.Model):
     @property
     def days_till_end(self):
         if self.date_finish_shipment:
-            res = datetime.now() - self.date_finish_shipment
+            res = datetime.now(timezone.utc) - self.date_finish_shipment
             return res.days if res.days >= 0 else 0
         return 0
 
