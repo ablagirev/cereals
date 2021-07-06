@@ -27,6 +27,8 @@ certificatesResolvers:
     acme:
       email: a.arkhipov@skipp.pro
       storage: /etc/traefik/acme.json
-      httpChallenge:
-        # used during the challenge
-        entryPoint: web
+#      httpChallenge:
+#        # used during the challenge
+#        entryPoint: web
+      tlsChallenge: {}
+
