@@ -224,7 +224,10 @@ class Offer(models.Model):
         return 0
 
     def __str__(self):
-        return self.title
+        if self.title:
+            return self.title
+        else:
+            return str(self.id)
 
 
 class Notification(models.Model):
