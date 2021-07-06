@@ -23,6 +23,7 @@ import { Loader } from "../../../uikit/Loader";
 import isNumber from "lodash-es/isNumber";
 import { Tooltip } from "../../../uikit/Tooltip";
 import { PushContext } from "../../../context";
+import * as Yup from "yup";
 
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
@@ -135,50 +136,6 @@ export const OfferPage: React.FC = () => {
       specifications: specificationsFormData,
     });
 
-  const initialValues = useMemo(() => {
-    return {
-      volume,
-      cost, // TODO: уточнить должно ли отправляться с НДС или без
-      product: getProduct(actualProductId),
-      warehouse:
-        warehouseOptions?.find(
-          (option) => option?.value === offerWarehouseId
-        ) || warehouseOptions?.[0],
-      specifications: productSpecifications?.map((spec) => {
-        const {
-          maxValue,
-          minValue,
-          unitOfMeasurement,
-          nameOfSpecification,
-          id: specId,
-          GOST,
-          isEditMaxValue,
-          isEditMinValue,
-          description,
-        } = spec;
-
-        return {
-          maxValue: maxValue || BLANK_CHAR,
-          minValue: minValue || BLANK_CHAR,
-          GOST,
-          description,
-          isEditMaxValue,
-          isEditMinValue,
-          nameOfSpecification: unitOfMeasurement?.unit
-            ? `${nameOfSpecification?.name}, ${unitOfMeasurement?.unit}`
-            : nameOfSpecification?.name || EMPTY_CHAR,
-          id: specId || EMPTY_CHAR,
-        };
-      }),
-    };
-  }, [
-    offerData,
-    warehouseOptions,
-    productSpecifications,
-    actualProductId,
-    productOptions,
-  ]);
-
   const convertToNumber = (value: any) => {
     return typeof value === "string"
       ? Number(value?.split(" ").join(""))
@@ -280,7 +237,7 @@ export const OfferPage: React.FC = () => {
   };
 
   useEffect(() => {
-    isEdit ? refetchOfferEdit() : refetchOfferCreate();
+    offerFormData && (isEdit ? refetchOfferEdit() : refetchOfferCreate());
   }, [offerFormData]);
 
   useEffect(() => {
@@ -313,6 +270,55 @@ export const OfferPage: React.FC = () => {
     specs && setProductSpecifications(specs);
   }, [actualProductId, productsData]);
 
+  const offerSchema = Yup.object().shape({
+    cost: Yup.number().required("Поле обязательное"),
+    volume: Yup.number().required("Поле обязательное"),
+  });
+
+  const initialValues = useMemo(() => {
+    return {
+      volume,
+      cost, // TODO: уточнить должно ли отправляться с НДС или без
+      product: getProduct(actualProductId),
+      warehouse:
+        warehouseOptions?.find(
+          (option) => option?.value === offerWarehouseId
+        ) || warehouseOptions?.[0],
+      specifications: productSpecifications?.map((spec) => {
+        const {
+          maxValue,
+          minValue,
+          unitOfMeasurement,
+          nameOfSpecification,
+          id: specId,
+          GOST,
+          isEditMaxValue,
+          isEditMinValue,
+          description,
+        } = spec;
+
+        return {
+          maxValue: maxValue || BLANK_CHAR,
+          minValue: minValue || BLANK_CHAR,
+          GOST,
+          description,
+          isEditMaxValue,
+          isEditMinValue,
+          nameOfSpecification: unitOfMeasurement?.unit
+            ? `${nameOfSpecification?.name}, ${unitOfMeasurement?.unit}`
+            : nameOfSpecification?.name || EMPTY_CHAR,
+          id: specId || EMPTY_CHAR,
+        };
+      }),
+    };
+  }, [
+    offerData,
+    warehouseOptions,
+    productSpecifications,
+    actualProductId,
+    productOptions,
+  ]);
+
   return isFetching ? (
     <Loader />
   ) : (
@@ -328,8 +334,12 @@ export const OfferPage: React.FC = () => {
         enableReinitialize
         initialValues={initialValues}
         onSubmit={handleSubmitForm}
+        validationSchema={offerSchema}
+        validateOnChange={false}
+        validateOnBlur={false}
       >
-        {({ handleSubmit }: any) => {
+        {({ handleSubmit, errors }: any) => {
+          const { cost: costError, volume: volumeError } = errors;
           return (
             <>
               <Form>
@@ -352,6 +362,7 @@ export const OfferPage: React.FC = () => {
                         variant="light"
                         type="masked"
                         disabled={isArchived}
+                        isError={!!costError}
                       />
                     </FormikField>
                     <FormikField name="volume" title="Объем, т">
@@ -360,6 +371,7 @@ export const OfferPage: React.FC = () => {
                         variant="light"
                         type="masked"
                         disabled={isArchived}
+                        isError={!!volumeError}
                       />
                     </FormikField>
                     <FormikField name="periodShipment" title="Период поставки">

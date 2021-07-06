@@ -2,8 +2,13 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Toast } from "../uikit/Toast";
 
+interface INewPushContext {
+  text: string;
+  type?: string;
+}
+
 type IPushContext = {
-  textList: string[];
+  textList: INewPushContext[];
 };
 
 // TODO: избавиться от any ниже в пуш контексте и использовать интерфейс
@@ -21,12 +26,12 @@ export const PushContextProvider: React.FC = ({ children }) => {
     textList: [],
   });
 
-  const updatePushContext = (newContext: { text: string }) => {
-    const { text } = newContext;
+  const updatePushContext = (newContext: INewPushContext) => {
+    const { text, type } = newContext;
     setPushContext((prevContext) => {
       const { textList } = prevContext;
       return {
-        textList: [...textList, text],
+        textList: [...textList, { text, type }],
       };
     });
   };
@@ -40,8 +45,8 @@ export const PushContextProvider: React.FC = ({ children }) => {
     >
       <ToastsWrapper>
         <Toasts>
-          {pushContext?.textList?.map((text, idx) => {
-            return <Toast key={`${idx}-${text}`} text={text} />;
+          {pushContext?.textList?.map(({ text, type }, idx) => {
+            return <Toast key={`${idx}-${text}`} text={text} type={type} />;
           })}
         </Toasts>
       </ToastsWrapper>
@@ -59,4 +64,5 @@ const Toasts = styled.div`
 
 const ToastsWrapper = styled.div`
   position: relative;
+  z-index: 9999;
 `;
