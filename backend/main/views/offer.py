@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import serializers, status
 from rest_framework.decorators import action
@@ -10,13 +12,16 @@ from .mixins import UpdateViewSetMixin
 from .. import models
 from .. import serializer
 from ..exceptions import UnprocessableEntityError
+from ..querysets.offer import GroupedOffers
 from ..serializer import inline_serializer, DetailOut
+import itertools
 
 
 @extend_schema(tags=["offer"])
 class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
     queryset = models.Offer.objects.all()
     serializer_class = serializer.OfferSerializer
+    grouped_serializer = serializer.GroupedOffers
     partial_update_output_serializer = serializer_class
     partial_update_serializer = inline_serializer(
         "OfferPartialUpdate",
@@ -98,4 +103,13 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
         return Response(
             data=self.serializer_class(instance=offer).data,
             status=status.HTTP_201_CREATED,
+        )
+
+    @action(methods=["GET"], detail=False)
+    def grouped(self, request: Request):
+        offers_iter: Iterable[
+            GroupedOffers
+        ] = models.Offer.objects.iterator_grouped_by_harvest()
+        return Response(
+            data=self.grouped_serializer(instance=offers_iter, many=True).data
         )

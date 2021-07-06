@@ -111,17 +111,6 @@ class OfferSerializer(WritableNestedModelSerializer):
     warehouse = WarehouseSerializer(allow_null=True)
 
 
-class OfferPostSerializer(WritableNestedModelSerializer):
-    class Meta:
-        model = Offer
-        fields = "__all__"
-
-    cost_with_NDS = serializers.IntegerField(read_only=True)
-    period_of_export = serializers.IntegerField(read_only=True)
-    # product = ProductSerializer(allow_null=True)
-    # warehouse = WarehouseSerializer(allow_null=True)
-
-
 class LoginOut(serializers.Serializer):
     token = serializers.CharField()
 
@@ -146,3 +135,16 @@ class SettingsSerializer(serializers.Serializer):
     coefficients = CoefficientOfDistanceSerializer(many=True)
     base_rate = BaseRateForDeliverySerializer()
     warehouses = WarehouseSerializer(many=True)
+
+
+class GroupOfferItem(serializers.ModelSerializer):
+    days_till_end = serializers.IntegerField()
+
+    class Meta:
+        model = Offer
+        fields = ("volume", "description", "days_till_end")
+
+
+class GroupedOffers(serializers.Serializer):
+    name = serializers.CharField()
+    offers = GroupOfferItem(many=True)
