@@ -271,8 +271,8 @@ export const OfferPage: React.FC = () => {
   }, [actualProductId, productsData]);
 
   const offerSchema = Yup.object().shape({
-    cost: Yup.number().required("Поле обязательное"),
-    volume: Yup.number().required("Поле обязательное"),
+    cost: Yup.number().min(1).required("Поле обязательное"),
+    volume: Yup.number().min(1).required("Поле обязательное"),
   });
 
   const initialValues = useMemo(() => {
