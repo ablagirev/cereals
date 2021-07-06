@@ -3,7 +3,6 @@ import { EMPTY_CHAR } from "../utils/consts";
 import { STORAGE_TOKEN_NAME, STORAGE_TOKEN_TYPE } from "./consts";
 import { daylesfordService } from "../services";
 import { useQuery } from "react-query";
-import { useAuthContext } from "./useAuthContext";
 
 const LOGIN_DATA_QUERY_KEY = "AUTH_DATA_QUERY_KEY";
 const LOGOUT_DATA_QUERY_KEY = "AUTH_DATA_QUERY_KEY";

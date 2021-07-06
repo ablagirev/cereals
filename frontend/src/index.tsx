@@ -13,6 +13,7 @@ import { AuthContext } from "./context";
 import { BrowserRouter } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Loader } from "./uikit/Loader";
+import { PushContextProvider } from "./context";
 
 /**
  * Инициализация кеша react-query.
@@ -35,9 +36,11 @@ const App: React.FC = () => {
             value={{ token, tokenType, login, logout, isAuthenticated }}
           >
             <BrowserRouter>
-              <Layout navigation={navigation}>
-                <Routes />
-              </Layout>
+              <PushContextProvider>
+                <Layout navigation={navigation}>
+                  <Routes />
+                </Layout>
+              </PushContextProvider>
             </BrowserRouter>
           </AuthContext.Provider>
         ) : (
