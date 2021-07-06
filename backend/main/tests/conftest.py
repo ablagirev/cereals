@@ -22,3 +22,15 @@ def admin_token(admin_user) -> str:
 def products():
     baker.make("main.Product")
     baker.make("main.Product")
+
+
+@pytest.fixture()
+def offer_groping_case():
+    one_p = baker.make("Product", harvest_type="1")
+    two_p = baker.make("Product", harvest_type="1")
+    three_p = baker.make("Product", harvest_type="2")
+    four_p = baker.make("Product", harvest_type="2")
+    baker.make("Offer", product_id=one_p.id)
+    baker.make("Offer", product_id=two_p.id)
+    baker.make("Offer", product_id=three_p.id)
+    baker.make("Offer", product_id=four_p.id)

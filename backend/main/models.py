@@ -1,8 +1,11 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 
 from main.consts import NDS
 from main.managers.offer import OfferManager
+from main.querysets.offer import OfferQuerySet
 
 
 class Company(models.Model):
@@ -191,7 +194,7 @@ class Offer(models.Model):
     )
     cost = models.FloatField("Цена", blank=True, null=True)
 
-    objects = models.Manager()
+    objects = OfferQuerySet.as_manager()
     service = OfferManager()
 
     @property
@@ -212,6 +215,13 @@ class Offer(models.Model):
             return delta.days
         else:
             return 0
+
+    @property
+    def days_till_end(self):
+        if self.date_finish_shipment:
+            res = datetime.now() - self.date_finish_shipment
+            return res.days if res.days >= 0 else 0
+        return 0
 
     def __str__(self):
         return self.title
@@ -243,14 +253,11 @@ class CarsForShipment(models.Model):
     company = models.CharField(max_length=250)
     shipment_fact = models.IntegerField()
 
-    pass
-
 
 class Shipment(models.Model):
     status = models.CharField(max_length=250)
     documents = models.ManyToManyField(Document)
     cars = models.ManyToManyField(CarsForShipment)
-    pass
 
 
 class Сontrol(models.Model):

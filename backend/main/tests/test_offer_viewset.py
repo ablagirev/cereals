@@ -50,3 +50,9 @@ def test_offer_patching(client, offer: models.Offer, products):
     assert response.json()
     assert models.Offer.objects.count() == 1
     assert models.Offer.objects.first().product_id == models.Product.objects.first().id
+
+
+@pytest.mark.django_db(transaction=True)
+def test_offer_grouped(client, offer_groping_case, admin_token):
+    res = client.get(reverse("offer-grouped"))
+    assert res.status_code == 200
