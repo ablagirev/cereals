@@ -1,7 +1,11 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 
 from main.consts import NDS
+from main.managers.offer import OfferManager
+from main.querysets.offer import OfferQuerySet
 
 
 class Company(models.Model):
@@ -48,13 +52,22 @@ class Company(models.Model):
 class NameOfSpecification(models.Model):
     name = models.CharField("Название характеристики", max_length=250)
 
+    def __str__(self):
+        return self.name
+
 
 class TypeOfSpecification(models.Model):
     type = models.CharField("Тип поля", max_length=250)
 
+    def __str__(self):
+        return self.type
+
 
 class UnitOfMeasurementOfSpecification(models.Model):
     unit = models.CharField("Единица измерения", max_length=250)
+
+    def __str__(self):
+        return self.unit
 
 
 class SpecificationsOfProduct(models.Model):
@@ -79,6 +92,7 @@ class SpecificationsOfProduct(models.Model):
         blank=True,
         null=True,
     )
+    description = models.TextField("Описание", blank=True, null=True)
     min_value = models.IntegerField("Минимальное значение", blank=True, null=True)
     is_edit_min_value = models.BooleanField(
         "Редактируемое минимальное значение?", blank=True, null=True
@@ -87,14 +101,17 @@ class SpecificationsOfProduct(models.Model):
     is_edit_max_value = models.BooleanField(
         "Редактируемое максимальное значение?", blank=True, null=True
     )
-    GOST = models.CharField("Тип поля", max_length=250, blank=True, null=True)
+    GOST = models.CharField("ГОСТ", max_length=250, blank=True, null=True)
+
+    def __str__(self):
+        return 'Спецификация "{0}"'.format(self.name_of_specification.name)
 
 
 class Product(models.Model):
-    title = models.CharField("Название", max_length=250)
+    title = models.CharField("Название", max_length=250, null=True)
     description = models.TextField("Описание", blank=True, null=True)
     specifications = models.ManyToManyField(
-        SpecificationsOfProduct, blank=True, related_name="specifications"
+        SpecificationsOfProduct, blank=True, related_name="specifications", null=True
     )
     # amount_of_gluten = models.IntegerField('Количество клейковины', blank=True, null=True)
     # vitreous = models.IntegerField('Стекловидность', blank=True, null=True)
@@ -148,10 +165,8 @@ class Product(models.Model):
 
 class Warehouse(models.Model):
     title = models.CharField("Название", max_length=250, default="")
-    address = models.CharField("Адрес", max_length=250)
-    owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="owner"
-    )  # TODO
+    address = models.CharField("Адрес", max_length=250, null=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
 
     def __str__(self):
         return self.title
@@ -179,6 +194,9 @@ class Offer(models.Model):
     )
     cost = models.FloatField("Цена", blank=True, null=True)
 
+    objects = OfferQuerySet.as_manager()
+    service = OfferManager()
+
     @property
     def cost_with_NDS(self):
         if self.cost:
@@ -197,6 +215,13 @@ class Offer(models.Model):
             return delta.days
         else:
             return 0
+
+    @property
+    def days_till_end(self):
+        if self.date_finish_shipment:
+            res = datetime.now() - self.date_finish_shipment
+            return res.days if res.days >= 0 else 0
+        return 0
 
     def __str__(self):
         return self.title
@@ -228,14 +253,11 @@ class CarsForShipment(models.Model):
     company = models.CharField(max_length=250)
     shipment_fact = models.IntegerField()
 
-    pass
-
 
 class Shipment(models.Model):
     status = models.CharField(max_length=250)
     documents = models.ManyToManyField(Document)
     cars = models.ManyToManyField(CarsForShipment)
-    pass
 
 
 class Сontrol(models.Model):
@@ -283,3 +305,19 @@ class Deal(models.Model):
         "Дата окончания экспорта", blank=True, null=True
     )
     amount_of_NDS = models.IntegerField("Размер НДС", blank=True, null=True)
+
+
+class CoefficientOfDistance(models.Model):
+    min_distance = models.IntegerField("Дистанция от", blank=True, null=True)
+    max_distance = models.IntegerField("Дистанция до", blank=True, null=True)
+    coefficient = models.FloatField("Коэффициент умножения", blank=True, null=True)
+
+    def __str__(self):
+        return "От {0} до {1}".format(self.min_distance, self.max_distance)
+
+
+class BaseRateForDelivery(models.Model):
+    cost_per_tonne = models.IntegerField("Стоимость за 1 тонну", blank=True, null=True)
+
+    def __str__(self):
+        return "{}р за 1 тонну".format(self.cost_per_tonne)

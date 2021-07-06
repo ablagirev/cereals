@@ -18,7 +18,11 @@ def create_sign():
     create_sing.send_file_to_cloud()
     create_sing.init_sign()
     create_sing.init_confirm_operation()
-    create_sing.get_document_id()
+    while True:
+        print("Iter")
+        if create_sing.get_document_id():
+            break
+    # create_sing.get_document_id()
     create_sing.get_document()
 
 
@@ -27,7 +31,8 @@ class CreateSign:
         self.user = user
         self.document = document
         self.auth = "Basic dGVzdGFwaUB0ZXN0LmFwaTpFd08yYXJ6eg=="
-        self.user_req_id = "24bfe02c-1cb7-4221-bbc7-8eacac1c2802"
+        # self.user_req_id = "24bfe02c-1cb7-4221-bbc7-8eacac1c2802"
+        self.user_req_id = "12d0cd99-6ecf-4196-a163-5db0c5ca5197"
         self.send_doc_id = None
         self.operation_id = None
         self.signed_document_id = None
@@ -44,7 +49,7 @@ class CreateSign:
         headers = {
             "Authorization": self.auth,
         }
-        req = requests.get(url, headers=headers)
+        req = requests.get(url, headers=headers, verify=False)
         self.user_req_id = req.json()[0]["RequestId"]
         # Возвращаем ИД запроса пользователя
         return self.user_req_id
@@ -61,7 +66,7 @@ class CreateSign:
 
         content_file = read_byte_file(self.document.file.path)
 
-        req = requests.post(url, headers=headers, data=content_file)
+        req = requests.post(url, headers=headers, data=content_file, verify=False)
         self.send_doc_id = req.json()
         # Возвращаем ИД загрузки документа в облако
         return self.send_doc_id
@@ -78,7 +83,7 @@ class CreateSign:
             "Authorization": self.auth,
         }
 
-        req = requests.post(url, headers=headers, json=data)
+        req = requests.post(url, headers=headers, json=data, verify=False)
         self.operation_id = req.json()["Id"]
         # Возвращаем ИД операции подписания
         return self.operation_id
@@ -92,13 +97,37 @@ class CreateSign:
             + self.operation_id
         )
 
+
         headers = {
             "Content-Type": "application/json-patch+json",
             "Authorization": self.auth,
         }
 
-        requests.post(url, headers=headers)
+        requests.post(url, headers=headers, verify=False)
         # Ничего не возвращает
+    #
+    # def check_status_create_sign(self):
+    #     url = (
+    #         URL_FOR_SIGN
+    #         + API_PATH
+    #         + self.user_req_id
+    #         + "/dss/operation/"
+    #         + self.operation_id
+    #     )
+    #
+    #
+    #     headers = {
+    #         "Content-Type": "application/json-patch+json",
+    #         "Authorization": self.auth,
+    #     }
+    #
+    #     req = requests.get(url, headers=headers)
+    #     if req.json().get('Status') == "Completed":
+    #         import time
+    #         time.sleep(2)
+    #         return True
+    #     else:
+    #         return False
 
     def get_document_id(self):
 
@@ -114,10 +143,14 @@ class CreateSign:
             "Authorization": self.auth,
         }
 
-        req = requests.get(url, headers=headers)
-        self.signed_document_id = req.json()["Result"]["ProcessedDocuments"][0]["RefId"]
+        req = requests.get(url, headers=headers, verify=False)
+        if req.json().get('Status') == "Completed":
+            self.signed_document_id = req.json()["Result"]["ProcessedDocuments"][0]["RefId"]
+            return True
+        else:
+            return False
         # Возвращаем ИД подписанного документа
-        return self.signed_document_id
+        # return self.signed_document_id
 
     def get_document(self):
         url = (
@@ -132,7 +165,7 @@ class CreateSign:
             "Authorization": self.auth,
         }
 
-        req = requests.get(url, headers=headers)
+        req = requests.get(url, headers=headers, verify=False)
 
         save_file(req.content, self.path + self.document.name + self.endswith_sign)
         # self.document.sign_file = self.document.file.url + self.endswith_sign

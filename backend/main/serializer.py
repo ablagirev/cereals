@@ -1,4 +1,11 @@
+from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
+from rest_framework.serializers import Serializer
+
+
+def inline_serializer(name: str, fields: dict[str, object]) -> type:
+    return type(name, (Serializer,), fields)
+
 
 from main.models import (
     Product,
@@ -11,16 +18,9 @@ from main.models import (
     NameOfSpecification,
     TypeOfSpecification,
     UnitOfMeasurementOfSpecification,
+    CoefficientOfDistance,
+    BaseRateForDelivery,
 )
-
-
-class OfferSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Offer
-        fields = "__all__"
-
-    cost_with_NDS = serializers.IntegerField(read_only=True)
-    period_of_export = serializers.IntegerField(read_only=True)
 
 
 class WarehouseSerializer(serializers.ModelSerializer):
@@ -66,7 +66,7 @@ class UnitOfMeasurementOfSpecificationSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class SpecificationsOfProductSerializer(serializers.ModelSerializer):
+class SpecificationsOfProductSerializer(WritableNestedModelSerializer):
     class Meta:
         model = SpecificationsOfProduct
         fields = "__all__"
@@ -76,25 +76,81 @@ class SpecificationsOfProductSerializer(serializers.ModelSerializer):
     unit_of_measurement = UnitOfMeasurementOfSpecificationSerializer()
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(WritableNestedModelSerializer):
     specifications = SpecificationsOfProductSerializer(many=True)
 
     class Meta:
         model = Product
         fields = "__all__"
 
-    def update(self, instance, validated_data):
-        specifications_data = validated_data.pop("specifications")
+    # def update(self, instance, validated_data):
+    #     specifications_data = validated_data.pop("specifications")
+    #
+    #     instance.title = validated_data.get("title")
+    #     instance.description = validated_data.get("description")
+    #     instance.harvest_year = validated_data.get("harvest_year")
+    #     instance.harvest_type = validated_data.get("harvest_type")
+    #
+    #     for index, specification in enumerate(instance.specifications.all()):
+    #         specification.min_value = specifications_data[index].get("min_value")
+    #         specification.max_value = specifications_data[index].get("max_value")
+    #         specification.save()
+    #
+    #     instance.save()
+    #     return instance
 
-        instance.title = validated_data.get("title")
-        instance.description = validated_data.get("description")
-        instance.harvest_year = validated_data.get("harvest_year")
-        instance.harvest_type = validated_data.get("harvest_type")
 
-        for index, specification in enumerate(instance.specifications.all()):
-            specification.min_value = specifications_data[index].get("min_value")
-            specification.max_value = specifications_data[index].get("max_value")
-            specification.save()
+class OfferSerializer(WritableNestedModelSerializer):
+    class Meta:
+        model = Offer
+        fields = "__all__"
 
-        instance.save()
-        return instance
+    cost_with_nds = serializers.IntegerField(read_only=True, source="cost_with_NDS")
+    period_of_export = serializers.IntegerField(read_only=True)
+    product = ProductSerializer(allow_null=True)
+    warehouse = WarehouseSerializer(allow_null=True)
+
+
+class LoginOut(serializers.Serializer):
+    token = serializers.CharField()
+
+
+class DetailOut(serializers.Serializer):
+    detail = serializers.CharField()
+
+
+class CoefficientOfDistanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CoefficientOfDistance
+        fields = "__all__"
+
+
+class BaseRateForDeliverySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BaseRateForDelivery
+        fields = "__all__"
+
+
+class SettingsSerializer(serializers.Serializer):
+    coefficients = CoefficientOfDistanceSerializer(many=True)
+    base_rate = BaseRateForDeliverySerializer()
+    warehouses = WarehouseSerializer(many=True)
+
+
+class GroupOfferItem(serializers.ModelSerializer):
+    days_till_end = serializers.IntegerField()
+
+    class Meta:
+        model = Offer
+        fields = ("volume", "description", "days_till_end")
+
+
+class DeliveryPrice(serializers.Serializer):
+    price = serializers.IntegerField()
+    warehouse = WarehouseSerializer()
+
+
+class GroupedOffers(serializers.Serializer):
+    name = serializers.CharField()
+    offers = GroupOfferItem(many=True)
+    delivery_prices = DeliveryPrice(many=True)

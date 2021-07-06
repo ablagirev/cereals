@@ -13,8 +13,9 @@ def send_doc():
     doc = Document.objects.last()
     send_doc_to_sbis = SendDocToSBIS(doc)
     send_doc_to_sbis.authorization()
-    send_doc_to_sbis.load_doc()
+    link_to_cabinet = send_doc_to_sbis.load_doc()
     send_doc_to_sbis.load_sign()
+    return link_to_cabinet
 
 
 class SendDocToSBIS:
@@ -33,7 +34,7 @@ class SendDocToSBIS:
             "params": {"Параметр": {"Логин": self.login, "Пароль": self.password}},
             "id": 0,
         }
-        res = requests.post(url, json=data)
+        res = requests.post(url, json=data, verify=False)
 
         self.auth_token = res.json()["result"]
         # Получение токена аунтификации
@@ -87,8 +88,9 @@ class SendDocToSBIS:
         }
         headers = {"X-SBISSessionID": self.auth_token}
 
-        res = requests.post(url, json=data, headers=headers)
+        res = requests.post(url, json=data, headers=headers, verify=False)
         print(res.json())
+        return res.json().get('result').get('Вложение')[0].get('СсылкаВКабинет')
 
     def load_sign(self):
         url = "https://online.sbis.ru/service/?srv=1"
@@ -159,5 +161,5 @@ class SendDocToSBIS:
 
         headers = {"X-SBISSessionID": self.auth_token}
 
-        res = requests.post(url, json=data, headers=headers)
+        res = requests.post(url, json=data, headers=headers, verify=False)
         print(res.json())
