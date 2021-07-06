@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -11,10 +11,8 @@ from .common import get_or_unprocessable
 from .mixins import UpdateViewSetMixin
 from .. import models
 from .. import serializer
-from ..exceptions import UnprocessableEntityError
 from ..querysets.offer import GroupedOffers
 from ..serializer import inline_serializer, DetailOut
-import itertools
 
 
 @extend_schema(tags=["offer"])
