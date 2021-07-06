@@ -13,6 +13,7 @@ from .. import models
 from .. import serializer
 from ..querysets.offer import GroupedOffers
 from ..serializer import inline_serializer, DetailOut
+from ..utils import get_data_of_cost_delivery
 
 
 @extend_schema(tags=["offer"])
