@@ -32,8 +32,7 @@ class SettingsViewSet(GenericViewSet):
         return data
 
     @extend_schema(responses={200: SettingsSerializer, 403: DetailOut})
-    @action(methods=["GET"], detail=False, url_path="")
-    def get(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         serializer = SettingsSerializer(self.get_data(request.user))
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
