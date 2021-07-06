@@ -3,6 +3,7 @@ from typing import Iterable
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -13,11 +14,11 @@ from .. import models
 from .. import serializer
 from ..querysets.offer import GroupedOffers
 from ..serializer import inline_serializer, DetailOut
-from ..utils import get_data_of_cost_delivery
 
 
 @extend_schema(tags=["offer"])
 class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = models.Offer.objects.all()
     serializer_class = serializer.OfferSerializer
     grouped_serializer = serializer.GroupedOffers
@@ -109,7 +110,7 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
     def grouped(self, request: Request):
         offers_iter: Iterable[
             GroupedOffers
-        ] = models.Offer.objects.iterator_grouped_by_harvest()
+        ] = models.Offer.objects.iterator_grouped_by_harvest(request.user)
         return Response(
             data=self.grouped_serializer(instance=offers_iter, many=True).data
         )
