@@ -2,7 +2,7 @@ log:
   level: DEBUG
 entryPoints:
   web:
-    address: ":{{env TRAEFIK_PORT}}"
+    address: ':{{getenv "TRAEFIK_PORT"}}'
 #    http:
 #      redirections:
 #        entryPoint:
