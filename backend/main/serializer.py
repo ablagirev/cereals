@@ -145,6 +145,12 @@ class GroupOfferItem(serializers.ModelSerializer):
         fields = ("volume", "description", "days_till_end")
 
 
+class DeliveryPrice(serializers.Serializer):
+    price = serializers.IntegerField()
+    warehouse = WarehouseSerializer()
+
+
 class GroupedOffers(serializers.Serializer):
     name = serializers.CharField()
     offers = GroupOfferItem(many=True)
+    delivery_prices = DeliveryPrice(many=True)

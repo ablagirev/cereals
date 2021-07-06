@@ -10,6 +10,7 @@ from django.db.models import QuerySet
 class GroupedOffers:
     name: str
     offers: list
+    delivery_prices: list
 
 
 class OfferQuerySet(QuerySet):
@@ -22,4 +23,6 @@ class OfferQuerySet(QuerySet):
 
         offers = self.ordered_by_type()
         for k, g in itertools.groupby(offers, _get_harvest_type):
-            yield GroupedOffers(name=k, offers=list(offer for offer in g))
+            yield GroupedOffers(
+                name=k, offers=list(offer for offer in g), delivery_prices=[]
+            )
