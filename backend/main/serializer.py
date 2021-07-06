@@ -137,6 +137,12 @@ class SettingsSerializer(serializers.Serializer):
     warehouses = WarehouseSerializer(many=True)
 
 
+class DeliveryPrice(serializers.Serializer):
+    price = serializers.IntegerField()
+    price_per_tonne = serializers.IntegerField()
+    warehouse = WarehouseSerializer()
+
+
 class GroupOfferItem(serializers.ModelSerializer):
     days_till_end = serializers.IntegerField()
 
@@ -145,12 +151,11 @@ class GroupOfferItem(serializers.ModelSerializer):
         fields = ("volume", "description", "days_till_end")
 
 
-class DeliveryPrice(serializers.Serializer):
-    price = serializers.IntegerField()
-    warehouse = WarehouseSerializer()
+class GroupedOfferWithPrice(serializers.Serializer):
+    offer = GroupOfferItem()
+    prices = DeliveryPrice(many=True)
 
 
 class GroupedOffers(serializers.Serializer):
     name = serializers.CharField()
-    offers = GroupOfferItem(many=True)
-    delivery_prices = DeliveryPrice(many=True)
+    offers = GroupedOfferWithPrice(many=True)
