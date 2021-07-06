@@ -2,7 +2,7 @@ import React from "react";
 import { Field } from "formik";
 import { EMPTY_CHAR } from "../../utils/consts";
 import styled from "styled-components";
-import { Spacer } from "..";
+import { Flex, Spacer, Typography } from "..";
 import { theme } from "../../theme";
 import isNil from "lodash-es/isNil";
 
@@ -38,6 +38,7 @@ export interface IInputProps {
   variant?: "light" | "dark" | "blank";
   size?: "lg" | "md" | "sm";
   tooltipContent?: string | number | JSX.Element | null | false;
+  errorText?: string;
   tooltipPlacement?:
     | "auto-start"
     | "auto"
@@ -91,43 +92,54 @@ export const Input: React.FC<IInputProps> = ({
   tooltipPlacement = "auto",
   value,
   onChange,
+  errorText,
   ...restProps
 }) => {
   const renderInput = () => (
-    <FieldWrapper
-      isError={isError}
-      variant={variant}
-      size={size}
-      disabled={disabled}
-    >
-      {type === "masked" ? (
-        <StyledIMaskInput
-          {...configBlocks}
-          id={name}
-          name={name}
-          placeholder={placeholder}
-          disabled={disabled}
-          variant={variant}
-          size={size}
-          value={!isNil(value) ? String(value) : null}
-          onAccept={onChange}
-          mask="numberInput" // enable number mask
-          autoComplete="off"
-          {...restProps}
-        />
-      ) : (
-        <StyledField
-          id={name}
-          name={name}
-          placeholder={placeholder}
-          type={type}
-          disabled={disabled}
-          variant={variant}
-          size={size}
-          autoComplete="off"
-        />
+    <>
+      {!!errorText && (
+        <Flex column vAlignContent="center" hAlignContent="center">
+          <Typography color={theme.palette.common.colors.red}>
+            {errorText}
+          </Typography>
+          <Spacer space={32} />
+        </Flex>
       )}
-    </FieldWrapper>
+      <FieldWrapper
+        isError={isError}
+        variant={variant}
+        size={size}
+        disabled={disabled}
+      >
+        {type === "masked" ? (
+          <StyledIMaskInput
+            {...configBlocks}
+            id={name}
+            name={name}
+            placeholder={placeholder}
+            disabled={disabled}
+            variant={variant}
+            size={size}
+            value={!isNil(value) ? String(value) : null}
+            onAccept={onChange}
+            mask="numberInput" // enable number mask
+            autoComplete="off"
+            {...restProps}
+          />
+        ) : (
+          <StyledField
+            id={name}
+            name={name}
+            placeholder={placeholder}
+            type={type}
+            disabled={disabled}
+            variant={variant}
+            size={size}
+            autoComplete="off"
+          />
+        )}
+      </FieldWrapper>
+    </>
   );
   return (
     <>

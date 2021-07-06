@@ -57,16 +57,18 @@ export const OffersListPage: React.FC = () => {
         label: status && `${status} - ${data?.length}`,
         items: data?.map((item) => {
           const {
-            title,
             volume,
-            costWith_NDS,
+            costWithNds,
             cost,
             periodOfExport,
             dateFinishShipment,
             dateStartShipment,
             warehouse,
+            product,
             id,
           } = item || {};
+
+          const { harvestType, harvestYear, title } = product || {};
 
           const periodOfShippment = `${formatDate(
             dateStartShipment
@@ -88,7 +90,7 @@ export const OffersListPage: React.FC = () => {
                   <TaxPresence>без НДС / CNCPT</TaxPresence>
                 </Flex>,
                 <Flex>
-                  <span>{formatMoney(costWith_NDS)}</span>
+                  <span>{formatMoney(costWithNds)}</span>
                   <Spacer width={18} />
                   <TaxPresence>с НДС / CVCPT</TaxPresence>
                 </Flex>,
@@ -105,7 +107,7 @@ export const OffersListPage: React.FC = () => {
           ];
           return (
             <Card
-              title={title}
+              title={`${title} ${harvestType}, ${formatDate(harvestYear)}`}
               statusText={`#${id}`}
               onClick={() => handleOfferClick(id)}
             >
