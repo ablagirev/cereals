@@ -56,6 +56,7 @@ export const DatePickerField: React.FC<IProps> = ({
           dateFormat="dd.MM.yyyy"
           disabled={disabled}
           locale="ru"
+          maxDate={endDate}
         />
         <StyledDatePicker
           selected={endDate}
