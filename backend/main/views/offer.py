@@ -105,7 +105,7 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-    @extend_schema(responses={200: grouped_serializer, 403: DetailOut})
+    @extend_schema(responses={200: grouped_serializer(many=True), 403: DetailOut})
     @action(methods=["GET"], detail=False)
     def grouped(self, request: Request):
         offers_iter: Iterable[
