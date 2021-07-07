@@ -10,6 +10,7 @@ def admin_user():
     user.is_staff = True
     user.is_superadmin = True
     user.save()
+    baker.make("Warehouse", distance=10, owner_id=user.id)
     return user
 
 
@@ -30,7 +31,8 @@ def offer_groping_case():
     two_p = baker.make("Product", harvest_type="1")
     three_p = baker.make("Product", harvest_type="2")
     four_p = baker.make("Product", harvest_type="2")
-    baker.make("Offer", product_id=one_p.id)
-    baker.make("Offer", product_id=two_p.id)
-    baker.make("Offer", product_id=three_p.id)
-    baker.make("Offer", product_id=four_p.id)
+    warehouse = baker.make("Warehouse", distance=10)
+    baker.make("Offer", product_id=one_p.id, warehouse_id=warehouse.id)
+    baker.make("Offer", product_id=two_p.id, warehouse_id=warehouse.id)
+    baker.make("Offer", product_id=three_p.id, warehouse_id=warehouse.id)
+    baker.make("Offer", product_id=four_p.id, warehouse_id=warehouse.id)
