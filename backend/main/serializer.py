@@ -148,7 +148,7 @@ class GroupOfferItem(serializers.ModelSerializer):
 
     class Meta:
         model = Offer
-        fields = ("volume", "description", "days_till_end")
+        fields = ("volume", "description", "days_till_end", "id")
 
 
 class GroupedOfferWithPrice(serializers.Serializer):
