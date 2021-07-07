@@ -158,4 +158,5 @@ class GroupedOfferWithPrice(serializers.Serializer):
 
 class GroupedOffers(serializers.Serializer):
     name = serializers.CharField()
+    type = serializers.CharField()
     offers = GroupedOfferWithPrice(many=True)

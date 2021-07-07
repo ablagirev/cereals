@@ -2,6 +2,7 @@ import functools
 import itertools
 from collections import Iterable
 from dataclasses import dataclass
+from typing import Optional
 
 from django.db.models import QuerySet
 
@@ -25,6 +26,7 @@ class OfferWithPrices:
 @dataclass
 class GroupedOffers:
     name: str
+    type: str
     offers: list[OfferWithPrices]
 
 
@@ -38,8 +40,10 @@ class OfferQuerySet(QuerySet):
 
         offers = self.ordered_by_type()
         for k, g in itertools.groupby(offers, _get_harvest_type):
+            any_: Optional["models.Offer"] = None
             group_offers = []
             for offer in g:
+                any_ = offer
                 prices_data = get_data_of_cost_delivery(
                     user, offer.warehouse, offer.volume
                 )
@@ -52,4 +56,4 @@ class OfferQuerySet(QuerySet):
                     for price in prices_data
                 )
                 group_offers.append(OfferWithPrices(offer=offer, prices=prices))
-            yield GroupedOffers(name=k, offers=group_offers)
+            yield GroupedOffers(type=k, offers=group_offers, name=any_.title)
