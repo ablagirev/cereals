@@ -26,7 +26,7 @@ def get_data_of_cost_delivery(user, warehouse, volume):
             "warehouse_to": warehouse,
         }
 
-    return result_cost_delivery_map
+    return result_cost_delivery_map.values()
 
 
 def calc_cost_delivery(distance, volume):
