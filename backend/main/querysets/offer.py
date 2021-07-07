@@ -26,7 +26,6 @@ class OfferWithPrices:
 @dataclass
 class GroupedOffers:
     name: str
-    type: str
     offers: list[OfferWithPrices]
 
 
@@ -36,9 +35,9 @@ class OfferQuerySet(QuerySet):
 
     def iterator_grouped_by_harvest(self, user) -> Iterable[GroupedOffers]:
         def _get_harvest_type(offer):
-            return functools.reduce(getattr, ("product", "harvest_type"), offer)
+            return functools.reduce(getattr, ("product", "title"), offer)
 
-        offers = self.ordered_by_type()
+        offers = self.ordered_by_type().filter(status="active")
         for k, g in itertools.groupby(offers, _get_harvest_type):
             any_: Optional["models.Offer"] = None
             group_offers = []
@@ -56,4 +55,4 @@ class OfferQuerySet(QuerySet):
                     for price in prices_data
                 )
                 group_offers.append(OfferWithPrices(offer=offer, prices=prices))
-            yield GroupedOffers(type=k, offers=group_offers, name=any_.title)
+            yield GroupedOffers(offers=group_offers, name=any_.product.title)

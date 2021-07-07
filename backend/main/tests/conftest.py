@@ -27,12 +27,20 @@ def products():
 
 @pytest.fixture()
 def offer_groping_case():
-    one_p = baker.make("Product", harvest_type="1")
-    two_p = baker.make("Product", harvest_type="1")
-    three_p = baker.make("Product", harvest_type="2")
-    four_p = baker.make("Product", harvest_type="2")
+    one_p = baker.make("Product", harvest_type="2", title="Пшено")
+    two_p = baker.make("Product", harvest_type="3", title="Пшено")
+    three_p = baker.make("Product", harvest_type="4", title="Другое")
+    four_p = baker.make("Product", harvest_type="5", title="Другое")
     warehouse = baker.make("Warehouse", distance=10)
-    baker.make("Offer", product_id=one_p.id, warehouse_id=warehouse.id)
-    baker.make("Offer", product_id=two_p.id, warehouse_id=warehouse.id)
-    baker.make("Offer", product_id=three_p.id, warehouse_id=warehouse.id)
-    baker.make("Offer", product_id=four_p.id, warehouse_id=warehouse.id)
+    baker.make(
+        "Offer", product_id=one_p.id, warehouse_id=warehouse.id,
+    )
+    baker.make(
+        "Offer", product_id=two_p.id, warehouse_id=warehouse.id,
+    )
+    baker.make(
+        "Offer", product_id=three_p.id, warehouse_id=warehouse.id,
+    )
+    baker.make(
+        "Offer", product_id=four_p.id, warehouse_id=warehouse.id,
+    )
