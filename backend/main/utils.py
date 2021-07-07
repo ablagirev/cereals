@@ -23,7 +23,7 @@ def get_data_of_cost_delivery(user, warehouse, volume):
         distance = find_distance(warehouse, warehouse_user)
         cost_delivery, cost_delivery_per_tonne = calc_cost_delivery(distance, volume)
 
-        result_cost_delivery_map[warehouses_user.id] = {
+        result_cost_delivery_map[warehouse_user.id] = {
             "cost_delivery": cost_delivery,
             "cost_delivery_per_tonne": cost_delivery_per_tonne,
             "warehouse_from": warehouse_user,
