@@ -1,11 +1,12 @@
 from datetime import datetime, timezone
+from typing import Optional
 
 from django.contrib.auth.models import User
 from django.db import models
 
 from main.consts import NDS
 from main.managers.offer import OfferManager
-from main.querysets.offer import OfferQuerySet
+from main.querysets.offer import OfferQuerySet, DeliveryPrice
 
 
 class Company(models.Model):
@@ -178,7 +179,9 @@ class Offer(models.Model):
     volume = models.IntegerField("Объем", blank=True, null=True)
     description = models.TextField("Описание", blank=True, null=True)
     # offer_lifetime = models.DateTimeField('Время жизни предложения', blank=True, null=True)
-    status = models.CharField("Статус", max_length=250, blank=True, null=True, default='active')
+    status = models.CharField(
+        "Статус", max_length=250, blank=True, null=True, default="active"
+    )
     creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField("Создано (время)", auto_now_add=True)
     product = models.ForeignKey(
@@ -194,6 +197,8 @@ class Offer(models.Model):
         "Дата окончания поставки", blank=True, null=True
     )
     cost = models.FloatField("Цена", blank=True, null=True)
+
+    prices: Optional[list[DeliveryPrice]] = None
 
     objects = OfferQuerySet.as_manager()
     service = OfferManager()

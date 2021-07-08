@@ -100,6 +100,12 @@ class ProductSerializer(WritableNestedModelSerializer):
     #     return instance
 
 
+class DeliveryPrice(serializers.Serializer):
+    price = serializers.IntegerField()
+    price_per_tonne = serializers.IntegerField()
+    warehouse = WarehouseSerializer()
+
+
 class OfferSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Offer
@@ -110,6 +116,10 @@ class OfferSerializer(WritableNestedModelSerializer):
     product = ProductSerializer(allow_null=True)
     warehouse = WarehouseSerializer(allow_null=True)
     days_till_end = serializers.IntegerField()
+
+
+class DetailOfferSerializer(OfferSerializer):
+    prices = DeliveryPrice(many=True)
 
 
 class LoginOut(serializers.Serializer):
@@ -136,12 +146,6 @@ class SettingsSerializer(serializers.Serializer):
     coefficients = CoefficientOfDistanceSerializer(many=True)
     base_rate = BaseRateForDeliverySerializer()
     warehouses = WarehouseSerializer(many=True)
-
-
-class DeliveryPrice(serializers.Serializer):
-    price = serializers.IntegerField()
-    price_per_tonne = serializers.IntegerField()
-    warehouse = WarehouseSerializer()
 
 
 class GroupOfferItem(serializers.ModelSerializer):
