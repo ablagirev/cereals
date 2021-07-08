@@ -13,24 +13,20 @@ def save_file(content, path):
     return path
 
 
-# user это пользователь который сделал запрос
-# warehouse это склад из предложения. Куда нужно доставить продукцию
-# volume это объем продукции
+# Todo: change!
 def get_data_of_cost_delivery(user, warehouse, volume):
     warehouses_user = models.Warehouse.objects.filter(owner=user)
     result_cost_delivery_map = {}
     for warehouse_user in warehouses_user:
-        distance = find_distance(warehouse, warehouse_user)
-        cost_delivery, cost_delivery_per_tonne = calc_cost_delivery(distance, volume)
 
-        result_cost_delivery_map[warehouses_user.id] = {
-            "cost_delivery": cost_delivery,
-            "cost_delivery_per_tonne": cost_delivery_per_tonne,
+        result_cost_delivery_map[warehouse_user.id] = {
+            "cost_delivery": 0,
+            "cost_delivery_per_tonne": 0,
             "warehouse_from": warehouse_user,
             "warehouse_to": warehouse,
         }
 
-    return result_cost_delivery_map
+    return result_cost_delivery_map.values()
 
 
 def calc_cost_delivery(distance, volume):

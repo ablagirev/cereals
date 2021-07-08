@@ -109,6 +109,7 @@ class OfferSerializer(WritableNestedModelSerializer):
     period_of_export = serializers.IntegerField(read_only=True)
     product = ProductSerializer(allow_null=True)
     warehouse = WarehouseSerializer(allow_null=True)
+    days_till_end = serializers.IntegerField()
 
 
 class LoginOut(serializers.Serializer):
@@ -145,10 +146,18 @@ class DeliveryPrice(serializers.Serializer):
 
 class GroupOfferItem(serializers.ModelSerializer):
     days_till_end = serializers.IntegerField()
+    cost_with_nds = serializers.IntegerField(source="cost_with_NDS")
 
     class Meta:
         model = Offer
-        fields = ("volume", "description", "days_till_end")
+        fields = (
+            "volume",
+            "days_till_end",
+            "id",
+            "title",
+            "cost",
+            "cost_with_nds",
+        )
 
 
 class GroupedOfferWithPrice(serializers.Serializer):
