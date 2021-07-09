@@ -11,15 +11,12 @@ from main.models import (
     Product,
     Offer,
     Warehouse,
-    Deal,
     Document,
     Company,
     SpecificationsOfProduct,
-    NameOfSpecification,
-    TypeOfSpecification,
     UnitOfMeasurementOfSpecification,
-    CoefficientOfDistance,
-    BaseRateForDelivery,
+    Order,
+    RateForDelivery,
 )
 
 
@@ -31,7 +28,7 @@ class WarehouseSerializer(serializers.ModelSerializer):
 
 class DealSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Deal
+        model = Order
         fields = "__all__"
 
 
@@ -48,18 +45,6 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class NameOfSpecificationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = NameOfSpecification
-        fields = "__all__"
-
-
-class TypeOfSpecificationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TypeOfSpecification
-        fields = "__all__"
-
-
 class UnitOfMeasurementOfSpecificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnitOfMeasurementOfSpecification
@@ -71,8 +56,6 @@ class SpecificationsOfProductSerializer(WritableNestedModelSerializer):
         model = SpecificationsOfProduct
         fields = "__all__"
 
-    name_of_specification = NameOfSpecificationSerializer()
-    type_field = TypeOfSpecificationSerializer()
     unit_of_measurement = UnitOfMeasurementOfSpecificationSerializer()
 
 
@@ -100,6 +83,12 @@ class ProductSerializer(WritableNestedModelSerializer):
     #     return instance
 
 
+class DeliveryPrice(serializers.Serializer):
+    price = serializers.IntegerField()
+    price_per_tonne = serializers.IntegerField()
+    warehouse = WarehouseSerializer()
+
+
 class OfferSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Offer
@@ -112,6 +101,10 @@ class OfferSerializer(WritableNestedModelSerializer):
     days_till_end = serializers.IntegerField()
 
 
+class DetailOfferSerializer(OfferSerializer):
+    prices = DeliveryPrice(many=True)
+
+
 class LoginOut(serializers.Serializer):
     token = serializers.CharField()
 
@@ -120,28 +113,15 @@ class DetailOut(serializers.Serializer):
     detail = serializers.CharField()
 
 
-class CoefficientOfDistanceSerializer(serializers.ModelSerializer):
+class RateForDeliverySerializer(serializers.ModelSerializer):
     class Meta:
-        model = CoefficientOfDistance
-        fields = "__all__"
-
-
-class BaseRateForDeliverySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BaseRateForDelivery
+        model = RateForDelivery
         fields = "__all__"
 
 
 class SettingsSerializer(serializers.Serializer):
-    coefficients = CoefficientOfDistanceSerializer(many=True)
-    base_rate = BaseRateForDeliverySerializer()
+    base_rate = RateForDelivery()
     warehouses = WarehouseSerializer(many=True)
-
-
-class DeliveryPrice(serializers.Serializer):
-    price = serializers.IntegerField()
-    price_per_tonne = serializers.IntegerField()
-    warehouse = WarehouseSerializer()
 
 
 class GroupOfferItem(serializers.ModelSerializer):

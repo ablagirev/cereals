@@ -1,7 +1,7 @@
 from django.contrib import admin
 from main.models import *
 
-# Register your models here.
+from . import models
 
 
 @admin.register(Company)
@@ -39,6 +39,12 @@ class UnitOfMeasurementOfSpecificationAdmin(admin.ModelAdmin):
         "unit__startswith",
     )
 
+@admin.register(models.Offer)
+class Offer(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "status",
+    )
 
 @admin.register(SpecificationsOfProduct)
 class SpecificationsOfProductAdmin(admin.ModelAdmin):

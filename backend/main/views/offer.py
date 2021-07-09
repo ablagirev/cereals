@@ -13,7 +13,7 @@ from .mixins import UpdateViewSetMixin
 from .. import models
 from .. import serializer
 from ..querysets.offer import GroupedOffers
-from ..serializer import inline_serializer, DetailOut
+from ..serializer import inline_serializer, DetailOut, DetailOfferSerializer
 
 
 @extend_schema(tags=["offer"])
@@ -47,6 +47,12 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
             "volume": serializers.IntegerField(required=True),
         },
     )
+
+    @extend_schema(responses={200: DetailOfferSerializer, 403: DetailOut})
+    def retrieve(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj.prices = models.Offer.objects.get_price_for(offer=obj, user=request.user)
+        return Response(DetailOfferSerializer(instance=obj).data)
 
     @extend_schema(
         request=partial_update_serializer,
