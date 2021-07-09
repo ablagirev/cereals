@@ -112,6 +112,9 @@ class Category(models.Model):
         SpecificationsOfProduct, blank=True, related_name="categories",
     )
 
+    def __str__(self):
+        return f'Категория: {self.name}'
+
 
 class Product(models.Model):
     title = models.CharField("Название", max_length=250, null=True)

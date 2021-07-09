@@ -1,10 +1,9 @@
 from django.contrib import admin
-from main.models import *
 
 from . import models
 
 
-@admin.register(Company)
+@admin.register(models.Company)
 class CompanyAdmin(admin.ModelAdmin):
     list_display = ('name_of_provider', 'inn', 'kpp', 'ogrn')
     list_filter = ('name_of_provider', 'inn', 'kpp', 'ogrn')
@@ -14,24 +13,7 @@ class CompanyAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(NameOfSpecification)
-class NameOfSpecificationAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    list_filter = ('name',)
-    search_fields = (
-        "name__startswith",
-    )
-
-@admin.register(TypeOfSpecification)
-class TypeOfSpecificationAdmin(admin.ModelAdmin):
-    list_display = ('type',)
-    list_filter = ('type',)
-    search_fields = (
-        "type__startswith",
-    )
-
-
-@admin.register(UnitOfMeasurementOfSpecification)
+@admin.register(models.UnitOfMeasurementOfSpecification)
 class UnitOfMeasurementOfSpecificationAdmin(admin.ModelAdmin):
     list_display = ('unit',)
     list_filter = ('unit',)
@@ -39,24 +21,20 @@ class UnitOfMeasurementOfSpecificationAdmin(admin.ModelAdmin):
         "unit__startswith",
     )
 
-@admin.register(models.Offer)
-class Offer(admin.ModelAdmin):
-    list_display = (
-        "title",
-        "status",
-    )
 
-@admin.register(SpecificationsOfProduct)
+@admin.register(models.SpecificationsOfProduct)
 class SpecificationsOfProductAdmin(admin.ModelAdmin):
     list_display = (
-        'name_of_specification',
-        'type_field',
+        'name',
+        'required',
+        'type',
         'unit_of_measurement',
         'GOST'
     )
     list_filter = (
-        'name_of_specification',
-        'type_field',
+        'name',
+        'required',
+        'type',
         'unit_of_measurement',
         'GOST'
     )
@@ -65,16 +43,43 @@ class SpecificationsOfProductAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Product)
+@admin.register(models.ProductSpecification)
+class ProductSpecificationAdmin(admin.ModelAdmin):
+    list_display = (
+        'product',
+        'specification',
+    )
+    list_filter = (
+        'product',
+        'specification',
+    )
+
+
+@admin.register(models.Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+    )
+    list_filter = (
+        'name',
+    )
+    search_fields = (
+        "name__startswith",
+    )
+
+
+@admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
         'title',
+        'category',
         'harvest_year',
         'harvest_type'
     )
     list_filter = (
         'title',
         'specifications',
+        'category',
         'harvest_year',
         'harvest_type'
     )
@@ -83,7 +88,7 @@ class ProductAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Warehouse)
+@admin.register(models.Warehouse)
 class WarehouseAdmin(admin.ModelAdmin):
     list_display = (
         'title',
@@ -100,7 +105,23 @@ class WarehouseAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Offer)
+@admin.register(models.WarehouseDistance)
+class WarehouseDistanceAdmin(admin.ModelAdmin):
+    list_display = (
+        'form',
+        'to',
+        'distance',
+        'price'
+    )
+    list_filter = (
+        'form',
+        'to',
+        'distance',
+        'price'
+    )
+
+
+@admin.register(models.Offer)
 class OfferAdmin(admin.ModelAdmin):
     list_display = (
         'title',
@@ -128,7 +149,8 @@ class OfferAdmin(admin.ModelAdmin):
         "title__startswith",
     )
 
-@admin.register(Document)
+
+@admin.register(models.Document)
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ('name',)
     list_filter = ('name',)
@@ -137,12 +159,13 @@ class DocumentAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Deal)
-class DealAdmin(admin.ModelAdmin):
+@admin.register(models.Order)
+class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'offer',
         'status',
         'provider',
+        'accepted_volume',
         'customer',
         'name_of_contract',
         'date_start_of_contract',
@@ -152,6 +175,7 @@ class DealAdmin(admin.ModelAdmin):
         'offer',
         'status',
         'provider',
+        'accepted_volume',
         'customer',
         'name_of_contract',
         'date_start_of_contract',
@@ -162,11 +186,21 @@ class DealAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(BaseRateForDelivery)
-class BaseRateForDeliveryAdmin(admin.ModelAdmin):
-    list_display = ('cost_per_tonne',)
-    list_filter = ('cost_per_tonne',)
-    search_fields = (
-        "cost_per_tonne__startswith",
+@admin.register(models.RateForDelivery)
+class RateForDeliveryAdmin(admin.ModelAdmin):
+    list_display = (
+        'way',
+        'cost_per_tonne',
+        'min',
+        'max',
+        'delta',
     )
+    list_filter = (
+        'way',
+        'cost_per_tonne',
+        'min',
+        'max',
+        'delta',
+    )
+
 
