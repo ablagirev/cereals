@@ -2,6 +2,7 @@ import functools
 import itertools
 from collections import Iterable
 from dataclasses import dataclass
+from typing import Optional
 
 from django.db.models import QuerySet
 
@@ -34,12 +35,14 @@ class OfferQuerySet(QuerySet):
 
     def iterator_grouped_by_harvest(self, user) -> Iterable[GroupedOffers]:
         def _get_harvest_type(offer):
-            return functools.reduce(getattr, ("product", "harvest_type"), offer)
+            return functools.reduce(getattr, ("product", "title"), offer)
 
-        offers = self.ordered_by_type()
+        offers = self.ordered_by_type().filter(status="active")
         for k, g in itertools.groupby(offers, _get_harvest_type):
+            any_: Optional["models.Offer"] = None
             group_offers = []
             for offer in g:
+                any_ = offer
                 prices_data = get_data_of_cost_delivery(
                     user, offer.warehouse, offer.volume
                 )
@@ -52,4 +55,4 @@ class OfferQuerySet(QuerySet):
                     for price in prices_data
                 )
                 group_offers.append(OfferWithPrices(offer=offer, prices=prices))
-            yield GroupedOffers(name=k, offers=group_offers)
+            yield GroupedOffers(offers=group_offers, name=any_.product.title)
