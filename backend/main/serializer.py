@@ -1,3 +1,7 @@
+from decimal import Decimal
+
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
@@ -148,3 +152,18 @@ class GroupedOfferWithPrice(serializers.Serializer):
 class GroupedOffers(serializers.Serializer):
     name = serializers.CharField()
     offers = GroupedOfferWithPrice(many=True)
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(source="offer.product.title")
+    cost_with_nds = serializers.IntegerField(source="offer.cost_with_NDS")
+    cost = serializers.IntegerField(source="offer.cost")
+    cost_by_tonne = serializers.SerializerMethodField("get_cost_by_tonne")
+
+    @extend_schema_field(OpenApiTypes.INT)
+    def get_cost_by_tonne(self, instance: Order) -> int:
+        return round(instance.offer.cost_by_kg / 1000)
+
+    class Meta:
+        model = Order
+        fields = "__all__"

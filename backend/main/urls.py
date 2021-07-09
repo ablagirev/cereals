@@ -12,6 +12,7 @@ router.register("warehouse", views.WarehouseViewSet, basename="warehouse")
 router.register("product", views.ProductViewSet, basename="product")
 router.register("company", views.CompanyViewSet, basename="company")
 router.register("settings", views.SettingsViewSet, basename="settings")
+router.register("orders", views.OrderViewSet, basename="orders")
 
 urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
