@@ -11,3 +11,8 @@ from ..serializer import OrderSerializer, DetailOut
 class OrderViewSet(UpdateViewSetMixin, ModelViewSet):
     queryset = models.Order.objects.all()
     serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        if self.action == "list":
+            return self.get_queryset().filter(customer_id=self.request.user.id)
+        return super().get_queryset()

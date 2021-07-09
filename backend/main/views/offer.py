@@ -54,7 +54,11 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
         },
     )
     accept_serializer = inline_serializer(
-        "AcceptOffer", {"volume": serializers.IntegerField(),}
+        "AcceptOffer",
+        {
+            "volume": serializers.IntegerField(required=True),
+            "warehouse_id": serializers.IntegerField(required=True),
+        },
     )
 
     @extend_schema(responses={200: DetailOfferSerializer, 403: DetailOut})
@@ -141,6 +145,10 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
         offer = models.Offer.objects.get(id=pk)
         order = models.Offer.service.accept(
             offer=offer,
-            payload=AcceptPayload(volume=data["volume"], user_id=request.user.id),
+            payload=AcceptPayload(
+                volume=data["volume"],
+                user_id=request.user.id,
+                warehouse_id=data["warehouse_id"],
+            ),
         )
         return Response(OrderSerializer(instance=order).data)

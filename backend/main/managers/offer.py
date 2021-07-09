@@ -11,6 +11,7 @@ from ..enums import OfferStatus
 class AcceptPayload:
     volume: int
     user_id: int
+    warehouse_id: int
 
 
 class OfferManager(DefaultUpdateManager):
@@ -21,6 +22,7 @@ class OfferManager(DefaultUpdateManager):
             accepted_volume=payload.volume,
             provider_id=offer.creator.id,
             customer_id=payload.user_id,
+            selected_warehouse_id=payload.warehouse_id,
         )
         offer.status = OfferStatus.pending.value
         offer.save()

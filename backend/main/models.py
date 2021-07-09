@@ -241,6 +241,7 @@ class Order(models.Model):
         User, on_delete=models.CASCADE, related_name="customer"
     )
     documents = models.ManyToManyField(Document)
+    selected_warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
 
     name_of_contract = models.CharField(
         "Название договора", max_length=250, default="",
