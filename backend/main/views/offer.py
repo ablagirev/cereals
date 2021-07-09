@@ -45,6 +45,7 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
             )(required=False),
             "cost": serializers.IntegerField(required=True),
             "volume": serializers.IntegerField(required=True),
+            "creator_id": serializers.IntegerField(required=True),
         },
     )
 
@@ -89,6 +90,7 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
 
     @extend_schema(request=create_serializer)
     def create(self, request, *args, **kwargs):
+        request.data['creator_id'] = request.user.id
         serializer: serializers.Serializer = self.create_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
