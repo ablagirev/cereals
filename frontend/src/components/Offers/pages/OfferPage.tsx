@@ -1,4 +1,4 @@
-import { FieldArray, Form, Formik } from "formik";
+import { FieldArray, Form, Formik, useFormikContext } from "formik";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { generatePath, useHistory, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -24,6 +24,7 @@ import isNumber from "lodash-es/isNumber";
 import { Tooltip } from "../../../uikit/Tooltip";
 import { PushContext } from "../../../context";
 import * as Yup from "yup";
+import { useQuery } from "react-query";
 
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
@@ -142,8 +143,12 @@ export const OfferPage: React.FC = () => {
       : value;
   };
 
+  // const [fileData, setFileData] = useState<File>();
+
   const handleSubmitForm = (values: any) => {
     const { volume, cost, product, warehouse } = values || {};
+    //file
+    // setFileData(file);
 
     setOfferFormData({
       ...values,
@@ -329,7 +334,6 @@ export const OfferPage: React.FC = () => {
         } предложение`}
       </Heading>
       <Spacer space={28} />
-
       <Formik
         enableReinitialize
         initialValues={initialValues}
@@ -353,6 +357,9 @@ export const OfferPage: React.FC = () => {
                         disabled={isArchived}
                       />
                     </FormikField>
+                    {/* <FormikField name="file">
+                      <Input type="file" name="file" />
+                    </FormikField> */}
                     <FormikField
                       name="cost"
                       title="Цена CNCPT на воротах порта, ₽/т"
@@ -531,6 +538,7 @@ export const OfferPage: React.FC = () => {
                     </Indicators>
                   </IndicatorsWrapper>
                 </FormInnerWrapper>
+                <Spacer space={150} />
               </Form>
               <ActionsWrapper>
                 <Flex column>

@@ -88,7 +88,7 @@ const requestMethodFactory = <TResponse>(method: 'POST' | 'GET' | 'PUT' | 'DELET
         const {data, queryParams, url} = params;
         const req = request(method, `${url}`)
             .set('Accept', 'application/json; charset=UTF-8')
-            .set('Authorization', `${appConfig.api.tokenType} ${appConfig.api.token}`); // TODO: вернуть при наличии авторизации
+            .set('Authorization', `${appConfig.api.tokenType} ${appConfig.api.token}`);
             // .set('Authorization', `Basic YWRtaW46YWRtaW4=`);
         !!data && req.send(data);
 
@@ -155,3 +155,47 @@ export const PUT = <TResponse = any>(url: string, data?: object, queryParams?: o
  */
 export const PATCH = <TResponse = any>(url: string, data?: object, queryParams?: object) =>
     requestMethodFactory<TResponse>('PATCH', {url, data, queryParams});
+
+    /**
+ * Загружает файл по указанному URL.
+ *
+ * @param {string} url URL.
+ * @param {File[]} files Загружаемые файлы.
+ * @param {any} data Данные тела запроса.
+ * @param {any} params Параметры строки запроса.
+ * @param {Function} onProgress Коллбэк для отслеживания прогресса загрузки файла.
+ */
+export const UPLOAD = (url: string, files: File[], data?: any, params?: any, onProgress?: (progress: number) => void): Promise<any> =>
+new Promise((resolve, reject) => {
+    const formData = new FormData();
+    const req = request
+        .post(url)
+        .set('Authorization', `${appConfig.api.tokenType} ${appConfig.api.token}`)
+        .on('progress', (event: any) => {
+            !!onProgress && onProgress(event.percent);
+        });
+
+    if (!!params) {
+        req.query(params);
+    }
+
+    if (!!data) {
+        for (const key in data) {
+            formData.append(key, data[key]);
+        }
+    }
+
+    files.forEach((file: File) => {
+        if (file instanceof File) {
+            formData.append('file', file, file.name);
+        }
+    });
+
+    req.send(formData);
+
+    req.then((response) => resolve(response.body)).catch((error) => {
+        showError(url, error);
+
+        reject(error);
+    });
+});

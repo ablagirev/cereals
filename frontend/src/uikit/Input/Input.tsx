@@ -1,5 +1,5 @@
 import React from "react";
-import { Field } from "formik";
+import { Field, useFormikContext } from "formik";
 import { EMPTY_CHAR } from "../../utils/consts";
 import styled from "styled-components";
 import { Flex, Spacer, Typography } from "..";
@@ -95,6 +95,7 @@ export const Input: React.FC<IInputProps> = ({
   errorText,
   ...restProps
 }) => {
+  const { setFieldValue } = useFormikContext();
   const renderInput = () => (
     <>
       {!!errorText && (

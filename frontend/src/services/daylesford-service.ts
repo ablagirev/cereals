@@ -1,5 +1,5 @@
 import { appConfig } from "../config";
-import { POST, GET, PATCH, DELETE } from "../utils/http";
+import { POST, GET, PATCH, DELETE, UPLOAD } from "../utils/http";
 import { IOffer, IOrder, IProduct, IWarehouse } from "./models";
 
 const {auth, offer, product, warehouse, order} = appConfig.api
@@ -8,7 +8,6 @@ const {auth, offer, product, warehouse, order} = appConfig.api
  * Методы auth-service.
  */
 export const daylesfordService = {
-
      // auth
      login: (request: any) => POST<any>(`${auth}/login/`, request), // TODO: прописать модели
      logout: () => GET<any>(`${auth}/logout/`), // TODO: прописать модели
@@ -28,6 +27,9 @@ export const daylesfordService = {
      getWarehouses: () => GET<IWarehouse[]>(`${warehouse}/`),
 
      //orders
-     getOrderList: () => GET<IOrder[]>(`${order}/`)
+     getOrderList: () => GET<IOrder[]>(`${order}/`),
+
+     // TODO: fake service - добавить как будет ендпоинт по отправке файлов
+     uploadOrderFile: (file: File, request: any) => UPLOAD(`${order}/${request.id}/upload`, [file], request),
 };
  
