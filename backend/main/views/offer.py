@@ -24,7 +24,7 @@ from ..serializer import (
 
 @extend_schema(tags=["offer"])
 class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     queryset = models.Offer.objects.all()
     serializer_class = serializer.OfferSerializer
     grouped_serializer = serializer.GroupedOffers
