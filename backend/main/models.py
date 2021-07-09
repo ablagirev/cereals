@@ -113,7 +113,7 @@ class Category(models.Model):
     )
 
     def __str__(self):
-        return f'Категория: {self.name}'
+        return f"Категория: {self.name}"
 
 
 class Product(models.Model):
@@ -230,7 +230,9 @@ class Shipment(models.Model):
 
 class Order(models.Model):
     offer = models.ForeignKey(Offer, on_delete=models.CASCADE, related_name="orders")
-    status = models.CharField(max_length=50, choices=OrderStatus.readable())
+    status = models.CharField(
+        max_length=50, choices=OrderStatus.readable(), default=OrderStatus.new.value
+    )
     provider = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="provider"
     )

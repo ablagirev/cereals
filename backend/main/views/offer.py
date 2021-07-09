@@ -12,8 +12,14 @@ from .common import get_or_unprocessable
 from .mixins import UpdateViewSetMixin
 from .. import models
 from .. import serializer
+from ..managers.offer import AcceptPayload
 from ..querysets.offer import GroupedOffers
-from ..serializer import inline_serializer, DetailOut, DetailOfferSerializer
+from ..serializer import (
+    inline_serializer,
+    DetailOut,
+    DetailOfferSerializer,
+    OrderSerializer,
+)
 
 
 @extend_schema(tags=["offer"])
@@ -45,8 +51,10 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
             )(required=False),
             "cost": serializers.IntegerField(required=True),
             "volume": serializers.IntegerField(required=True),
-            "creator_id": serializers.IntegerField(required=True),
         },
+    )
+    accept_serializer = inline_serializer(
+        "AcceptOffer", {"volume": serializers.IntegerField(),}
     )
 
     @extend_schema(responses={200: DetailOfferSerializer, 403: DetailOut})
@@ -90,7 +98,6 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
 
     @extend_schema(request=create_serializer)
     def create(self, request, *args, **kwargs):
-        request.data['creator_id'] = request.user.id
         serializer: serializers.Serializer = self.create_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
@@ -107,7 +114,7 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
                 message="Склад с указанным id не найден",
             )
             create_data["warehouse_id"] = warehouse.id
-        offer = models.Offer.service.create(**create_data)
+        offer = models.Offer.service.create(creator_id=request.user.id, **create_data)
         return Response(
             data=self.serializer_class(instance=offer).data,
             status=status.HTTP_201_CREATED,
@@ -122,3 +129,18 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
         return Response(
             data=self.grouped_serializer(instance=offers_iter, many=True).data
         )
+
+    @extend_schema(
+        responses={200: OrderSerializer, 403: DetailOut}, request=accept_serializer
+    )
+    @action(methods=["POST"], detail=True)
+    def accept(self, request: Request, pk: int):
+        serializer: serializers.Serializer = self.accept_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        offer = models.Offer.objects.get(id=pk)
+        order = models.Offer.service.accept(
+            offer=offer,
+            payload=AcceptPayload(volume=data["volume"], user_id=request.user.id),
+        )
+        return Response(OrderSerializer(instance=order).data)
