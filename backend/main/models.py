@@ -250,13 +250,15 @@ class Order(models.Model):
     customer = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="customer"
     )
-    documents = models.ManyToManyField(Document)
+    documents = models.ManyToManyField(Document, blank=True)
     selected_warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
 
     name_of_contract = models.CharField(
-        "Название договора", max_length=250, default="",
+        "Название договора", max_length=250, default="", blank=True
     )
-    number_of_spec = models.CharField("Номер спецификации", max_length=250, default="",)
+    number_of_spec = models.CharField(
+        "Номер спецификации", max_length=250, default="", blank=True
+    )
     date_start_of_spec = models.DateTimeField(
         "Дата начала спецификации", blank=True, null=True
     )
