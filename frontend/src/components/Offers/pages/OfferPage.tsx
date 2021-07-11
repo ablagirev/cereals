@@ -1,4 +1,4 @@
-import { FieldArray, Form, Formik, useFormikContext } from "formik";
+import { FieldArray, Form, Formik } from "formik";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { generatePath, useHistory, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -24,7 +24,6 @@ import isNumber from "lodash-es/isNumber";
 import { Tooltip } from "../../../uikit/Tooltip";
 import { PushContext } from "../../../context";
 import * as Yup from "yup";
-import { useQuery } from "react-query";
 
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();

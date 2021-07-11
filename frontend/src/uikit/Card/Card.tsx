@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 import { Flex } from "..";
-import { theme } from "../../theme";
+import { EMPTY_CHAR } from "../../utils/consts";
 import { Typography } from "../Text";
 
 interface IProps {
   title: string;
-  statusText?: string;
+  statusText?: JSX.Element;
   onClick?: () => void;
 }
 
@@ -25,11 +25,7 @@ export const Card: React.FC<IProps> = ({
             {title}
           </Typography>
         </Flex>
-        {statusText && (
-          <Typography size="sm" color="#918F89">
-            {statusText}
-          </Typography>
-        )}
+        {statusText || EMPTY_CHAR}
       </StyledFlex>
       {children}
     </Wrapper>
