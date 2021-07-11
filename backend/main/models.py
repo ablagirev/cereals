@@ -277,6 +277,18 @@ class Order(models.Model):
         "Дата окончания экспорта", blank=True, null=True
     )
     amount_of_NDS = models.IntegerField("Размер НДС", default=0)
+    customer_cost = models.IntegerField(default=0)
+    total = models.IntegerField(default=0)
+
+    @property
+    def total_with_NDS(self):
+        return (
+            self.offer.cost + (self.offer.cost * self.amount_of_NDS / 100)
+        ) * self.accepted_volume
+
+    @property
+    def customer_cost_with_NDS(self):
+        return self.customer_cost + (self.customer_cost * self.amount_of_NDS / 100)
 
 
 class RateForDelivery(models.Model):
