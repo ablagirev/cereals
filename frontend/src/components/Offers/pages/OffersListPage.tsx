@@ -17,13 +17,16 @@ import {
   formatMoney,
   numberWithSeparators,
 } from "../../../utils/utils";
+import groupBy from "lodash-es/groupBy";
 
-// TODO: заменить на i18n
-export const getStatus = (status: string) => {
-  switch (status) {
+const getStatusName = (statusCode: string) => {
+  switch (statusCode) {
     case "active":
+    case "pending":
       return "Активные";
-    case "archive":
+    case "archived":
+    case "accepted":
+    case "partial":
       return "Завершенные";
     default:
       return EMPTY_CHAR;
@@ -52,7 +55,7 @@ export const OffersListPage: React.FC = () => {
 
   const renderOfferTab = useCallback(
     (data: IOffer[]): ITab => {
-      const status = getStatus(data?.[0]?.status);
+      const status = getStatusName(data?.[0]?.status);
       const tab = {
         label: status && `${status} - ${data?.length}`,
         items: data?.map((item) => {
@@ -108,7 +111,11 @@ export const OffersListPage: React.FC = () => {
           return (
             <Card
               title={`${title} ${harvestType}, ${formatDate(harvestYear)}`}
-              statusText={`#${id}`}
+              statusText={
+                <Typography size="sm" color="#918F89">
+                  {`#${id}`}
+                </Typography>
+              }
               onClick={() => handleOfferClick(id)}
             >
               <Spacer space={30} />
@@ -122,12 +129,11 @@ export const OffersListPage: React.FC = () => {
     [warehouseData]
   );
 
-  const activeData = renderOfferTab(
-    offerData?.filter((el) => el.status === "active")
-  );
-  const archiveData = renderOfferTab(
-    offerData?.filter((el) => el.status === "archive")
-  );
+  const offerTabs = Object.entries(
+    groupBy(offerData, (obj) => getStatusName(obj.status))
+  ).map((offer) => {
+    return renderOfferTab(offer[1]);
+  });
 
   return isFetching ? (
     <Loader />
@@ -142,7 +148,7 @@ export const OffersListPage: React.FC = () => {
           Создать предложение
         </Button>
         <Spacer space={28} />
-        <Tabs tabs={[activeData, archiveData]} />
+        <Tabs tabs={offerTabs} />
       </Flex>
     </Wrapper>
   );

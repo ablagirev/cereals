@@ -5,7 +5,7 @@ const apiNames = {
     offer: 'offer',
     product: 'product',
     warehouse: 'warehouse',
-    order: 'order'
+    orders: 'orders'
 };
 
 const buildEndpoint = (name: string) => {
@@ -23,7 +23,7 @@ class AppConfig {
             offer,
             product,
             warehouse,
-            order
+            orders
         } = apiNames;
 
         return {
@@ -31,7 +31,7 @@ class AppConfig {
             offer: buildEndpoint(offer),
             product: buildEndpoint(product),
             warehouse: buildEndpoint(warehouse),
-            order: buildEndpoint(order),
+            orders: buildEndpoint(orders),
             token: localStorage.getItem(STORAGE_TOKEN_NAME),
             tokenType: localStorage.getItem(STORAGE_TOKEN_TYPE),
         };

@@ -24,3 +24,5 @@ media
 
 
 .env
+
+.lock

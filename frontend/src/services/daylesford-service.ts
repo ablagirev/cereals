@@ -2,7 +2,7 @@ import { appConfig } from "../config";
 import { POST, GET, PATCH, DELETE, UPLOAD } from "../utils/http";
 import { IOffer, IOrder, IProduct, IWarehouse } from "./models";
 
-const {auth, offer, product, warehouse, order} = appConfig.api
+const {auth, offer, product, warehouse, orders} = appConfig.api
 
 /**
  * Методы auth-service.
@@ -27,9 +27,10 @@ export const daylesfordService = {
      getWarehouses: () => GET<IWarehouse[]>(`${warehouse}/`),
 
      //orders
-     getOrderList: () => GET<IOrder[]>(`${order}/`),
+     getOrderList: () => GET<IOrder[]>(`${orders}/`),
+     getOrder: (id: string) => GET<IOrder>(`${orders}/${id}/`),
 
      // TODO: fake service - добавить как будет ендпоинт по отправке файлов
-     uploadOrderFile: (file: File, request: any) => UPLOAD(`${order}/${request.id}/upload`, [file], request),
+     uploadOrderFile: (file: File, request: any) => UPLOAD(`${orders}/${request.id}/upload`, [file], request),
 };
  
