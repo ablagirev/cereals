@@ -5,7 +5,7 @@ import { TAppNavItem } from "../../routes/models";
 import { ProtectedRoute } from "../../routes/ProtectedRoute";
 import { RedirectToFirstAvailable } from "../../routes/RedirectToFirstAvailable";
 import { IRouteParams } from "../../utils/models";
-import { OrdersListPage } from "./pages";
+import { OrderPage, OrdersListPage } from "./pages";
 
 export const getOrdersNavigation = ({ id }: IRouteParams): TAppNavItem[] => [
   {
@@ -18,22 +18,22 @@ export const getOrdersNavigation = ({ id }: IRouteParams): TAppNavItem[] => [
   },
   {
     allowed: [],
-    path: routes.orders.orderTimeline.path,
+    path: routes.orders.timeline.path,
     linkTo: id
-      ? generatePath(routes.orders.orderTimeline.path, { id })
+      ? generatePath(routes.orders.timeline.path, { id })
       : routes.orders.list.path,
     route: {
-      render: () => <div>Страница предложения (таймлайн)</div>,
+      render: () => <OrderPage />,
     },
   },
 ];
 
 export const getOrdersRoutes = ({ id }: IRouteParams) => {
-  const dealingsNavigation = getOrdersNavigation({ id });
+  const ordersNavigation = getOrdersNavigation({ id });
 
   return (
     <Switch>
-      {dealingsNavigation.map((item: TAppNavItem) => (
+      {ordersNavigation.map((item: TAppNavItem) => (
         <ProtectedRoute
           allowed={item.allowed}
           key={item.path}
@@ -42,7 +42,7 @@ export const getOrdersRoutes = ({ id }: IRouteParams) => {
           render={item.route.render}
         />
       ))}
-      <RedirectToFirstAvailable nav={dealingsNavigation} />
+      <RedirectToFirstAvailable nav={ordersNavigation} />
     </Switch>
   );
 };
