@@ -7,6 +7,13 @@ from ..enums import TaxTypes
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    """
+    Cтатусы:
+    active - Новая сделка
+    finished - Завершенная
+    failed - Провалененная сделка
+    """
+
     title = serializers.CharField(source="offer.product.title")
     cost_with_nds = serializers.IntegerField(source="offer.cost_with_NDS")
     cost = serializers.IntegerField(source="offer.cost")
