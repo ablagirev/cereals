@@ -178,6 +178,7 @@ class Offer(models.Model):
     tax_type = models.CharField(
         max_length=25, choices=TaxTypes.readable(), default=TaxTypes.simple.value
     )
+    company_name = models.CharField(max_length=225, default="", blank=True)
 
     prices: Optional[list[DeliveryPrice]] = None
 
