@@ -84,10 +84,15 @@ def test_offer_grouped(client, offer_groping_case, admin_token):
 @pytest.mark.django_db(transaction=True)
 def test_order_accept(client, admin_token, products, offer: "models.Offer"):
     offer = models.Offer.objects.first()
+    warehouse = models.Warehouse.objects.first()
     res = client.post(
         reverse("offer-accept", kwargs={"pk": offer.id}),
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {admin_token}",
-        data=json.dumps({"volume": offer.volume / 2}),
+        data=json.dumps(
+            {"volume": round(offer.volume / 2), "warehouseId": warehouse.id}
+        ),
     )
-    assert res.status_code == 200
+    assert res.status_code == 200, res.json()
+
+    assert models.Order.objects.count() == 1

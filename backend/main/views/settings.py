@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from main import models
-from main.serializer import (
+from main.serializers import (
     SettingsSerializer,
     WarehouseSerializer,
     DetailOut,

@@ -58,3 +58,18 @@ class OrderStatus(Enum):
     def readable(cls):
         map_ = cls.read_map()
         return ((key.value, map_[key]) for key in cls)
+
+
+class ProfileType(Enum):
+    admin = "admin"
+    farmer = "farmer"
+    provider = "provider"
+
+    @classmethod
+    def read_map(cls):
+        return {cls.admin: "Админ", cls.farmer: "Фермер", cls.provider: "Провайдер"}
+
+    @classmethod
+    def readable(cls):
+        map_ = cls.read_map()
+        return ((key.value, map_[key]) for key in cls)

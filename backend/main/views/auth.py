@@ -8,13 +8,13 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from main.serializer import inline_serializer, LoginOut
+from main import serializers as ser
 
 
 @extend_schema(tags=["auth"])
 class AuthViewSet(GenericViewSet):
     permission_classes = [AllowAny]
-    input_serializer = inline_serializer(
+    input_serializer = ser.inline_serializer(
         "LoginSerializer",
         {
             "username": serializers.CharField(required=True),
@@ -22,7 +22,7 @@ class AuthViewSet(GenericViewSet):
         },
     )
 
-    @extend_schema(request=input_serializer, responses={200: LoginOut})
+    @extend_schema(request=input_serializer, responses={200: ser.LoginOut})
     @action(detail=False, methods=["post"])
     def login(self, request: Request):
         serializer = self.input_serializer(data=request.data)
@@ -40,3 +40,10 @@ class AuthViewSet(GenericViewSet):
         return Response(
             status=status.HTTP_403_FORBIDDEN, data={"detail": "Доступ запрещен"}
         )
+
+    @extend_schema()
+    @action(methods=("GET",), detail=False)
+    def get_profile(self, request: Request):
+        user = request.user
+        if user.profile:
+            pass

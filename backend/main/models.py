@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from main.consts import NDS
-from main.enums import SpecificationTypes, OfferStatus, OrderStatus
+from main.enums import SpecificationTypes, OfferStatus, OrderStatus, ProfileType
 from main.managers.offer import OfferManager
 from main.querysets.offer import OfferQuerySet, DeliveryPrice
 
@@ -280,3 +280,15 @@ class RateForDelivery(models.Model):
 
     def __str__(self):
         return "{}р за 1 тонну".format(self.cost_per_tonne)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        "auth.User", on_delete=models.CASCADE, related_name="profile"
+    )
+    company = models.ForeignKey(
+        Company, on_delete=models.CASCADE, related_name="profiles"
+    )
+    type = models.CharField(
+        choices=ProfileType.readable(), max_length=25, default=ProfileType.farmer.value
+    )

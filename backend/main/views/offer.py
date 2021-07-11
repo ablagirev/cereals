@@ -11,49 +11,43 @@ from rest_framework.viewsets import ModelViewSet
 from .common import get_or_unprocessable
 from .mixins import UpdateViewSetMixin
 from .. import models
-from .. import serializer
+from .. import serializers as ser
 from ..managers.offer import AcceptPayload
 from ..querysets.offer import GroupedOffers
-from ..serializer import (
-    inline_serializer,
-    DetailOut,
-    DetailOfferSerializer,
-    OrderSerializer,
-)
 
 
 @extend_schema(tags=["offer"])
 class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = models.Offer.objects.all()
-    serializer_class = serializer.OfferSerializer
-    grouped_serializer = serializer.GroupedOffers
+    serializer_class = ser.OfferSerializer
+    grouped_serializer = ser.GroupedOffers
     partial_update_output_serializer = serializer_class
-    partial_update_serializer = inline_serializer(
+    partial_update_serializer = ser.inline_serializer(
         "OfferPartialUpdate",
         {
-            "product": inline_serializer(
+            "product": ser.inline_serializer(
                 "ProductById", {"id": serializers.IntegerField(required=True)}
             )(required=False),
-            "warehouse": inline_serializer(
+            "warehouse": ser.inline_serializer(
                 "WarehouseById", {"id": serializers.IntegerField(required=True)}
             )(required=False),
         },
     )
-    create_serializer = inline_serializer(
+    create_serializer = ser.inline_serializer(
         "OfferCreate",
         {
-            "product": inline_serializer(
+            "product": ser.inline_serializer(
                 "ProductById", {"id": serializers.IntegerField(required=True)}
             )(required=False),
-            "warehouse": inline_serializer(
+            "warehouse": ser.inline_serializer(
                 "WarehouseById", {"id": serializers.IntegerField(required=True)}
             )(required=False),
             "cost": serializers.IntegerField(required=True),
             "volume": serializers.IntegerField(required=True),
         },
     )
-    accept_serializer = inline_serializer(
+    accept_serializer = ser.inline_serializer(
         "AcceptOffer",
         {
             "volume": serializers.IntegerField(required=True),
@@ -61,18 +55,18 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
         },
     )
 
-    @extend_schema(responses={200: DetailOfferSerializer, 403: DetailOut})
+    @extend_schema(responses={200: ser.DetailOfferSerializer, 403: ser.DetailOut})
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
         obj.prices = models.Offer.objects.get_price_for(offer=obj, user=request.user)
-        return Response(DetailOfferSerializer(instance=obj).data)
+        return Response(ser.DetailOfferSerializer(instance=obj).data)
 
     @extend_schema(
         request=partial_update_serializer,
         responses={
             200: partial_update_output_serializer,
-            403: DetailOut,
-            422: DetailOut,
+            403: ser.DetailOut,
+            422: ser.DetailOut,
         },
     )
     def partial_update(self, request: Request, *args, **kwargs):
@@ -124,7 +118,7 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-    @extend_schema(responses={200: grouped_serializer(many=True), 403: DetailOut})
+    @extend_schema(responses={200: grouped_serializer(many=True), 403: ser.DetailOut})
     @action(methods=["GET"], detail=False)
     def grouped(self, request: Request):
         offers_iter: Iterable[
@@ -135,7 +129,8 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
         )
 
     @extend_schema(
-        responses={200: OrderSerializer, 403: DetailOut}, request=accept_serializer
+        responses={200: ser.OrderSerializer, 403: ser.DetailOut},
+        request=accept_serializer,
     )
     @action(methods=["POST"], detail=True)
     def accept(self, request: Request, pk: int):
@@ -151,4 +146,4 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
                 warehouse_id=data["warehouse_id"],
             ),
         )
-        return Response(OrderSerializer(instance=order).data)
+        return Response(ser.OrderSerializer(instance=order).data)
