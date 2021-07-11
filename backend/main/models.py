@@ -6,7 +6,13 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from main.consts import NDS
-from main.enums import SpecificationTypes, OfferStatus, OrderStatus, ProfileType
+from main.enums import (
+    SpecificationTypes,
+    OfferStatus,
+    OrderStatus,
+    ProfileType,
+    TaxTypes,
+)
 from main.managers.offer import OfferManager
 from main.querysets.offer import OfferQuerySet, DeliveryPrice
 
@@ -169,6 +175,9 @@ class Offer(models.Model):
         "Дата окончания поставки", blank=True, null=True
     )
     cost = models.IntegerField()
+    tax_type = models.CharField(
+        max_length=25, choices=TaxTypes.readable(), default=TaxTypes.simple.value
+    )
 
     prices: Optional[list[DeliveryPrice]] = None
 

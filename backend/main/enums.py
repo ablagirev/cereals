@@ -73,3 +73,16 @@ class ProfileType(Enum):
     def readable(cls):
         map_ = cls.read_map()
         return ((key.value, map_[key]) for key in cls)
+
+
+class TaxTypes(Enum):
+    simple = "simple"
+
+    @classmethod
+    def read_map(cls):
+        return {cls.simple: "Упрощенная"}
+
+    @classmethod
+    def readable(cls):
+        map_ = cls.read_map()
+        return ((key.value, map_[key]) for key in cls)

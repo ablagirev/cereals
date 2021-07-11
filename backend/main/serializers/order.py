@@ -10,6 +10,7 @@ class OrderSerializer(serializers.ModelSerializer):
     cost = serializers.IntegerField(source="offer.cost")
     period_of_export = serializers.IntegerField(source="offer.period_of_export")
     cost_by_tonne = serializers.SerializerMethodField("get_cost_by_tonne")
+    tax_type = serializers.CharField(source="offer.tax_type")
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_cost_by_tonne(self, instance: models.Order) -> int:
