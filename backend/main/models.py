@@ -241,7 +241,7 @@ class Shipment(models.Model):
 class Order(models.Model):
     offer = models.ForeignKey(Offer, on_delete=models.CASCADE, related_name="orders")
     status = models.CharField(
-        max_length=50, choices=OrderStatus.readable(), default=OrderStatus.new.value
+        max_length=50, choices=OrderStatus.readable(), default=OrderStatus.active.value
     )
     provider = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="provider"

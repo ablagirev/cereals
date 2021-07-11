@@ -48,11 +48,12 @@ class OfferStatus(Enum):
 
 
 class OrderStatus(Enum):
-    new = "new"
+    active = "active"
+    finished = "finished"
 
     @classmethod
     def read_map(cls):
-        return {cls.new: "Новый"}
+        return {cls.active: "Новый", cls.finished: "Завершена"}
 
     @classmethod
     def readable(cls):

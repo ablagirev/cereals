@@ -11,6 +11,15 @@ class DeliveryPrice(serializers.Serializer):
 
 
 class OfferSerializer(serializers.ModelSerializer):
+    """
+    Статусы (status):
+    active - Сделка активный (создан)
+    archived - Сделка зархивирована (завершена)
+    accepted = Сделка принята (завершена с успешеыми заказами)
+    pending = Сделка в процессе
+    partial = Сделка частично заверешена
+    """
+
     class Meta:
         model = models.Offer
         fields = "__all__"
