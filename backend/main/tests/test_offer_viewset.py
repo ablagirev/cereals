@@ -8,8 +8,18 @@ from main import models
 
 
 @pytest.fixture()
-def offer():
+def offer() -> "models.Offer":
     return baker.make("main.Offer")
+
+
+@pytest.fixture()
+def product() -> "models.Product":
+    return baker.make("main.Product")
+
+
+@pytest.fixture()
+def warehouse() -> "models.Warehouse":
+    return baker.make("main.Warehouse")
 
 
 @pytest.mark.django_db(transaction=True)
@@ -17,7 +27,14 @@ def test_offer_creating(client, admin_token, products):
     response = client.post(
         reverse("offer-list"),
         content_type="application/json",
-        data=json.dumps({"cost": 100, "volume": 10}),
+        data=json.dumps(
+            {
+                "cost": 100,
+                "volume": 10,
+                "product": {"id": models.Product.objects.first().id},
+                "warehouse": {"id": models.Warehouse.objects.first().id},
+            }
+        ),
         HTTP_AUTHORIZATION=f"Bearer {admin_token}",
     )
     assert response.status_code == 201
@@ -32,6 +49,7 @@ def test_offer_creating(client, admin_token, products):
                 "cost": 100,
                 "volume": 10,
                 "product": {"id": models.Product.objects.first().id},
+                "warehouse": {"id": models.Warehouse.objects.first().id},
             }
         ),
         HTTP_AUTHORIZATION=f"Bearer {admin_token}",
@@ -61,3 +79,20 @@ def test_offer_grouped(client, offer_groping_case, admin_token):
         reverse("offer-grouped"), HTTP_AUTHORIZATION=f"Bearer {admin_token}",
     )
     assert res.status_code == 200
+
+
+@pytest.mark.django_db(transaction=True)
+def test_order_accept(client, admin_token, products, offer: "models.Offer"):
+    offer = models.Offer.objects.first()
+    warehouse = models.Warehouse.objects.first()
+    res = client.post(
+        reverse("offer-accept", kwargs={"pk": offer.id}),
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {admin_token}",
+        data=json.dumps(
+            {"volume": round(offer.volume / 2), "warehouseId": warehouse.id}
+        ),
+    )
+    assert res.status_code == 200, res.json()
+
+    assert models.Order.objects.count() == 1

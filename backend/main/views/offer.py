@@ -11,49 +11,62 @@ from rest_framework.viewsets import ModelViewSet
 from .common import get_or_unprocessable
 from .mixins import UpdateViewSetMixin
 from .. import models
-from .. import serializer
+from .. import serializers as ser
+from ..managers.offer import AcceptPayload
 from ..querysets.offer import GroupedOffers
-from ..serializer import inline_serializer, DetailOut
 
 
 @extend_schema(tags=["offer"])
 class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     queryset = models.Offer.objects.all()
-    serializer_class = serializer.OfferSerializer
-    grouped_serializer = serializer.GroupedOffers
+    serializer_class = ser.OfferSerializer
+    grouped_serializer = ser.GroupedOffers
     partial_update_output_serializer = serializer_class
-    partial_update_serializer = inline_serializer(
+    partial_update_serializer = ser.inline_serializer(
         "OfferPartialUpdate",
         {
-            "product": inline_serializer(
+            "product": ser.inline_serializer(
                 "ProductById", {"id": serializers.IntegerField(required=True)}
             )(required=False),
-            "warehouse": inline_serializer(
+            "warehouse": ser.inline_serializer(
                 "WarehouseById", {"id": serializers.IntegerField(required=True)}
             )(required=False),
         },
     )
-    create_serializer = inline_serializer(
+    create_serializer = ser.inline_serializer(
         "OfferCreate",
         {
-            "product": inline_serializer(
+            "product": ser.inline_serializer(
                 "ProductById", {"id": serializers.IntegerField(required=True)}
             )(required=False),
-            "warehouse": inline_serializer(
+            "warehouse": ser.inline_serializer(
                 "WarehouseById", {"id": serializers.IntegerField(required=True)}
             )(required=False),
             "cost": serializers.IntegerField(required=True),
             "volume": serializers.IntegerField(required=True),
         },
     )
+    accept_serializer = ser.inline_serializer(
+        "AcceptOffer",
+        {
+            "volume": serializers.IntegerField(required=True),
+            "warehouse_id": serializers.IntegerField(required=True),
+        },
+    )
+
+    @extend_schema(responses={200: ser.DetailOfferSerializer, 403: ser.DetailOut})
+    def retrieve(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj.prices = models.Offer.objects.get_price_for(offer=obj, user=request.user)
+        return Response(ser.DetailOfferSerializer(instance=obj).data)
 
     @extend_schema(
         request=partial_update_serializer,
         responses={
             200: partial_update_output_serializer,
-            403: DetailOut,
-            422: DetailOut,
+            403: ser.DetailOut,
+            422: ser.DetailOut,
         },
     )
     def partial_update(self, request: Request, *args, **kwargs):
@@ -99,13 +112,13 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
                 message="Склад с указанным id не найден",
             )
             create_data["warehouse_id"] = warehouse.id
-        offer = models.Offer.service.create(**create_data)
+        offer = models.Offer.service.create(creator_id=request.user.id, **create_data)
         return Response(
             data=self.serializer_class(instance=offer).data,
             status=status.HTTP_201_CREATED,
         )
 
-    @extend_schema(responses={200: grouped_serializer(many=True), 403: DetailOut})
+    @extend_schema(responses={200: grouped_serializer(many=True), 403: ser.DetailOut})
     @action(methods=["GET"], detail=False)
     def grouped(self, request: Request):
         offers_iter: Iterable[
@@ -114,3 +127,23 @@ class OfferViewSet(UpdateViewSetMixin, ModelViewSet):
         return Response(
             data=self.grouped_serializer(instance=offers_iter, many=True).data
         )
+
+    @extend_schema(
+        responses={200: ser.OrderSerializer, 403: ser.DetailOut},
+        request=accept_serializer,
+    )
+    @action(methods=["POST"], detail=True)
+    def accept(self, request: Request, pk: int):
+        serializer: serializers.Serializer = self.accept_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        offer = models.Offer.objects.get(id=pk)
+        order = models.Offer.service.accept(
+            offer=offer,
+            payload=AcceptPayload(
+                volume=data["volume"],
+                user_id=request.user.id,
+                warehouse_id=data["warehouse_id"],
+            ),
+        )
+        return Response(ser.OrderSerializer(instance=order).data)

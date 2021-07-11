@@ -1,66 +1,69 @@
 from datetime import datetime, timezone
+from decimal import Decimal
+from typing import Optional
 
 from django.contrib.auth.models import User
 from django.db import models
 
 from main.consts import NDS
+from main.enums import (
+    SpecificationTypes,
+    OfferStatus,
+    OrderStatus,
+    ProfileType,
+    TaxTypes,
+)
 from main.managers.offer import OfferManager
-from main.querysets.offer import OfferQuerySet
+from main.querysets.offer import OfferQuerySet, DeliveryPrice
 
 
+# Для Sign
 class Company(models.Model):
     name_of_provider = models.CharField("Название компании", max_length=250)
     head_of_provider = models.CharField(
-        "ФИО руководителя компании", max_length=250, blank=True, null=True
+        "ФИО руководителя компании", max_length=250, blank=True, default=""
     )
     short_fio = models.CharField(
-        "сокращенное ФИО руководителя компании", max_length=250, blank=True, null=True
+        "сокращенное ФИО руководителя компании", max_length=250, blank=True, default=""
     )
     position_head_of_provider = models.CharField(
-        "Должность руководителя компании", max_length=250, blank=True, null=True
+        "Должность руководителя компании", max_length=250, blank=True, default=""
     )
     basis_of_doc = models.CharField(
-        "Должность руководителя компании", max_length=250, blank=True, null=True
+        "Должность руководителя компании", max_length=250, blank=True, default=""
     )
     address_load = models.CharField(
-        "Должность руководителя компании", max_length=250, blank=True, null=True
+        "Должность руководителя компании", max_length=250, blank=True, default=""
     )
     ul_address = models.CharField(
-        "Юридический адрес компании", max_length=500, blank=True, null=True
+        "Юридический адрес компании", max_length=500, blank=True, default=""
     )
-    inn = models.IntegerField("ИНН компании", blank=True, null=True)
-    kpp = models.IntegerField("КПП компании", blank=True, null=True)
-    ogrn = models.IntegerField("ОГРН компании", blank=True, null=True)
-    bik = models.CharField("БИК компании", max_length=250, blank=True, null=True)
+    inn = models.CharField("ИНН компании", blank=True, default="", max_length=500)
+    kpp = models.CharField("КПП компании", blank=True, default="", max_length=500)
+    ogrn = models.CharField("ОГРН компании", blank=True, default="", max_length=500)
+    bik = models.CharField("БИК компании", max_length=250, blank=True, default="")
     payment_account = models.CharField(
-        "Расчетный счет компании", max_length=250, blank=True, null=True
+        "Расчетный счет компании", max_length=250, blank=True, default="",
     )
     correspondent_account = models.CharField(
-        "Корреспондентский счет компании", max_length=250, blank=True, null=True
+        "Корреспондентский счет компании", max_length=250, blank=True, default="",
     )
     phone_number = models.CharField(
-        "Телефонный номер компании", max_length=64, blank=True, null=True
+        "Телефонный номер компании", max_length=64, blank=True, default="",
     )
     email_of_head = models.CharField(
-        "Email руководителя", max_length=250, blank=True, null=True
+        "Email руководителя", max_length=250, blank=True, default="",
     )
     name_of_bank = models.CharField(
-        "Название банка", max_length=250, blank=True, null=True
+        "Название банка", max_length=250, blank=True, default="",
     )
 
-
-class NameOfSpecification(models.Model):
-    name = models.CharField("Название характеристики", max_length=250)
-
-    def __str__(self):
-        return self.name
-
-
-class TypeOfSpecification(models.Model):
-    type = models.CharField("Тип поля", max_length=250)
+    # @property
+    # def is_valid_for_sign(self) -> bool:
+    #     return (self.pro)
 
     def __str__(self):
-        return self.type
+        return self.name_of_provider
 
 
 class UnitOfMeasurementOfSpecification(models.Model):
@@ -71,93 +74,63 @@ class UnitOfMeasurementOfSpecification(models.Model):
 
 
 class SpecificationsOfProduct(models.Model):
-    name_of_specification = models.ForeignKey(
-        NameOfSpecification,
-        on_delete=models.CASCADE,
-        related_name="name_of_specification",
-        blank=True,
-        null=True,
-    )
-    type_field = models.ForeignKey(
-        TypeOfSpecification,
-        on_delete=models.CASCADE,
-        related_name="type_field",
-        blank=True,
-        null=True,
-    )
+    name = models.CharField(max_length=255)
+    required = models.BooleanField(default=False)
+    type = models.CharField(
+        choices=SpecificationTypes.readable(), max_length=255
+    )  # Enum
     unit_of_measurement = models.ForeignKey(
         UnitOfMeasurementOfSpecification,
         on_delete=models.CASCADE,
         related_name="unit_of_measurement",
-        blank=True,
-        null=True,
     )
     description = models.TextField("Описание", blank=True, null=True)
-    min_value = models.IntegerField("Минимальное значение", blank=True, null=True)
-    is_edit_min_value = models.BooleanField(
-        "Редактируемое минимальное значение?", blank=True, null=True
-    )
-    max_value = models.IntegerField("Максимальное значение", blank=True, null=True)
-    is_edit_max_value = models.BooleanField(
-        "Редактируемое максимальное значение?", blank=True, null=True
-    )
+    # min_value = models.IntegerField("Минимальное значение", blank=True, null=True)
+    # is_edit_min_value = models.BooleanField(
+    #     "Редактируемое минимальное значение?", blank=True, null=True
+    # )
+    # max_value = models.IntegerField("Максимальное значение", blank=True, null=True)
+    # is_edit_max_value = models.BooleanField(
+    #     "Редактируемое максимальное значение?", blank=True, null=True
+    # )
     GOST = models.CharField("ГОСТ", max_length=250, blank=True, null=True)
 
     def __str__(self):
-        return 'Спецификация "{0}"'.format(self.name_of_specification.name)
+        return f"Спецификация  {self.name}"
+
+
+class ProductSpecification(models.Model):
+    product = models.ForeignKey(
+        "Product", on_delete=models.CASCADE, related_name="specification_values"
+    )
+    specification = models.ForeignKey(
+        "SpecificationsOfProduct",
+        on_delete=models.CASCADE,
+        related_name="specification_values",
+    )
+
+    value = models.TextField(blank=True)
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+    specifications = models.ManyToManyField(
+        SpecificationsOfProduct, blank=True, related_name="categories",
+    )
+
+    def __str__(self):
+        return f"Категория: {self.name}"
 
 
 class Product(models.Model):
     title = models.CharField("Название", max_length=250, null=True)
     description = models.TextField("Описание", blank=True, null=True)
     specifications = models.ManyToManyField(
-        SpecificationsOfProduct, blank=True, related_name="specifications", null=True
+        SpecificationsOfProduct, blank=True, related_name="specifications",
     )
-    # amount_of_gluten = models.IntegerField('Количество клейковины', blank=True, null=True)
-    # vitreous = models.IntegerField('Стекловидность', blank=True, null=True)
-    # nature = models.IntegerField('Натура', blank=True, null=True)
-    # moisture = models.IntegerField('Влажность', blank=True, null=True)
-    # weed_admixture = models.IntegerField('Сорная примесь', blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     harvest_year = models.DateField("Год урожая", blank=True, null=True)
     harvest_type = models.CharField("Тип урожая", max_length=250, blank=True, null=True)
-    # humidity = models.IntegerField('Влажность', blank=True, null=True)
-    # grain_impurity = models.IntegerField('Зерновая примесь', blank=True, null=True)
-    # broken = models.IntegerField('Битые', blank=True, null=True)
-    # damaged_by_mold = models.IntegerField('Поврежденные плесенью', blank=True, null=True)
-    # aflatoxin = models.IntegerField('Афлатоксин', blank=True, null=True)
-    # vomitoxin = models.IntegerField('Вомитоксин', blank=True, null=True)
-    # protein = models.IntegerField('Протеин', blank=True, null=True)
-    # drop_number = models.IntegerField('Число падения', blank=True, null=True)
-    # damage_bedbug_turtle = models.IntegerField('Повреждение клопом черепашкой', blank=True, null=True)
-    # alveographic_characteristics_of_the_test = models.IntegerField(
-    #     'Альвеографические характеристики теста', blank=True, null=True)
-    # gluten_strain_gauge = models.IntegerField('Измеритель деформации клейковины', blank=True, null=True)
-    # damaged = models.IntegerField('Поврежденные', blank=True, null=True)
-    # colored = models.IntegerField('Цветные', blank=True, null=True)
-    # oilseed_admixture = models.IntegerField('Масличная примесь', blank=True, null=True)
-    # oil_content = models.IntegerField('Масличность', blank=True, null=True)
-    # acid_number_of_the_oil = models.IntegerField('Кислотное число масла', blank=True, null=True)
-    # free_fatty_acids = models.IntegerField('Свободные жирные кислоты', blank=True, null=True)
-    # salmonella = models.IntegerField('Сальмонелла', blank=True, null=True)
-    # pesticides = models.IntegerField('Пестициды', blank=True, null=True)
-    # erucic_acid = models.IntegerField('Эруковая кислота', blank=True, null=True)
-    # glucosinolates = models.IntegerField('Глюкозинолаты', blank=True, null=True)
-    # genetically_modified_organism = models.IntegerField('Генетически модифицированный организм', blank=True, null=True)
-    # fiber = models.IntegerField('Клетчатка', blank=True, null=True)
-    # dirty_chickpeas = models.IntegerField('Грязный нут', blank=True, null=True)
-    # passing_through_the_sieve = models.IntegerField('Проход через сито', blank=True, null=True)
-    # smell = models.IntegerField('Запах', blank=True, null=True)
-    # harmful_substances = models.IntegerField('Вредные вещества', blank=True, null=True)
-    # urea = models.IntegerField('Мочевина', blank=True, null=True)
-    # potassium_hydroxide = models.IntegerField('Гидрооксид калия', blank=True, null=True)
-    # trypsin = models.IntegerField('Трипсин', blank=True, null=True)
-    # ochratoxin = models.IntegerField('Охратоксин', blank=True, null=True)
-    # zearalenon = models.IntegerField('Зеараленон', blank=True, null=True)
-    # fumonisin = models.IntegerField('Фумонизин', blank=True, null=True)
-    # damaged_by_drying = models.IntegerField('Поврежденные сушкой', blank=True, null=True)
-    # damaged_by_pests = models.IntegerField('Поврежденные вредителями', blank=True, null=True)
-    # other_cereals = models.IntegerField('Прочие зерновые', blank=True, null=True)
-    # infection_is_not_allowed = models.BooleanField('Зараженность не допускается', blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -167,33 +140,47 @@ class Warehouse(models.Model):
     title = models.CharField("Название", max_length=250, default="")
     address = models.CharField("Адрес", max_length=250, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
-    distance = models.IntegerField("Расстояние", blank=True, null=True)
 
     def __str__(self):
         return self.title
 
 
+class WarehouseDistance(models.Model):
+    # Todo: Added validation
+    form = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name="starts")
+    to = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name="ends")
+
+    distance = models.IntegerField()
+    price = models.IntegerField()
+
+
 class Offer(models.Model):
-    title = models.CharField("Заголовок", max_length=250, blank=True, null=True)
-    volume = models.IntegerField("Объем", blank=True, null=True)
-    description = models.TextField("Описание", blank=True, null=True)
-    # offer_lifetime = models.DateTimeField('Время жизни предложения', blank=True, null=True)
-    status = models.CharField("Статус", max_length=250, blank=True, null=True, default='active')
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    title = models.CharField(verbose_name="Заголовок", max_length=250)
+    volume = models.IntegerField(verbose_name="Объем")
+    description = models.TextField("Описание", blank=True, default="")
+    status = models.CharField(
+        "Статус",
+        max_length=250,
+        choices=OfferStatus.readable(),
+        default=OfferStatus.active.value,
+    )
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField("Создано (время)", auto_now_add=True)
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, blank=True, null=True
-    )
-    warehouse = models.ForeignKey(
-        Warehouse, on_delete=models.CASCADE, blank=True, null=True
-    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
     date_start_shipment = models.DateTimeField(
         "Дата старта поставки", blank=True, null=True
     )
     date_finish_shipment = models.DateTimeField(
         "Дата окончания поставки", blank=True, null=True
     )
-    cost = models.FloatField("Цена", blank=True, null=True)
+    cost = models.IntegerField()
+    tax_type = models.CharField(
+        max_length=25, choices=TaxTypes.readable(), default=TaxTypes.simple.value
+    )
+    company_name = models.CharField(max_length=225, default="", blank=True)
+
+    prices: Optional[list[DeliveryPrice]] = None
 
     objects = OfferQuerySet.as_manager()
     service = OfferManager()
@@ -201,13 +188,13 @@ class Offer(models.Model):
     @property
     def cost_with_NDS(self):
         if self.cost:
-            return self.cost + (self.cost / 100) * NDS
+            return self.cost + (self.cost * NDS / 100)
         else:
             return 0
 
     @property
-    def cost_by_tonne(self):
-        return 0
+    def cost_by_kg(self) -> Decimal:
+        return Decimal(round(self.cost / self.volume))
 
     @property
     def period_of_export(self):
@@ -231,10 +218,6 @@ class Offer(models.Model):
             return str(self.id)
 
 
-class Notification(models.Model):
-    pass
-
-
 class Document(models.Model):
     name = models.CharField("Имя документа", max_length=250, default="")
     type_doc = models.CharField("Тип документа", max_length=250, null=True, blank=True)
@@ -244,18 +227,9 @@ class Document(models.Model):
     )
 
 
-class QualityControl(models.Model):
-    pass
-
-
-class Payment(models.Model):
-    pass
-
-
 class CarsForShipment(models.Model):
     name = models.CharField(max_length=250)
-    company = models.CharField(max_length=250)
-    shipment_fact = models.IntegerField()
+    deliver = models.CharField(max_length=255)
 
 
 class Shipment(models.Model):
@@ -264,30 +238,26 @@ class Shipment(models.Model):
     cars = models.ManyToManyField(CarsForShipment)
 
 
-class Сontrol(models.Model):
-    pass
-
-
-class Deal(models.Model):
-    offer = models.ForeignKey(Offer, on_delete=models.CASCADE, related_name="offer")
-    status = models.CharField(max_length=250)
+class Order(models.Model):
+    offer = models.ForeignKey(Offer, on_delete=models.CASCADE, related_name="orders")
+    status = models.CharField(
+        max_length=50, choices=OrderStatus.readable(), default=OrderStatus.active.value
+    )
     provider = models.ForeignKey(
-        User, on_delete=models.CASCADE, blank=True, null=True, related_name="provider"
+        User, on_delete=models.CASCADE, related_name="provider"
     )
+    accepted_volume = models.IntegerField()
     customer = models.ForeignKey(
-        User, on_delete=models.CASCADE, blank=True, null=True, related_name="customer"
+        User, on_delete=models.CASCADE, related_name="customer"
     )
-    documents = models.ManyToManyField(Document)
-    quality_control = models.ManyToManyField(QualityControl)
-    payment = models.ManyToManyField(Payment)
-    shipment = models.ManyToManyField(Shipment)
-    control = models.ManyToManyField(Сontrol)
+    documents = models.ManyToManyField(Document, blank=True)
+    selected_warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
 
     name_of_contract = models.CharField(
-        "Название договора", max_length=250, blank=True, null=True
+        "Название договора", max_length=250, default="", blank=True
     )
     number_of_spec = models.CharField(
-        "Номер спецификации", max_length=250, blank=True, null=True
+        "Номер спецификации", max_length=250, default="", blank=True
     )
     date_start_of_spec = models.DateTimeField(
         "Дата начала спецификации", blank=True, null=True
@@ -308,20 +278,41 @@ class Deal(models.Model):
     date_finish_shipment = models.DateTimeField(
         "Дата окончания экспорта", blank=True, null=True
     )
-    amount_of_NDS = models.IntegerField("Размер НДС", blank=True, null=True)
+    amount_of_NDS = models.IntegerField("Размер НДС", default=0)
+    customer_cost = models.IntegerField(default=0)
+    total = models.IntegerField(default=0)
+
+    @property
+    def total_with_NDS(self):
+        return (
+            self.offer.cost + (self.offer.cost * self.amount_of_NDS / 100)
+        ) * self.accepted_volume
+
+    @property
+    def customer_cost_with_NDS(self):
+        return self.customer_cost + (self.customer_cost * self.amount_of_NDS / 100)
 
 
-class CoefficientOfDistance(models.Model):
-    min_distance = models.IntegerField("Дистанция от", blank=True, null=True)
-    max_distance = models.IntegerField("Дистанция до", blank=True, null=True)
-    coefficient = models.FloatField("Коэффициент умножения", blank=True, null=True)
-
-    def __str__(self):
-        return "От {0} до {1}".format(self.min_distance, self.max_distance)
-
-
-class BaseRateForDelivery(models.Model):
+class RateForDelivery(models.Model):
+    way = models.ForeignKey(
+        WarehouseDistance, on_delete=models.CASCADE, related_name="rates"
+    )
     cost_per_tonne = models.IntegerField("Стоимость за 1 тонну", blank=True, null=True)
+    min = models.IntegerField(blank=True, null=True)
+    max = models.IntegerField(blank=True, null=True)
+    delta = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     def __str__(self):
         return "{}р за 1 тонну".format(self.cost_per_tonne)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        "auth.User", on_delete=models.CASCADE, related_name="profile"
+    )
+    company = models.ForeignKey(
+        Company, on_delete=models.CASCADE, related_name="profiles"
+    )
+    type = models.CharField(
+        choices=ProfileType.readable(), max_length=25, default=ProfileType.farmer.value
+    )
