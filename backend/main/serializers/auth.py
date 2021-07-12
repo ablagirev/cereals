@@ -11,5 +11,5 @@ class ProfileSerializer(serializers.ModelSerializer):
     company = CompanySerializer()
 
     class Meta:
-        profile = models.Profile
+        model = models.Profile
         fields = ("type", "user")
