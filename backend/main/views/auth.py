@@ -66,7 +66,7 @@ class AuthViewSet(GenericViewSet):
         responses={200: ser.WarehouseSerializer, 403: ser.DetailOut},
         request=warehouse_add_serializer,
     )
-    @action(methods=("POST",), detail=False, url_path="/warehouse/add")
+    @action(methods=("POST",), detail=False, url_path="warehouse/add")
     def add_warehouse(self, request: Request):
         serializer: serializers.Serializer = self.warehouse_add_serializer(
             data=request.data
@@ -82,7 +82,7 @@ class AuthViewSet(GenericViewSet):
     @extend_schema(
         responses={200: ser.WarehouseSerializer(many=True), 403: ser.DetailOut}
     )
-    @action(methods=("GET",), detail=False, url_path="/warehouse/")
+    @action(methods=("GET",), detail=False, url_path="warehouse")
     def warehouses(self, request: Request):
         warehouses = models.Warehouse.objects.filter(owner_id=request.user.id)
         return Response(ser.WarehouseSerializer(instance=warehouses, many=True).data)
