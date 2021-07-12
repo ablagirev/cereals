@@ -16,8 +16,18 @@ class SpecificationsOfProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ProductSpecificationsSerializer(serializers.ModelSerializer):
+    specification = SpecificationsOfProductSerializer()
+
+    class Meta:
+        model = models.ProductSpecification
+        exclude = ("product",)
+
+
 class ProductSerializer(serializers.ModelSerializer):
-    specifications = SpecificationsOfProductSerializer(many=True)
+    specifications = ProductSpecificationsSerializer(
+        many=True, source="specification_values"
+    )
 
     class Meta:
         model = models.Product
