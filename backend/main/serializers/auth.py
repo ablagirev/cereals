@@ -12,4 +12,4 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Profile
-        fields = ("type", "user")
+        exclude = ("type", "user")
