@@ -1,5 +1,6 @@
 import React from "react";
 import { OffersPage } from "../components/Offers";
+import { OrdersPage } from "../components/Orders";
 
 import { routes } from "./consts";
 import { TAppNavSection } from "./models";
@@ -11,8 +12,7 @@ export const navigation: TAppNavSection = {
       allowed: [],
       path: routes.orders.path,
       route: {
-        exact: true,
-        render: () => <div>Страница сделок</div>,
+        render: () => <OrdersPage />,
       },
       element: {
         label: "Сделки",

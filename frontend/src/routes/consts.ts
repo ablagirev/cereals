@@ -17,9 +17,9 @@ export const routes = {
             key: 'list',
             path: `/${ORDERS}/list`,
         },
-        orderTimeline: {
-            key: 'order-timeline',
-            path: `/${OFFERS}/order/:id`,
+        timeline: {
+            key: 'timeline',
+            path: `/${ORDERS}/timeline/:id`,
         },
     },
     offers: {

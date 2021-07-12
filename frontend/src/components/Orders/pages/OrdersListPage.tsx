@@ -7,48 +7,135 @@ import { Flex, Spacer, Tabs, Typography } from "../../../uikit";
 import { Card } from "../../../uikit/Card/Card";
 import { Table } from "../../../uikit/Table/Table";
 import { ITab } from "../../../uikit/Tabs/Tabs";
+import { Loader } from "../../../uikit/Loader";
+import styled from "styled-components";
+import { formatMoney, getTrimText } from "../../../utils/utils";
+import { theme } from "../../../theme";
+import { EMPTY_CHAR } from "../../../utils/consts";
+
+const getStatusName = (statusCode: string) => {
+  switch (statusCode) {
+    case "active":
+      return "Активные";
+    case "finished":
+      return "Завершенные";
+    case "failed":
+      return "Аннулированные";
+    default:
+      return EMPTY_CHAR;
+  }
+};
+
+const getOrderStatusName = (statusCode: string) => {
+  switch (statusCode) {
+    case "active":
+      return "Сделка создана";
+    case "archived":
+      return "Сделка завершена";
+    case "accepted":
+      return "Сделка принята";
+    case "pending":
+      return "Сделка в процессе";
+    case "partial":
+      return "Сделка частично завершена";
+    default:
+      return EMPTY_CHAR;
+  }
+};
 
 export const OrdersListPage: React.FC = () => {
-  const { data } = useOrders();
+  const { data, isFetching } = useOrders();
   const history = useHistory();
   const ordersData = data || [];
 
   const handleOrderClick = (id: string | number) => {
-    history.push(generatePath(routes.orders.orderTimeline.path, { id }));
+    history.push(generatePath(routes.orders.timeline.path, { id }));
   };
 
   const renderOrderTab = (data: IOrder[]): ITab => {
-    const status = data?.[0]?.status;
+    const statusName = getStatusName(data?.[0]?.status);
     const tab = {
-      label: status && `${status} - ${data?.length}`,
+      label: statusName && `${statusName} - ${data?.length}`,
       items: data?.map((item) => {
-        const { title, id } = item || {};
+        const {
+          title,
+          offer,
+          acceptedVolume,
+          cost,
+          costWithNds,
+          taxType,
+          id,
+          customerCost,
+          customerCostWithNds,
+        } = item || {};
 
-        // TODO: разложить данные когда будет ендпоинт
+        const { status, companyName } = offer || {};
+
         const dataList = [
           {
             title: "Продавец",
-            content: [],
+            content: [companyName],
           },
           {
             title: "Налогообложение",
-            content: [],
+            content: [taxType],
           },
           {
             title: "Сделка",
-            content: [],
+            content: [
+              <Flex>
+                <span>{formatMoney(offer?.cost)}</span>
+                <Spacer width={18} />
+                <TaxPresence>без НДС</TaxPresence>
+              </Flex>,
+              <Flex>
+                <span>{formatMoney(offer?.costWithNds)}</span>
+                <Spacer width={18} />
+                <TaxPresence>с НДС</TaxPresence>
+              </Flex>,
+            ],
           },
           {
             title: "Цена продавца, руб",
-            content: [],
+            content: [
+              <Flex>
+                <span>{formatMoney(cost)}</span>
+                <Spacer width={18} />
+                <TaxPresence>без НДС / CNEXW</TaxPresence>
+              </Flex>,
+              <Flex>
+                <span>{formatMoney(costWithNds)}</span>
+                <Spacer width={18} />
+                <TaxPresence>с НДС / CVEXW</TaxPresence>
+              </Flex>,
+            ],
           },
           {
             title: "Цена покупателя, руб",
-            content: [],
+            content: [
+              <Flex>
+                <span>{formatMoney(customerCost)}</span>
+                <Spacer width={18} />
+                <TaxPresence>без НДС / CNCPT</TaxPresence>
+              </Flex>,
+              <Flex>
+                <span>{formatMoney(customerCostWithNds)}</span>
+                <Spacer width={18} />
+                <TaxPresence>с НДС / CVCPT</TaxPresence>
+              </Flex>,
+            ],
           },
         ];
         return (
-          <Card title={title} onClick={() => handleOrderClick(id)}>
+          <Card
+            title={getTrimText(`#${id} ${title} ${acceptedVolume} т`)}
+            onClick={() => handleOrderClick(id)}
+            statusText={
+              <Typography size="sm" color={theme.palette.common.colors.purple}>
+                {getOrderStatusName(status)}
+              </Typography>
+            }
+          >
             <Spacer space={30} />
             <Table data={dataList} />
           </Card>
@@ -65,16 +152,44 @@ export const OrdersListPage: React.FC = () => {
     ordersData?.filter((el) => el.status === "finished")
   );
   const canceledData = renderOrderTab(
-    ordersData?.filter((el) => el.status === "canceled")
+    ordersData?.filter((el) => el.status === "cancelled")
   );
 
-  return (
-    <Flex column>
-      <Typography size="lg2" bold>
-        Сделки
-      </Typography>
-      <Spacer space={28} />
-      <Tabs tabs={[activeData, finishedData, canceledData]} />
-    </Flex>
+  return isFetching ? (
+    <Loader />
+  ) : (
+    <Wrapper>
+      <Flex column>
+        <Typography size="lg2" bold>
+          Сделки
+        </Typography>
+        <Spacer space={28} />
+        <Tabs tabs={[activeData, finishedData, canceledData]} />
+      </Flex>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  padding: 44px;
+`;
+
+const TaxPresence = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+`;
+
+{
+  /* TODO: фейк компонент экспанда для теста */
+}
+// <Typography size="lg2" bold>
+//   <Accordion>
+//     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+//       Accordion 1
+//     </AccordionSummary>
+//     <AccordionDetails>
+//       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+//       malesuada lacus ex, sit amet blandit leo lobortis eget.
+//     </AccordionDetails>
+//   </Accordion>
+// </Typography>
