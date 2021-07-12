@@ -14,6 +14,7 @@ from main.enums import (
     TaxTypes,
 )
 from main.managers.offer import OfferManager
+from main.managers.warehouse import WarehouseManager
 from main.querysets.offer import OfferQuerySet, DeliveryPrice
 
 
@@ -126,7 +127,10 @@ class Product(models.Model):
     title = models.CharField("Название", max_length=250, null=True)
     description = models.TextField("Описание", blank=True, null=True)
     specifications = models.ManyToManyField(
-        SpecificationsOfProduct, blank=True, related_name="specifications",
+        SpecificationsOfProduct,
+        blank=True,
+        related_name="specifications",
+        through="ProductSpecification",
     )
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     harvest_year = models.DateField("Год урожая", blank=True, null=True)
@@ -140,6 +144,9 @@ class Warehouse(models.Model):
     title = models.CharField("Название", max_length=250, default="")
     address = models.CharField("Адрес", max_length=250, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
+
+    objects = models.Manager()
+    service = WarehouseManager()
 
     def __str__(self):
         return self.title

@@ -68,8 +68,8 @@ class OrderStatus(Enum):
 
 class ProfileType(Enum):
     admin = "admin"
-    farmer = "farmer"
-    provider = "provider"
+    farmer = "customer"
+    provider = "crm"
 
     @classmethod
     def read_map(cls):

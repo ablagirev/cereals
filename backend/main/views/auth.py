@@ -2,18 +2,28 @@ from django.contrib.auth import authenticate
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from main import serializers as ser
+from main.exceptions import UnprocessableEntityError
+from main.managers.warehouse import AddWarehousePayload
+from .. import models
+
+
+class AuthPermission(BasePermission):
+    def has_permission(self, request, view):
+        if view.action in ("profile", "add_warehouse", "warehouses"):
+            return request.user and request.user.is_authenticated
+        return True
 
 
 @extend_schema(tags=["auth"])
 class AuthViewSet(GenericViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = (AuthPermission,)
     input_serializer = ser.inline_serializer(
         "LoginSerializer",
         {
@@ -21,6 +31,7 @@ class AuthViewSet(GenericViewSet):
             "password": serializers.CharField(required=True),
         },
     )
+    warehouse_add_serializer = input_serializer("AddWarehouse",)
 
     @extend_schema(request=input_serializer, responses={200: ser.LoginOut})
     @action(detail=False, methods=["post"])
@@ -41,9 +52,37 @@ class AuthViewSet(GenericViewSet):
             status=status.HTTP_403_FORBIDDEN, data={"detail": "Доступ запрещен"}
         )
 
-    @extend_schema()
+    @extend_schema(responses={200: ser.ProfileSerializer, 403: ser.DetailOut})
     @action(methods=("GET",), detail=False)
-    def get_profile(self, request: Request):
+    def profile(self, request: Request):
         user = request.user
         if user.profile:
-            pass
+            raise UnprocessableEntityError(
+                detail="Запросите администратора добавить вас в клиентскую базу"
+            )
+        return Response(data=ser.ProfileSerializer(instance=user.profile).data)
+
+    @extend_schema(
+        responses={200: ser.WarehouseSerializer, 403: ser.DetailOut},
+        request=warehouse_add_serializer,
+    )
+    @action(methods=("POST",), detail=False, url_path="/warehouse/add")
+    def add_warehouse(self, request: Request):
+        serializer: serializers.Serializer = self.warehouse_add_serializer(
+            data=request.data
+        )
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        payload = AddWarehousePayload(title=data["title"], address=data["address"])
+        warehouse = models.Warehouse.service.create_for_user(
+            user=request.user, payload=payload
+        )
+        return Response(ser.WarehouseSerializer(instance=warehouse).data)
+
+    @extend_schema(
+        responses={200: ser.WarehouseSerializer(many=True), 403: ser.DetailOut}
+    )
+    @action(methods=("GET",), detail=False, url_path="/warehouse/")
+    def warehouses(self, request: Request):
+        warehouses = models.Warehouse.objects.filter(owner_id=request.user.id)
+        return Response(ser.WarehouseSerializer(instance=warehouses, many=True).data)
