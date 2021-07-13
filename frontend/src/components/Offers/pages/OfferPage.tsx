@@ -511,7 +511,7 @@ export const OfferPage: React.FC = () => {
                                             />
                                           </Flex>
                                         </>
-                                      ) : (
+                                      ) : !!description ? (
                                         <Tooltip
                                           tooltipContent={description}
                                           id={`${GOST}-${description}-${maxValue}-${minValue}`}
@@ -525,7 +525,7 @@ export const OfferPage: React.FC = () => {
                                             </TruncatedText>
                                           </Flex>
                                         </Tooltip>
-                                      )}
+                                      ) : null}
                                     </Flex>
                                   </Fragment>
                                 );
