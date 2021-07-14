@@ -20,7 +20,7 @@ deploy-test:
     - docker:dind
   script:
     - pip3 install docker-compose
-    - docker-compose up --build -d
+    - docker-compose up -p dev --build -d
   only:
     - develop
 
