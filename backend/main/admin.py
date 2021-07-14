@@ -24,18 +24,6 @@ class SpecificationsOfProductAdmin(admin.ModelAdmin):
     search_fields = ("name_of_specification__startswith",)
 
 
-@admin.register(models.ProductSpecification)
-class ProductSpecificationAdmin(admin.ModelAdmin):
-    list_display = (
-        "product",
-        "specification",
-    )
-    list_filter = (
-        "product",
-        "specification",
-    )
-
-
 @admin.register(models.Culture)
 class CultureAdmin(admin.ModelAdmin):
     list_display = ("name",)

@@ -740,7 +740,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "fb856591d37037cdf9c4c3b2355fb96321e9e8ad76a243c0d80f25bb77e3d7db"
+content-hash = "0b1e9c113011545f8b4495236950bbe6649ddfdb6ad08531e8a48939de5ca0ef"
 
 [metadata.files]
 appscript = [
