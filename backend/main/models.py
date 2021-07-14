@@ -86,24 +86,16 @@ class SpecificationsOfProduct(models.Model):
         related_name="unit_of_measurement",
     )
     description = models.TextField("Описание", blank=True, null=True)
-    # min_value = models.IntegerField("Минимальное значение", blank=True, null=True)
-    # is_edit_min_value = models.BooleanField(
-    #     "Редактируемое минимальное значение?", blank=True, null=True
-    # )
-    # max_value = models.IntegerField("Максимальное значение", blank=True, null=True)
-    # is_edit_max_value = models.BooleanField(
-    #     "Редактируемое максимальное значение?", blank=True, null=True
-    # )
     GOST = models.CharField("ГОСТ", max_length=250, blank=True, null=True)
-    default = models.TextField(blank=True, null=True)
+    spec = models.TextField(blank=True, default="")
 
     def __str__(self):
         return f"Спецификация  {self.name}"
 
 
-class ProductSpecification(models.Model):
-    product = models.ForeignKey(
-        "Product", on_delete=models.CASCADE, related_name="specification_values"
+class OfferSpecification(models.Model):
+    offer = models.ForeignKey(
+        "Offer", on_delete=models.CASCADE, related_name="specification_values"
     )
     specification = models.ForeignKey(
         "SpecificationsOfProduct",
@@ -127,12 +119,6 @@ class Culture(models.Model):
 class Product(models.Model):
     title = models.CharField("Название", max_length=250, null=True)
     description = models.TextField("Описание", blank=True, null=True)
-    specifications = models.ManyToManyField(
-        SpecificationsOfProduct,
-        blank=True,
-        related_name="specifications",
-        through="ProductSpecification",
-    )
     culture = models.ForeignKey(Culture, on_delete=models.CASCADE)
     harvest_year = models.DateField("Год урожая", blank=True, null=True)
     harvest_type = models.CharField("Тип урожая", max_length=250, blank=True, null=True)
@@ -163,7 +149,9 @@ class WarehouseDistance(models.Model):
 
 
 class Offer(models.Model):
-    title = models.CharField(verbose_name="Заголовок", max_length=250)
+    title = models.CharField(
+        verbose_name="Заголовок", max_length=250, blank=True, default=""
+    )
     volume = models.IntegerField(verbose_name="Объем")
     description = models.TextField("Описание", blank=True, default="")
     status = models.CharField(
@@ -176,19 +164,25 @@ class Offer(models.Model):
     created_at = models.DateTimeField("Создано (время)", auto_now_add=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
-    date_start_shipment = models.DateTimeField(
+    date_start_shipment = models.DateField(
         "Дата старта поставки", blank=True, null=True
     )
-    date_finish_shipment = models.DateTimeField(
+    date_finish_shipment = models.DateField(
         "Дата окончания поставки", blank=True, null=True
     )
-    cost = models.IntegerField()
+    cost = models.IntegerField(verbose_name="Цена покупателя")
     tax_type = models.CharField(
         max_length=25, choices=TaxTypes.readable(), default=TaxTypes.simple.value
     )
     company_name = models.CharField(max_length=225, default="", blank=True)
 
     prices: Optional[list[DeliveryPrice]] = None
+    specifications = models.ManyToManyField(
+        SpecificationsOfProduct,
+        blank=True,
+        related_name="specifications",
+        through="OfferSpecification",
+    )
 
     objects = OfferQuerySet.as_manager()
     service = OfferManager()

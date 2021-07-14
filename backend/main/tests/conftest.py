@@ -2,6 +2,8 @@ import pytest
 from model_bakery import baker
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from main.enums import ProfileType
+
 
 @pytest.fixture()
 def admin_user():
@@ -11,6 +13,7 @@ def admin_user():
     user.is_superadmin = True
     user.save()
     baker.make("Warehouse", owner_id=user.id)
+    baker.make("Profile", user_id=user.id, type=ProfileType.provider.value)
     return user
 
 

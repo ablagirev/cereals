@@ -6,7 +6,6 @@ from .product import (
     ProductSerializer,
     SpecificationsOfProductSerializer,
     UnitOfMeasurementOfSpecificationSerializer,
-    ProductSpecificationsSerializer,
 )
 from .offer import (
     OfferSerializer,
@@ -14,6 +13,8 @@ from .offer import (
     GroupOfferItem,
     GroupedOfferWithPrice,
     DetailOfferSerializer,
+    ProductSpecificationsSerializer,
+    DeliveryPrice,
 )
 from .company import CompanySerializer
 from .order import OrderSerializer
