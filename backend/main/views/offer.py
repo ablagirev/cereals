@@ -73,6 +73,11 @@ class OfferViewSet(
         },
     )
 
+    def get_queryset(self):
+        if self.action in ("list", "retrieve", "detail"):
+            return models.Offer.objects.filter(creator_id=self.request.user.id)
+        return super().get_queryset()
+
     @extend_schema(responses={200: ser.DetailOfferSerializer, 403: ser.DetailOut})
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
