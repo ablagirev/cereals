@@ -24,11 +24,23 @@ class SpecificationsOfProductAdmin(admin.ModelAdmin):
     search_fields = ("name_of_specification__startswith",)
 
 
+@admin.register(models.OfferSpecification)
+class OfferSpecificationAdmin(admin.ModelAdmin):
+    list_display = ("offer", "specification", "value")
+    list_filter = ("offer", "specification", "value")
+
+
+class CultureSpecificationsInline(admin.TabularInline):
+    model = models.Culture.specifications.through
+
+
 @admin.register(models.Culture)
 class CultureAdmin(admin.ModelAdmin):
     list_display = ("name",)
     list_filter = ("name",)
     search_fields = ("name__startswith",)
+
+    inlines = (CultureSpecificationsInline,)
 
 
 @admin.register(models.Product)
@@ -57,6 +69,10 @@ class WarehouseDistanceAdmin(admin.ModelAdmin):
     list_filter = ("form", "to", "distance", "price")
 
 
+class OfferSpecificationsInline(admin.TabularInline):
+    model = models.Offer.specifications.through
+
+
 @admin.register(models.Offer)
 class OfferAdmin(admin.ModelAdmin):
     list_display = (
@@ -82,6 +98,8 @@ class OfferAdmin(admin.ModelAdmin):
         "date_finish_shipment",
     )
     search_fields = ("title__startswith",)
+
+    inlines = (OfferSpecificationsInline,)
 
 
 @admin.register(models.Document)
@@ -132,3 +150,10 @@ class RateForDeliveryAdmin(admin.ModelAdmin):
         "max",
         "delta",
     )
+
+
+@admin.register(models.Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "company", "type")
+    list_filter = ("user", "company", "type")
+    search_fields = ("user__startswith",)
