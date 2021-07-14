@@ -95,6 +95,7 @@ class SpecificationsOfProduct(models.Model):
     #     "Редактируемое максимальное значение?", blank=True, null=True
     # )
     GOST = models.CharField("ГОСТ", max_length=250, blank=True, null=True)
+    default = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Спецификация  {self.name}"
@@ -110,10 +111,10 @@ class ProductSpecification(models.Model):
         related_name="specification_values",
     )
 
-    value = models.TextField(blank=True)
+    value = models.TextField(blank=True, null=True)
 
 
-class Category(models.Model):
+class Culture(models.Model):
     name = models.CharField(max_length=255)
     specifications = models.ManyToManyField(
         SpecificationsOfProduct, blank=True, related_name="categories",
@@ -132,7 +133,7 @@ class Product(models.Model):
         related_name="specifications",
         through="ProductSpecification",
     )
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    culture = models.ForeignKey(Culture, on_delete=models.CASCADE)
     harvest_year = models.DateField("Год урожая", blank=True, null=True)
     harvest_type = models.CharField("Тип урожая", max_length=250, blank=True, null=True)
 
