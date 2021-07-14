@@ -174,3 +174,6 @@ REST_FRAMEWORK = {
         "djangorestframework_camel_case.parser.CamelCaseMultiPartParser",
     ),
 }
+
+DOCS_DIR = os.path.join(BASE_DIR, "info/site/")
+DOCS_STATIC_NAMESPACE = os.path.basename(DOCS_DIR)

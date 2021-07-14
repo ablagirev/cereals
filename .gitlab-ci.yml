@@ -2,17 +2,27 @@
 deploy-prod:
   stage: deploy
   image: ubuntu:latest
+  environment: production
   services:
     - docker:dind
 
   script:
-#    - python3 -m venv venv
-#    - source venv/bin/activate
-#    - pip3 install -r req.txt
-#    - gunicorn --reload -b 0.0.0.0:8000 Daylesford.wsgi &
     - pip3 install docker-compose
     - docker-compose up --build -d
   only:
     - main
 
+
+deploy-test:
+  stage: deploy
+  environment: test
+  image: ubuntu:latest
+  services:
+    - docker:dind
+
+  script:
+    - pip3 install docker-compose
+    - docker-compose up --build -d
+  only:
+    - develop
 

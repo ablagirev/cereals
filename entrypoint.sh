@@ -1,6 +1,7 @@
 #!/bin/bash
 npm run --prefix frontend build
 cd /app/backend && poetry run python manage.py migrate
+cd /app/backend/info && poetry run mkdocs build
 cd /app/backend && poetry run python manage.py collectstatic --noinput
 cp -R /app/backend/static/* /app/static/
 cp -R /app/frontend/build/static/* /app/static/
