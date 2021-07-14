@@ -15,7 +15,7 @@ deploy-prod:
 deploy-test:
   stage: deploy
   image: ubuntu:latest
-  environment: test
+  environment: dev
   services:
     - docker:dind
   script:
