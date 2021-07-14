@@ -5,7 +5,6 @@ deploy-prod:
   environment: production
   services:
     - docker:dind
-
   script:
     - pip3 install docker-compose
     - docker-compose up --build -d
@@ -15,11 +14,10 @@ deploy-prod:
 
 deploy-test:
   stage: deploy
-  environment: test
   image: ubuntu:latest
+  environment: test
   services:
     - docker:dind
-
   script:
     - pip3 install docker-compose
     - docker-compose up --build -d
