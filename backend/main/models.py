@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import timezone, date
 from decimal import Decimal
 from typing import Optional
 
@@ -209,7 +209,8 @@ class Offer(models.Model):
     @property
     def days_till_end(self):
         if self.date_finish_shipment:
-            res = datetime.now(timezone.utc) - self.date_finish_shipment
+            # res = datetime.now(timezone.utc) - self.date_finish_shipment
+            res = date.today() - self.date_finish_shipment
             return res.days if res.days >= 0 else 0
         return 0
 
