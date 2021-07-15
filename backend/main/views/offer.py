@@ -81,7 +81,7 @@ class OfferViewSet(
     @extend_schema(responses={200: ser.DetailOfferSerializer, 403: ser.DetailOut})
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
-        obj.prices = models.Offer.objects.get_price_for(offer=obj, user=request.user)
+        obj.prices = models.Offer.objects.get_price_for(offer=obj)
         return Response(ser.DetailOfferSerializer(instance=obj).data)
 
     @extend_schema(
