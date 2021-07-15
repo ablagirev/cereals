@@ -1,4 +1,9 @@
+import os.path
+import csv
 from main import models
+
+from Daylesford.settings import BASE_DIR
+
 
 
 def read_byte_file(path_file):
@@ -42,3 +47,90 @@ def calc_cost_delivery(distance, volume):
 
 def find_distance(warehouse, warehouse_user):
     return abs(warehouse_user.distance - warehouse.distance)
+
+
+def load_data_for_spec():
+    with open(os.path.join(BASE_DIR, 'temp_file', 'spec.csv')) as file:
+        data = csv.DictReader(file)
+
+        # Единица измерения
+        if not models.UnitOfMeasurementOfSpecification.objects.filter(
+                unit='текст').exists():
+            models.UnitOfMeasurementOfSpecification.objects.create(unit='текст')
+
+        # Склад
+        if not models.Warehouse.objects.filter(
+                title='Склад 1').exists():
+            models.Warehouse.objects.create(
+                title='Склад 1',
+                address='Складкая 32',
+                owner=models.User.objects.get(id=1)
+            )
+
+        for d in data:
+            if not models.UnitOfMeasurementOfSpecification.objects.filter(
+                    unit=d['Единица измерения']).exists() and len(d['Единица измерения']) < 9:
+                models.UnitOfMeasurementOfSpecification.objects.create(unit=d['Единица измерения'])
+
+            # Показатель
+            name = d['Показатель зерна']
+            if not models.SpecificationsOfProduct.objects.filter(name=name).exists():
+                spec = models.SpecificationsOfProduct()
+                spec.name = name
+                if d['Тип поля'] == 'Числовое':
+                    spec.type = 'int'
+                    spec.unit_of_measurement = models.UnitOfMeasurementOfSpecification.objects.get(
+                        unit=d['Единица измерения'])
+                if d['Тип поля'] == 'Текстовое':
+                    spec.type = 'string'
+                    spec.unit_of_measurement = models.UnitOfMeasurementOfSpecification.objects.get(
+                        unit='текст')
+                    spec.description = d['Единица измерения']
+
+                spec.GOST = d['ГОСТ']
+                spec.save()
+
+            # Культура
+            if not models.Culture.objects.filter(name=d['Культура']).exists():
+                culture = models.Culture()
+                culture.name = d['Культура']
+                culture.save()
+            else:
+                culture = models.Culture.objects.get(name=d['Культура'])
+                culture.specifications.add(models.SpecificationsOfProduct.objects.get(name=d['Показатель зерна']))
+
+            # Продукт
+            if not models.Product.objects.filter(title=d['Культура']).exists():
+                models.Product.objects.create(
+                    title=d['Культура'],
+                    culture=models.Culture.objects.get(name=d['Культура'])
+                )
+
+            # Предложение
+            if not models.Offer.objects.filter(
+                    title='Предложение 1').exists():
+                offer = models.Offer()
+                offer.title = 'Предложение 1'
+                offer.volume = 100
+                offer.creator = models.User.objects.get(id=1)
+                offer.product = models.Product.objects.get(title=d['Культура'])
+                offer.warehouse = models.Warehouse.objects.get(id=1)
+                offer.cost = 10000
+                offer.save()
+
+            # Показатели предложения
+            if not models.OfferSpecification.objects.filter(
+                    offer__title='Предложение 1', specification__name=d['Показатель зерна']).exists() and \
+                    d['Культура'] == models.Offer.objects.get(title='Предложение 1').product.title:
+
+                offer_specification = models.OfferSpecification()
+                offer_specification.offer = models.Offer.objects.get(title='Предложение 1')
+                offer_specification.specification = models.SpecificationsOfProduct.objects.get(
+                    name=d['Показатель зерна']
+                )
+                if d['Минимальное значение'] not in ['нет', 'Нет']:
+                    offer_specification.value = d['Минимальное значение']
+                if d['Максимальное значение'] not in ['нет', 'Нет']:
+                    offer_specification.value = d['Максимальное значение']
+                offer_specification.save()
+
