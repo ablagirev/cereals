@@ -70,7 +70,6 @@ def load_data_for_spec():
         for d in data:
             if not models.UnitOfMeasurementOfSpecification.objects.filter(
                     unit=d['Единица измерения']).exists() and len(d['Единица измерения']) < 9:
-                print(d['Единица измерения'])
                 models.UnitOfMeasurementOfSpecification.objects.create(unit=d['Единица измерения'])
 
             # Показатель
@@ -104,7 +103,7 @@ def load_data_for_spec():
             if not models.Product.objects.filter(title=d['Культура']).exists():
                 models.Product.objects.create(
                     title=d['Культура'],
-                    culture__name=d['Культура']
+                    culture=models.Culture.objects.get(name=d['Культура'])
                 )
 
             # Предложение
