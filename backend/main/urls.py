@@ -5,6 +5,8 @@ from rest_framework.routers import SimpleRouter
 
 from main import views
 
+from main.views.product import load_spec_view
+
 router = SimpleRouter()
 router.register("auth", views.AuthViewSet, basename="auth")
 router.register("offer", views.OfferViewSet, basename="offer")
@@ -18,5 +20,6 @@ urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("api/", include(router.urls)),
+    path("api/load_data", views.product.load_spec_view),
     re_path(".*", TemplateView.as_view(template_name="index.html",), name="index",),
 ]
