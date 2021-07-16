@@ -47,3 +47,20 @@ def offer_groping_case():
     baker.make(
         "Offer", product_id=four_p.id, warehouse_id=warehouse.id,
     )
+
+
+@pytest.fixture()
+def farmer():
+    user = baker.make("User", username="farmer")
+    user.set_password("test")
+    user.is_staff = False
+    user.is_superadmin = False
+    user.save()
+    baker.make("Warehouse", owner_id=user.id)
+    baker.make("Profile", user_id=user.id, type=ProfileType.farmer.value)
+    return user
+
+
+@pytest.fixture()
+def farmer_token(farmer) -> str:
+    return str(RefreshToken.for_user(farmer).access_token)

@@ -15,6 +15,7 @@ import { BLANK_CHAR, EMPTY_CHAR } from "../../../utils/consts";
 import {
   formatDate,
   formatMoney,
+  getTrimText,
   numberWithSeparators,
 } from "../../../utils/utils";
 import groupBy from "lodash-es/groupBy";
@@ -36,11 +37,9 @@ const getStatusName = (statusCode: string) => {
 export const OffersListPage: React.FC = () => {
   const { data, isFetching: isOffersFetching } = useOffers();
   const history = useHistory();
-  const { data: warehouseData, isFetching: isWarehousesFetching } =
-    useWarehouses();
   const offerData = data || [];
 
-  const isFetching = isOffersFetching || isWarehousesFetching;
+  const isFetching = isOffersFetching;
 
   const handleOfferClick = (id: string | number) => {
     history.push(generatePath(routes.offers.edit.path, { id }));
@@ -50,84 +49,82 @@ export const OffersListPage: React.FC = () => {
     history.push(generatePath(routes.offers.create.path));
   };
 
-  const getWareHouseName = (warehouseId: number) =>
-    warehouseData?.find((warehouse) => warehouse?.id === warehouseId)?.title;
+  const renderOfferTab = (data: IOffer[]): ITab => {
+    const status = getStatusName(data?.[0]?.status);
+    const tab = {
+      label: status && `${status} - ${data?.length}`,
+      items: data?.map((item) => {
+        const {
+          volume,
+          costWithNds,
+          cost,
+          periodOfExport,
+          dateFinishShipment,
+          dateStartShipment,
+          warehouse,
+          product,
+          id,
+        } = item || {};
 
-  const renderOfferTab = useCallback(
-    (data: IOffer[]): ITab => {
-      const status = getStatusName(data?.[0]?.status);
-      const tab = {
-        label: status && `${status} - ${data?.length}`,
-        items: data?.map((item) => {
-          const {
-            volume,
-            costWithNds,
-            cost,
-            periodOfExport,
-            dateFinishShipment,
-            dateStartShipment,
-            warehouse,
-            product,
-            id,
-          } = item || {};
+        const { harvestType, harvestYear, title } = product || {};
 
-          const { harvestType, harvestYear, title } = product || {};
+        const periodOfShippment = getTrimText(
+          `${formatDate(dateStartShipment)} ${
+            dateFinishShipment && BLANK_CHAR
+          } ${formatDate(dateFinishShipment)} (${periodOfExport} д.)`
+        );
 
-          const periodOfShippment = `${formatDate(
-            dateStartShipment
-          )} ${BLANK_CHAR} ${formatDate(
-            dateFinishShipment
-          )} (${periodOfExport} д.)`;
-
-          const dataList = [
-            {
-              title: "Объем, т",
-              content: [numberWithSeparators(volume)],
-            },
-            {
-              title: "Цена покупателя, руб",
-              content: [
-                <Flex>
-                  <span>{formatMoney(cost)}</span>
-                  <Spacer width={18} />
-                  <TaxPresence>без НДС / CNCPT</TaxPresence>
-                </Flex>,
-                <Flex>
-                  <span>{formatMoney(costWithNds)}</span>
-                  <Spacer width={18} />
-                  <TaxPresence>с НДС / CVCPT</TaxPresence>
-                </Flex>,
-              ],
-            },
-            {
-              title: "Период поставки",
-              content: [periodOfShippment],
-            },
-            {
-              title: "Порт",
-              content: [getWareHouseName(warehouse?.id)],
-            },
-          ];
-          return (
-            <Card
-              title={`${title} ${harvestType}, ${formatDate(harvestYear)}`}
-              statusText={
-                <Typography size="sm" color="#918F89">
-                  {`#${id}`}
-                </Typography>
-              }
-              onClick={() => handleOfferClick(id)}
-            >
-              <Spacer space={30} />
-              <Table data={dataList} />
-            </Card>
-          );
-        }),
-      };
-      return tab;
-    },
-    [warehouseData]
-  );
+        const dataList = [
+          {
+            title: "Объем, т",
+            content: [numberWithSeparators(volume)],
+          },
+          {
+            title: "Цена покупателя, руб",
+            content: [
+              <Flex>
+                <span>{formatMoney(cost)}</span>
+                <Spacer width={18} />
+                <TaxPresence>без НДС / CNCPT</TaxPresence>
+              </Flex>,
+              <Flex>
+                <span>{formatMoney(costWithNds)}</span>
+                <Spacer width={18} />
+                <TaxPresence>с НДС / CVCPT</TaxPresence>
+              </Flex>,
+            ],
+          },
+          {
+            title: "Период поставки",
+            content: [periodOfShippment],
+          },
+          {
+            title: "Порт",
+            content: [warehouse?.title],
+          },
+        ];
+        return (
+          <Card
+            title={getTrimText(
+              `${title} ${harvestType}${harvestYear && " ,"} ${formatDate(
+                harvestYear
+              )}`
+            )}
+            statusText={
+              <Typography size="sm" color="#918F89">
+                {`#${id}`}
+              </Typography>
+            }
+            onClick={() => handleOfferClick(id)}
+          >
+            <Spacer space={30} />
+            <Table data={dataList} />
+          </Card>
+        );
+      }),
+    };
+    return tab;
+  };
 
   const offerTabs = Object.entries(
     groupBy(offerData, (obj) => getStatusName(obj.status))

@@ -27,6 +27,7 @@ class OrderSerializer(serializers.ModelSerializer):
     customer_cost_with_nds = serializers.IntegerField(source="customer_cost_with_NDS")
     total_with_nds = serializers.IntegerField(source="total_with_NDS")
     amount_of_nds = serializers.IntegerField(source="amount_of_NDS")
+    selected_warehouse = ser.WarehouseSerializer()
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_cost_by_tonne(self, instance: models.Order) -> int:

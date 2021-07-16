@@ -1,4 +1,4 @@
-import { FieldArray, Form, Formik, useFormikContext } from "formik";
+import { FieldArray, Form, Formik } from "formik";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { generatePath, useHistory, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -8,7 +8,7 @@ import {
   useOfferDelete,
   useOfferEdit,
 } from "../../../hooks/useOffers";
-import { useProductEdit, useProducts } from "../../../hooks/useProducts";
+import { useProducts } from "../../../hooks/useProducts";
 import { useWarehouses } from "../../../hooks/useWarehouses";
 import { routes } from "../../../routes/consts";
 import { IProductSpecs } from "../../../services/models";
@@ -24,23 +24,18 @@ import isNumber from "lodash-es/isNumber";
 import { Tooltip } from "../../../uikit/Tooltip";
 import { PushContext } from "../../../context";
 import * as Yup from "yup";
-import { useQuery } from "react-query";
+import { isDeepEmpty } from "../../../utils/utils";
+import format from "date-fns/esm/format";
 
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
   const history = useHistory();
   const pushContext = React.useContext(PushContext);
-  const {
-    data: productsData,
-    isFetching: isProductsFetching,
-    refetch: refetchProducts,
-  } = useProducts();
+  const { data: productsData, isFetching: isProductsFetching } = useProducts();
   const { data: warehouseData, isFetching: isWarehousesFetching } =
     useWarehouses();
   const { data: offerData, isFetching: isOfferFetching } = useOffer(paramId);
   const [offerFormData, setOfferFormData] = useState<any>();
-  const [specificationsFormData, setSpecificationsFormData] =
-    useState<IProductSpecs[]>();
   const [chosenProductId, setChosenProductId] = useState<number>();
   const [productSpecifications, setProductSpecifications] =
     useState<IProductSpecs[]>();
@@ -131,44 +126,38 @@ export const OfferPage: React.FC = () => {
     [chosenProductId, offerProductId, productOptions]
   );
 
-  const { isSuccess: isProductEditSuccess, refetch: refetchProductEdit } =
-    useProductEdit({
-      id: actualProductId,
-      specifications: specificationsFormData,
-    });
-
   const convertToNumber = (value: any) => {
     return typeof value === "string"
       ? Number(value?.split(" ").join(""))
       : value;
   };
 
-  // const [fileData, setFileData] = useState<File>();
-
   const handleSubmitForm = (values: any) => {
-    const { volume, cost, product, warehouse } = values || {};
-    //file
-    // setFileData(file);
+    const { volume, cost, product, warehouse, shipmentEnd, shipmentStart } =
+      values || {};
 
     setOfferFormData({
       ...values,
+      shipmentStart: format(shipmentStart, "yyyy-MM-dd"),
+      shipmentEnd: format(shipmentEnd, "yyyy-MM-dd"),
       volume: convertToNumber(volume),
       cost: convertToNumber(cost),
       product: { id: product?.value },
       warehouse: { id: warehouse?.value },
       id: paramId ? Number(paramId) : undefined,
-      specifications: undefined,
+      specifications: values?.specifications
+        ?.map(({ max, min, id: specId }: any) => {
+          const value = {
+            max: parseInt(max) || undefined,
+            min: parseInt(min) || undefined,
+          };
+          return {
+            id: specId,
+            value: !isDeepEmpty(value) ? JSON.stringify(value) : undefined,
+          };
+        })
+        ?.filter((el: any) => el.value),
     });
-
-    setSpecificationsFormData(
-      values?.specifications?.map(({ maxValue, minValue, id: specId }: any) => {
-        return {
-          id: specId,
-          maxValue: parseInt(maxValue) || undefined,
-          minValue: parseInt(minValue) || undefined,
-        };
-      })
-    );
   };
 
   const renderModal = () => (
@@ -203,34 +192,44 @@ export const OfferPage: React.FC = () => {
     min?: number;
   }
 
-  const renderMaxTooltip = ({ max, min }: ISpecTooltip) => {
+  const renderMinMaxTooltip = ({ max, min }: ISpecTooltip) => {
     return (
-      max && (
-        <Flex column>
-          <Typography size="sm">По умолчанию:</Typography>
+      <>
+        {isNumber(max) && isNumber(min) ? (
           <Flex>
-            {isNumber(min) ? (
-              <>
-                <Typography size="sm">от</Typography>
-                <Spacer width={4} />
-                <Typography size="sm" color="#407ef5">
-                  {min}
-                </Typography>
-                <Spacer width={4} />
-                <Typography size="sm">до</Typography>
-              </>
-            ) : (
-              <Typography size="sm">
-                {min === "≤" ? "не более" : min === "≥" ? "не менее" : null}
-              </Typography>
-            )}
+            <Typography size="sm">По умолчанию:</Typography>
+            <Spacer width={4} />
+            <Typography size="sm">от</Typography>
+            <Spacer width={4} />
+            <Typography size="sm" color="#407ef5">
+              {min}
+            </Typography>
+            <Spacer width={4} />
+            <Typography size="sm">до</Typography>
             <Spacer width={4} />
             <Typography size="sm" color="#407ef5">
               {max}
             </Typography>
+            <Spacer width={4} />
           </Flex>
-        </Flex>
-      )
+        ) : isNumber(max) ? (
+          <Flex column>
+            <Typography size="sm">По умолчанию не более:</Typography>
+            <Typography size="sm" color="#407ef5">
+              {max}
+            </Typography>
+          </Flex>
+        ) : (
+          isNumber(min) && (
+            <Flex column>
+              <Typography size="sm">По умолчанию не менее:</Typography>
+              <Typography size="sm" color="#407ef5">
+                {min}
+              </Typography>
+            </Flex>
+          )
+        )}
+      </>
     );
   };
 
@@ -246,14 +245,9 @@ export const OfferPage: React.FC = () => {
   }, [offerFormData]);
 
   useEffect(() => {
-    specificationsFormData && refetchProductEdit();
-  }, [specificationsFormData]);
+    const isFormSuccess = isCreateSuccess || isOfferEditSuccess;
 
-  useEffect(() => {
-    const isFormSuccess =
-      isProductEditSuccess && (isCreateSuccess || isOfferEditSuccess);
-
-    if ((isFormSuccess || isOfferDeleteSuccess) && refetchProducts()) {
+    if (isFormSuccess || isOfferDeleteSuccess) {
       pushContext.setPushContext({
         text: isCreateSuccess
           ? "Предложене успешно создано"
@@ -263,12 +257,7 @@ export const OfferPage: React.FC = () => {
       });
       history.push(generatePath(routes.offers.list.path));
     }
-  }, [
-    isOfferEditSuccess,
-    isCreateSuccess,
-    isProductEditSuccess,
-    isOfferDeleteSuccess,
-  ]);
+  }, [isOfferEditSuccess, isCreateSuccess, isOfferDeleteSuccess]);
 
   useEffect(() => {
     const specs = getProductSpecsById(actualProductId);
@@ -283,7 +272,7 @@ export const OfferPage: React.FC = () => {
   const initialValues = useMemo(() => {
     return {
       volume,
-      cost, // TODO: уточнить должно ли отправляться с НДС или без
+      cost,
       product: getProduct(actualProductId),
       warehouse:
         warehouseOptions?.find(
@@ -291,27 +280,27 @@ export const OfferPage: React.FC = () => {
         ) || warehouseOptions?.[0],
       specifications: productSpecifications?.map((spec) => {
         const {
-          maxValue,
-          minValue,
           unitOfMeasurement,
-          nameOfSpecification,
           id: specId,
           GOST,
-          isEditMaxValue,
-          isEditMinValue,
           description,
+          name: nameOfSpecification,
+          spec: specification,
         } = spec;
 
+        const { max, min, isEditableMax, isEditableMin } =
+          (specification && JSON.parse(specification)) || {};
+
         return {
-          maxValue: maxValue || BLANK_CHAR,
-          minValue: minValue || BLANK_CHAR,
+          max: max || BLANK_CHAR,
+          min: min || BLANK_CHAR,
           GOST,
           description,
-          isEditMaxValue,
-          isEditMinValue,
+          isEditableMax,
+          isEditableMin,
           nameOfSpecification: unitOfMeasurement?.unit
-            ? `${nameOfSpecification?.name}, ${unitOfMeasurement?.unit}`
-            : nameOfSpecification?.name || EMPTY_CHAR,
+            ? `${nameOfSpecification}, ${unitOfMeasurement?.unit}`
+            : nameOfSpecification || EMPTY_CHAR,
           id: specId || EMPTY_CHAR,
         };
       }),
@@ -322,6 +311,7 @@ export const OfferPage: React.FC = () => {
     productSpecifications,
     actualProductId,
     productOptions,
+    dateStartShipment,
   ]);
 
   return isFetching ? (
@@ -357,9 +347,6 @@ export const OfferPage: React.FC = () => {
                         disabled={isArchived}
                       />
                     </FormikField>
-                    {/* <FormikField name="file">
-                      <Input type="file" name="file" />
-                    </FormikField> */}
                     <FormikField
                       name="cost"
                       title="Цена CNCPT на воротах порта, ₽/т"
@@ -387,8 +374,8 @@ export const OfferPage: React.FC = () => {
                           start: dateStartShipment,
                           end: dateFinishShipment,
                         }}
-                        startFieldName="dateStartShipment"
-                        endFieldName="dateFinishShipment"
+                        startFieldName="shipmentStart"
+                        endFieldName="shipmentEnd"
                         hasCounter
                         disabled={isArchived}
                       />
@@ -401,6 +388,7 @@ export const OfferPage: React.FC = () => {
                       />
                     </FormikField>
                   </MainFormWrapper>
+
                   <IndicatorsWrapper>
                     <Indicators>
                       <FieldArray
@@ -411,15 +399,15 @@ export const OfferPage: React.FC = () => {
                               (specification: any, idx: number) => {
                                 const {
                                   GOST,
-                                  maxValue,
-                                  minValue,
-                                  isEditMaxValue,
-                                  isEditMinValue,
+                                  max,
+                                  min,
+                                  isEditableMax,
+                                  isEditableMin,
                                   description,
                                 } = specification || {};
 
                                 const isSpecValuesEditable =
-                                  isEditMaxValue || isEditMinValue;
+                                  isEditableMax || isEditableMin;
 
                                 return (
                                   <Fragment key={idx}>
@@ -453,25 +441,25 @@ export const OfferPage: React.FC = () => {
                                             <Input
                                               variant={
                                                 isArchived ||
-                                                !isEditMinValue ||
-                                                !isNumber(minValue)
+                                                !isEditableMin ||
+                                                !isNumber(min)
                                                   ? "blank"
                                                   : "light"
                                               }
                                               disabled={
                                                 isArchived ||
-                                                !isEditMinValue ||
-                                                !isNumber(minValue)
+                                                !isEditableMin ||
+                                                !isNumber(min)
                                               }
-                                              name={`specifications[${idx}].minValue`}
+                                              name={`specifications[${idx}].min`}
                                               size="sm"
                                               tooltipContent={
                                                 !isArchived &&
-                                                isEditMinValue &&
-                                                isNumber(minValue) &&
-                                                renderMaxTooltip({
-                                                  max: maxValue,
-                                                  min: minValue,
+                                                isEditableMin &&
+                                                isNumber(min) &&
+                                                renderMinMaxTooltip({
+                                                  max,
+                                                  min,
                                                 })
                                               }
                                             />
@@ -483,29 +471,31 @@ export const OfferPage: React.FC = () => {
                                                 max
                                               </Typography>
                                             )}
+
                                             <Spacer space={10} />
+
                                             <Input
-                                              name={`specifications[${idx}].maxValue`}
+                                              name={`specifications[${idx}].max`}
                                               variant={
                                                 isArchived ||
-                                                !isEditMaxValue ||
-                                                !isNumber(maxValue)
+                                                !isEditableMax ||
+                                                !isNumber(max)
                                                   ? "blank"
                                                   : "light"
                                               }
                                               size="sm"
                                               disabled={
                                                 isArchived ||
-                                                !isEditMaxValue ||
-                                                !isNumber(maxValue)
+                                                !isEditableMax ||
+                                                !isNumber(max)
                                               }
                                               tooltipContent={
                                                 !isArchived &&
-                                                isEditMaxValue &&
-                                                isNumber(maxValue) &&
-                                                renderMaxTooltip({
-                                                  max: maxValue,
-                                                  min: minValue,
+                                                isEditableMax &&
+                                                isNumber(max) &&
+                                                renderMinMaxTooltip({
+                                                  max,
+                                                  min,
                                                 })
                                               }
                                             />
@@ -514,7 +504,7 @@ export const OfferPage: React.FC = () => {
                                       ) : !!description ? (
                                         <Tooltip
                                           tooltipContent={description}
-                                          id={`${GOST}-${description}-${maxValue}-${minValue}`}
+                                          id={`${GOST}-${description}-${max}-${min}`}
                                         >
                                           <Flex
                                             vAlignContent="center"
