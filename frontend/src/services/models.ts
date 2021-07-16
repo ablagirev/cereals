@@ -19,6 +19,7 @@ export interface IOffer {
     volume: number;
     warehouse: {
       id: number;
+      title: string;
     };
 }
 
@@ -30,25 +31,18 @@ export interface IProduct {
   }
 
   export interface IProductSpecs {
-        id: number,
-        description: string,
-        minValue: number,
-        isEditMinValue: boolean,
-        maxValue: number,
-        isEditMaxValue: boolean,
-        GOST: string,
-        nameOfSpecification: {
           id: number,
-          name: string
-        },
-        typeField: {
-          id: number,
-          type: string
-        },
-        unitOfMeasurement: {
-          id: number,
-          unit: string
-        }
+          unitOfMeasurement: {
+            id: number,
+            unit: string
+          },
+          name: string,
+          required: boolean,
+          type: 'string',
+          description: string,
+          GOST: string,
+          spec: string
+        
   }
 
   export interface IWarehouse {
