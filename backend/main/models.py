@@ -130,7 +130,7 @@ class Product(models.Model):
 class Warehouse(models.Model):
     title = models.CharField("Название", max_length=250, default="")
     address = models.CharField("Адрес", max_length=250, null=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="warehouses")
 
     objects = models.Manager()
     service = WarehouseManager()
