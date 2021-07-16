@@ -5,8 +5,6 @@ from rest_framework.routers import SimpleRouter
 
 from main import views
 
-from main.views.product import load_spec_view
-
 router = SimpleRouter()
 router.register("auth", views.AuthViewSet, basename="auth")
 router.register("offer", views.OfferViewSet, basename="offer")
