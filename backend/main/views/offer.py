@@ -74,7 +74,7 @@ class OfferViewSet(
     )
 
     def get_queryset(self):
-        if self.action in ("list", "retrieve", "detail"):
+        if self.action in ("list",):
             return models.Offer.objects.filter(creator_id=self.request.user.id)
         return super().get_queryset()
 
