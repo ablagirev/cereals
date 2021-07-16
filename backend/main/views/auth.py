@@ -56,11 +56,13 @@ class AuthViewSet(GenericViewSet):
     @action(methods=("GET",), detail=False)
     def profile(self, request: Request):
         user = request.user
-        if user.profile:
+        try:
+            profile = user.profile
+        except models.Profile.DoesNotExist:
             raise UnprocessableEntityError(
                 detail="Запросите администратора добавить вас в клиентскую базу"
             )
-        return Response(data=ser.ProfileSerializer(instance=user.profile).data)
+        return Response(data=ser.ProfileSerializer(instance=profile).data)
 
     @extend_schema(
         responses={200: ser.WarehouseSerializer, 403: ser.DetailOut},
