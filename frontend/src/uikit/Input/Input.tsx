@@ -1,5 +1,5 @@
 import React from "react";
-import { Field, useFormikContext } from "formik";
+import { Field } from "formik";
 import { EMPTY_CHAR } from "../../utils/consts";
 import styled from "styled-components";
 import { Flex, Spacer, Typography } from "..";
@@ -95,53 +95,43 @@ export const Input: React.FC<IInputProps> = ({
   errorText,
   ...restProps
 }) => {
-  const { setFieldValue } = useFormikContext();
   const renderInput = () => (
-    <>
-      {!!errorText && (
-        <Flex column vAlignContent="center" hAlignContent="center">
-          <Typography color={theme.palette.common.colors.red}>
-            {errorText}
-          </Typography>
-          <Spacer space={32} />
-        </Flex>
+    <FieldWrapper
+      isError={isError}
+      variant={variant}
+      size={size}
+      disabled={disabled}
+    >
+      {type === "masked" ? (
+        <StyledIMaskInput
+          {...configBlocks}
+          id={name}
+          name={name}
+          placeholder={placeholder}
+          disabled={disabled}
+          variant={variant}
+          size={size}
+          value={!isNil(value) ? String(value) : null}
+          onAccept={onChange}
+          mask="numberInput" // enable number mask
+          autoComplete="off"
+          {...restProps}
+        />
+      ) : (
+        <StyledField
+          id={name}
+          name={name}
+          placeholder={placeholder}
+          type={type}
+          disabled={disabled}
+          variant={variant}
+          size={size}
+          autoComplete="off"
+        />
       )}
-      <FieldWrapper
-        isError={isError}
-        variant={variant}
-        size={size}
-        disabled={disabled}
-      >
-        {type === "masked" ? (
-          <StyledIMaskInput
-            {...configBlocks}
-            id={name}
-            name={name}
-            placeholder={placeholder}
-            disabled={disabled}
-            variant={variant}
-            size={size}
-            value={!isNil(value) ? String(value) : null}
-            onAccept={onChange}
-            mask="numberInput" // enable number mask
-            autoComplete="off"
-            {...restProps}
-          />
-        ) : (
-          <StyledField
-            id={name}
-            name={name}
-            placeholder={placeholder}
-            type={type}
-            disabled={disabled}
-            variant={variant}
-            size={size}
-            autoComplete="off"
-          />
-        )}
-      </FieldWrapper>
-    </>
+    </FieldWrapper>
   );
+
   return (
     <>
       {label && (
@@ -150,17 +140,21 @@ export const Input: React.FC<IInputProps> = ({
           <Spacer space={4} />
         </>
       )}
-      {!!tooltipContent ? (
-        <Tooltip
-          tooltipContent={tooltipContent}
-          tooltipPlacement={tooltipPlacement}
-          id={`${name}-${type}`}
-        >
-          {renderInput()}
-        </Tooltip>
-      ) : (
-        renderInput()
+      {!!errorText && (
+        <Flex column vAlignContent="center" hAlignContent="center">
+          <Typography color={theme.palette.common.colors.red}>
+            {errorText}
+          </Typography>
+          <Spacer space={32} />
+        </Flex>
       )}
+      <Tooltip
+        tooltipContent={tooltipContent}
+        tooltipPlacement={tooltipPlacement}
+        id={name}
+      >
+        {renderInput()}
+      </Tooltip>
     </>
   );
 };

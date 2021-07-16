@@ -3,6 +3,7 @@ import parseISO from 'date-fns/esm/parseISO';
 import format from 'date-fns/esm/format';
 import isValid from 'date-fns/esm/isValid';
 import isString from 'lodash-es/isString';
+import isEmpty from 'lodash-es/isEmpty';
 
 /**
  * Формат даты для отображения
@@ -58,3 +59,24 @@ export const formatMoney = (value: MoneyValueType) => {
 export const numberWithSeparators = (x: string | number) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
+
+/**
+ * Произвести глубокую проверку аргумента и потенциально имеющихся
+ * у него свойств на предмет отсутствия данных.
+ *
+ * @param {any} input Проверяемый на предмет отсутствия данных аргумент.
+ */
+ export const isDeepEmpty = (input: any) => {
+    if (isEmpty(input)) {
+        return true;
+    }
+    if (typeof input === 'object') {
+        for (const item of Object.values(input)) {
+            if ((!!item && typeof item !== 'object') || !isDeepEmpty(item)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return isEmpty(input);
+};

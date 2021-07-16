@@ -27,20 +27,22 @@ export const DatePickerField: React.FC<IProps> = ({
   disabled,
 }) => {
   const { start, end } = initialValues;
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const { setFieldValue } = useFormikContext();
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const { setFieldValue, values } = useFormikContext();
   const [days, setDays] = useState<number>();
 
   useEffect(() => {
-    setFieldValue(startFieldName, startDate);
-    setFieldValue(endFieldName, endDate);
-    setDays(
-      Math.round(
-        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-      ) + 1
-    );
-  }, [startDate, endDate]);
+    startDate && setFieldValue(startFieldName, startDate);
+    endDate && setFieldValue(endFieldName, endDate);
+    endDate &&
+      startDate &&
+      setDays(
+        Math.round(
+          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+        ) + 1
+      );
+  }, [startDate, endDate, startFieldName, endFieldName, values]);
 
   useEffect(() => {
     start && setStartDate(new Date(start));
@@ -57,6 +59,7 @@ export const DatePickerField: React.FC<IProps> = ({
           disabled={disabled}
           locale="ru"
           maxDate={endDate}
+          selectsStart
         />
         <StyledDatePicker
           selected={endDate}
@@ -66,9 +69,10 @@ export const DatePickerField: React.FC<IProps> = ({
           dateFormat="dd.MM.yyyy"
           disabled={disabled}
           locale="ru"
+          selectsEnd
         />
       </DatePickerWrapper>
-      {hasCounter && <DaysCounter>{`${days} д.`}</DaysCounter>}
+      {hasCounter && days && <DaysCounter>{`${days} д.`}</DaysCounter>}
     </Flex>
   );
 };
