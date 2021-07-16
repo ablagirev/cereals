@@ -79,7 +79,7 @@ def load_data_for_spec():
                 spec = models.SpecificationsOfProduct()
                 spec.name = name
                 if d['Тип поля'] == 'Числовое':
-                    spec.type = 'int'
+                    spec.type = 'range'
                     spec.unit_of_measurement = models.UnitOfMeasurementOfSpecification.objects.get(
                         unit=d['Единица измерения'])
 
