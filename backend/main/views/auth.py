@@ -31,7 +31,13 @@ class AuthViewSet(GenericViewSet):
             "password": serializers.CharField(required=True),
         },
     )
-    warehouse_add_serializer = input_serializer("AddWarehouse",)
+    warehouse_add_serializer = ser.inline_serializer(
+        "AddWarehouse",
+        {
+            "title": serializers.CharField(required=True),
+            "address": serializers.CharField(required=True),
+        },
+    )
 
     @extend_schema(request=input_serializer, responses={200: ser.LoginOut})
     @action(detail=False, methods=["post"])
