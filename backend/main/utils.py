@@ -79,23 +79,36 @@ def load_data_for_spec():
                 spec = models.SpecificationsOfProduct()
                 spec.name = name
                 if d['Тип поля'] == 'Числовое':
-                    spec.type = 'int'
+                    spec.type = 'range'
                     spec.unit_of_measurement = models.UnitOfMeasurementOfSpecification.objects.get(
                         unit=d['Единица измерения'])
 
-                    is_editable_min = 'true' if d['Редакт. min-знач'] in ['да', 'Да'] else 'false'
-                    is_editable_max = 'true' if d['Редакт max-знач'] in ['да', 'Да'] else 'false'
+                    is_editable_min = True if d['Редакт. min-знач'] in ['да', 'Да'] else False
+                    is_editable_max = True if d['Редакт max-знач'] in ['да', 'Да'] else False
                     min_value = d['Минимальное значение'] if d['Минимальное значение'] not in ['нет', 'Нет'] \
-                        else 'undefined'
+                        else None
                     max_value = d['Максимальное значение'] if d['Максимальное значение'] not in ['нет', 'Нет'] \
-                        else 'undefined'
+                        else None
 
                     spec_data = {
-                        'min': min_value,
-                        'max': max_value,
                         'isEditableMin': is_editable_min,
                         'isEditableMax': is_editable_max,
                     }
+                    if max_value is not None:
+                        try:
+                            max_value = int(max_value)
+                        except:
+                            max_value = float(max_value.replace(',', '.'))
+                        print(max_value)
+                        spec_data['max'] = max_value
+
+                    if min_value is not None:
+                        try:
+                            min_value = int(min_value)
+                        except:
+                            min_value = float(min_value.replace(',', '.'))
+                        print(min_value)
+                        spec_data['min'] = min_value
 
                     spec.spec = json.dumps(spec_data, ensure_ascii=False)
                 if d['Тип поля'] == 'Текстовое':
@@ -103,6 +116,7 @@ def load_data_for_spec():
                     spec.unit_of_measurement = models.UnitOfMeasurementOfSpecification.objects.get(
                         unit='текст')
                     spec.description = d['Единица измерения']
+                    spec.spec = json.dumps({"isEditable": False}, ensure_ascii=False)
 
                 spec.GOST = d['ГОСТ']
                 spec.save()
