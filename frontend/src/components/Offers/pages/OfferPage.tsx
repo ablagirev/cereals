@@ -24,19 +24,14 @@ import isNumber from "lodash-es/isNumber";
 import { Tooltip } from "../../../uikit/Tooltip";
 import { PushContext } from "../../../context";
 import * as Yup from "yup";
-import { formatDate, isDeepEmpty } from "../../../utils/utils";
+import { isDeepEmpty } from "../../../utils/utils";
 import format from "date-fns/esm/format";
-import { idText } from "typescript";
 
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
   const history = useHistory();
   const pushContext = React.useContext(PushContext);
-  const {
-    data: productsData,
-    isFetching: isProductsFetching,
-    refetch: refetchProducts,
-  } = useProducts();
+  const { data: productsData, isFetching: isProductsFetching } = useProducts();
   const { data: warehouseData, isFetching: isWarehousesFetching } =
     useWarehouses();
   const { data: offerData, isFetching: isOfferFetching } = useOffer(paramId);
@@ -199,9 +194,11 @@ export const OfferPage: React.FC = () => {
 
   const renderMinMaxTooltip = ({ max, min }: ISpecTooltip) => {
     return (
-      <Flex>
+      <>
         {isNumber(max) && isNumber(min) ? (
-          <>
+          <Flex>
+            <Typography size="sm">По умолчанию:</Typography>
+            <Spacer width={4} />
             <Typography size="sm">от</Typography>
             <Spacer width={4} />
             <Typography size="sm" color="#407ef5">
@@ -214,27 +211,25 @@ export const OfferPage: React.FC = () => {
               {max}
             </Typography>
             <Spacer width={4} />
-          </>
+          </Flex>
         ) : isNumber(max) ? (
-          <>
+          <Flex column>
             <Typography size="sm">По умолчанию не более:</Typography>
-            <Spacer width={4} />
             <Typography size="sm" color="#407ef5">
               {max}
             </Typography>
-          </>
+          </Flex>
         ) : (
           isNumber(min) && (
-            <>
+            <Flex column>
               <Typography size="sm">По умолчанию не менее:</Typography>
-              <Spacer width={4} />
               <Typography size="sm" color="#407ef5">
                 {min}
               </Typography>
-            </>
+            </Flex>
           )
         )}
-      </Flex>
+      </>
     );
   };
 
@@ -252,7 +247,7 @@ export const OfferPage: React.FC = () => {
   useEffect(() => {
     const isFormSuccess = isCreateSuccess || isOfferEditSuccess;
 
-    if ((isFormSuccess || isOfferDeleteSuccess) && refetchProducts()) {
+    if (isFormSuccess || isOfferDeleteSuccess) {
       pushContext.setPushContext({
         text: isCreateSuccess
           ? "Предложене успешно создано"
