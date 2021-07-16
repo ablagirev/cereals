@@ -1,5 +1,6 @@
 import os.path
 import csv
+import json
 from main import models
 
 from Daylesford.settings import BASE_DIR
@@ -81,6 +82,22 @@ def load_data_for_spec():
                     spec.type = 'int'
                     spec.unit_of_measurement = models.UnitOfMeasurementOfSpecification.objects.get(
                         unit=d['Единица измерения'])
+
+                    is_editable_min = 'true' if d['Редакт. min-знач'] in ['да', 'Да'] else 'false'
+                    is_editable_max = 'true' if d['Редакт max-знач'] in ['да', 'Да'] else 'false'
+                    min_value = d['Минимальное значение'] if d['Минимальное значение'] not in ['нет', 'Нет'] \
+                        else 'undefined'
+                    max_value = d['Максимальное значение'] if d['Максимальное значение'] not in ['нет', 'Нет'] \
+                        else 'undefined'
+
+                    spec_data = {
+                        'min': min_value,
+                        'max': max_value,
+                        'isEditableMin': is_editable_min,
+                        'isEditableMax': is_editable_max,
+                    }
+
+                    spec.spec = json.dumps(spec_data, ensure_ascii=False)
                 if d['Тип поля'] == 'Текстовое':
                     spec.type = 'string'
                     spec.unit_of_measurement = models.UnitOfMeasurementOfSpecification.objects.get(
@@ -119,18 +136,18 @@ def load_data_for_spec():
                 offer.save()
 
             # Показатели предложения
-            if not models.OfferSpecification.objects.filter(
-                    offer__title='Предложение 1', specification__name=d['Показатель зерна']).exists() and \
-                    d['Культура'] == models.Offer.objects.get(title='Предложение 1').product.title:
-
-                offer_specification = models.OfferSpecification()
-                offer_specification.offer = models.Offer.objects.get(title='Предложение 1')
-                offer_specification.specification = models.SpecificationsOfProduct.objects.get(
-                    name=d['Показатель зерна']
-                )
-                if d['Минимальное значение'] not in ['нет', 'Нет']:
-                    offer_specification.value = d['Минимальное значение']
-                if d['Максимальное значение'] not in ['нет', 'Нет']:
-                    offer_specification.value = d['Максимальное значение']
-                offer_specification.save()
+            # if not models.OfferSpecification.objects.filter(
+            #         offer__title='Предложение 1', specification__name=d['Показатель зерна']).exists() and \
+            #         d['Культура'] == models.Offer.objects.get(title='Предложение 1').product.title:
+            #
+            #     offer_specification = models.OfferSpecification()
+            #     offer_specification.offer = models.Offer.objects.get(title='Предложение 1')
+            #     offer_specification.specification = models.SpecificationsOfProduct.objects.get(
+            #         name=d['Показатель зерна']
+            #     )
+            #     if d['Минимальное значение'] not in ['нет', 'Нет']:
+            #         offer_specification.value = d['Минимальное значение']
+            #     if d['Максимальное значение'] not in ['нет', 'Нет']:
+            #         offer_specification.value = d['Максимальное значение']
+            #     offer_specification.save()
 
