@@ -74,61 +74,81 @@ def load_data_for_spec():
                 models.UnitOfMeasurementOfSpecification.objects.create(unit=d['Единица измерения'])
 
             # Показатель
-            name = ' '.join([d['Показатель зерна'], d['Культура']])
-            if not models.SpecificationsOfProduct.objects.filter(name=name).exists():
-                spec = models.SpecificationsOfProduct()
-                spec.name = name
-                if d['Тип поля'] == 'Числовое':
+            name = d['Показатель зерна']
+            if d['Тип поля'] == 'Числовое':
+                is_editable_min = True if d['Редакт. min-знач'] in ['да', 'Да'] else False
+                is_editable_max = True if d['Редакт max-знач'] in ['да', 'Да'] else False
+                min_value = d['Минимальное значение'] if d['Минимальное значение'] not in ['нет', 'Нет'] \
+                    else None
+                max_value = d['Максимальное значение'] if d['Максимальное значение'] not in ['нет', 'Нет'] \
+                    else None
+
+                spec_data = {
+                    'isEditableMin': is_editable_min,
+                    'isEditableMax': is_editable_max,
+                }
+                if max_value is not None:
+                    try:
+                        max_value = int(max_value.replace(' ', ''))
+                    except:
+                        max_value = float(max_value.replace(',', '.').replace(' ', ''))
+                    spec_data['max'] = max_value
+
+                if min_value is not None:
+                    try:
+                        min_value = int(min_value)
+                    except:
+                        min_value = float(min_value.replace(',', '.'))
+                    print(min_value)
+                    spec_data['min'] = min_value
+
+                spec_data = json.dumps(spec_data, ensure_ascii=False)
+
+                if not models.SpecificationsOfProduct.objects.filter(name=name, spec=spec_data).exists():
+                    spec = models.SpecificationsOfProduct()
+                    spec.name = name
                     spec.type = 'range'
                     spec.unit_of_measurement = models.UnitOfMeasurementOfSpecification.objects.get(
                         unit=d['Единица измерения'])
+                    spec.spec = spec_data
+                    spec.GOST = d['ГОСТ']
+                    spec.save()
 
-                    is_editable_min = True if d['Редакт. min-знач'] in ['да', 'Да'] else False
-                    is_editable_max = True if d['Редакт max-знач'] in ['да', 'Да'] else False
-                    min_value = d['Минимальное значение'] if d['Минимальное значение'] not in ['нет', 'Нет'] \
-                        else None
-                    max_value = d['Максимальное значение'] if d['Максимальное значение'] not in ['нет', 'Нет'] \
-                        else None
-
-                    spec_data = {
-                        'isEditableMin': is_editable_min,
-                        'isEditableMax': is_editable_max,
-                    }
-                    if max_value is not None:
-                        try:
-                            max_value = int(max_value)
-                        except:
-                            max_value = float(max_value.replace(',', '.'))
-                        print(max_value)
-                        spec_data['max'] = max_value
-
-                    if min_value is not None:
-                        try:
-                            min_value = int(min_value)
-                        except:
-                            min_value = float(min_value.replace(',', '.'))
-                        print(min_value)
-                        spec_data['min'] = min_value
-
-                    spec.spec = json.dumps(spec_data, ensure_ascii=False)
-                if d['Тип поля'] == 'Текстовое':
+            if d['Тип поля'] == 'Текстовое':
+                if not models.SpecificationsOfProduct.objects.filter(name=name, description=d['Единица измерения']).exists():
+                    spec = models.SpecificationsOfProduct()
+                    spec.name = name
                     spec.type = 'string'
                     spec.unit_of_measurement = models.UnitOfMeasurementOfSpecification.objects.get(
                         unit='текст')
                     spec.description = d['Единица измерения']
                     spec.spec = json.dumps({"isEditable": False}, ensure_ascii=False)
-
-                spec.GOST = d['ГОСТ']
-                spec.save()
+                    spec.GOST = d['ГОСТ']
+                    spec.save()
 
             # Культура
             if not models.Culture.objects.filter(name=d['Культура']).exists():
                 culture = models.Culture()
                 culture.name = d['Культура']
                 culture.save()
+
+                culture = models.Culture.objects.get(name=d['Культура'])
+                if d['Тип поля'] == 'Числовое':
+                    culture.specifications.add(models.SpecificationsOfProduct.objects.get(
+                        name=d['Показатель зерна'], spec=spec_data))
+
+                if d['Тип поля'] == 'Текстовое':
+                    culture.specifications.add(models.SpecificationsOfProduct.objects.get(
+                        name=d['Показатель зерна'], description=d['Единица измерения']))
             else:
                 culture = models.Culture.objects.get(name=d['Культура'])
-                culture.specifications.add(models.SpecificationsOfProduct.objects.get(name=name))
+                if d['Тип поля'] == 'Числовое':
+                    culture.specifications.add(models.SpecificationsOfProduct.objects.get(
+                        name=d['Показатель зерна'], spec=spec_data))
+
+                if d['Тип поля'] == 'Текстовое':
+                    culture.specifications.add(models.SpecificationsOfProduct.objects.get(
+                        name=d['Показатель зерна'], description=d['Единица измерения']))
 
             # Продукт
             if not models.Product.objects.filter(title=d['Культура']).exists():
@@ -148,20 +168,3 @@ def load_data_for_spec():
                 offer.warehouse = models.Warehouse.objects.get(id=1)
                 offer.cost = 10000
                 offer.save()
-
-            # Показатели предложения
-            # if not models.OfferSpecification.objects.filter(
-            #         offer__title='Предложение 1', specification__name=d['Показатель зерна']).exists() and \
-            #         d['Культура'] == models.Offer.objects.get(title='Предложение 1').product.title:
-            #
-            #     offer_specification = models.OfferSpecification()
-            #     offer_specification.offer = models.Offer.objects.get(title='Предложение 1')
-            #     offer_specification.specification = models.SpecificationsOfProduct.objects.get(
-            #         name=d['Показатель зерна']
-            #     )
-            #     if d['Минимальное значение'] not in ['нет', 'Нет']:
-            #         offer_specification.value = d['Минимальное значение']
-            #     if d['Максимальное значение'] not in ['нет', 'Нет']:
-            #         offer_specification.value = d['Максимальное значение']
-            #     offer_specification.save()
-
