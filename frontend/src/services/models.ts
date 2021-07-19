@@ -8,11 +8,47 @@ export interface IOffer {
     description: string;
     id: number;
     periodOfExport: number;
+    specifications: [
+      {
+          id: number,
+          specification: {
+            id: number,
+            unitOfMeasurement: {
+              id: number,
+              unit: string
+            },
+            name: string,
+            required: boolean,
+            type: string,
+            description: string,
+            GOST: string,
+            spec: string
+          }
+          value: string;
+      }
+    ],
     product: {
-      id: number;
-      harvestType: string;
-      harvestYear: string;
-      title: string;
+      id: number,
+      specifications: [
+        {
+          id: number,
+          unitOfMeasurement: {
+            id: number,
+            unit: string
+          },
+          name: string,
+          required: boolean,
+          type: string,
+          description: string,
+          GOST: string,
+          spec: string
+        }
+      ],
+      title: string,
+      description: string,
+      harvestYear: string,
+      harvestType: string,
+      culture: number;
     };
     status: string;
     title: string;
@@ -21,6 +57,7 @@ export interface IOffer {
       id: number;
       title: string;
     };
+    
 }
 
 export interface IProduct {
@@ -38,7 +75,7 @@ export interface IProduct {
           },
           name: string,
           required: boolean,
-          type: 'string',
+          type: string,
           description: string,
           GOST: string,
           spec: string
