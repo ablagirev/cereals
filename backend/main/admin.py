@@ -76,6 +76,7 @@ class OfferSpecificationsInline(admin.TabularInline):
 @admin.register(models.Offer)
 class OfferAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "title",
         "volume",
         "status",

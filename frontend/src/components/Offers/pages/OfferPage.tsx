@@ -66,6 +66,8 @@ export const OfferPage: React.FC = () => {
 
   const isEdit = !!paramId;
   const isArchived = offerStatus === "archive";
+  const isActive = offerStatus === "active";
+  const isReadOnly = isEdit && !isActive;
 
   const getProductSpecsById = (productId?: number) => {
     return (
@@ -344,7 +346,7 @@ export const OfferPage: React.FC = () => {
                         variant="light"
                         options={productOptions}
                         onChange={handleProductChange}
-                        disabled={isArchived}
+                        disabled={!isActive && isEdit}
                       />
                     </FormikField>
                     <FormikField
@@ -355,7 +357,7 @@ export const OfferPage: React.FC = () => {
                         name="cost"
                         variant="light"
                         type="masked"
-                        disabled={isArchived}
+                        disabled={isReadOnly}
                         isError={!!costError}
                       />
                     </FormikField>
@@ -364,7 +366,7 @@ export const OfferPage: React.FC = () => {
                         name="volume"
                         variant="light"
                         type="masked"
-                        disabled={isArchived}
+                        disabled={isReadOnly}
                         isError={!!volumeError}
                       />
                     </FormikField>
@@ -377,14 +379,14 @@ export const OfferPage: React.FC = () => {
                         startFieldName="shipmentStart"
                         endFieldName="shipmentEnd"
                         hasCounter
-                        disabled={isArchived}
+                        disabled={isReadOnly}
                       />
                     </FormikField>
                     <FormikField name="warehouse" title="Порт">
                       <Select
                         options={warehouseOptions}
                         variant="light"
-                        disabled={isArchived}
+                        disabled={isReadOnly}
                       />
                     </FormikField>
                   </MainFormWrapper>
@@ -440,21 +442,21 @@ export const OfferPage: React.FC = () => {
                                             <Spacer space={10} />
                                             <Input
                                               variant={
-                                                isArchived ||
+                                                isReadOnly ||
                                                 !isEditableMin ||
                                                 !isNumber(min)
                                                   ? "blank"
                                                   : "light"
                                               }
                                               disabled={
-                                                isArchived ||
+                                                isReadOnly ||
                                                 !isEditableMin ||
                                                 !isNumber(min)
                                               }
                                               name={`specifications[${idx}].min`}
                                               size="sm"
                                               tooltipContent={
-                                                !isArchived &&
+                                                !isReadOnly &&
                                                 isEditableMin &&
                                                 isNumber(min) &&
                                                 renderMinMaxTooltip({
@@ -477,7 +479,7 @@ export const OfferPage: React.FC = () => {
                                             <Input
                                               name={`specifications[${idx}].max`}
                                               variant={
-                                                isArchived ||
+                                                isReadOnly ||
                                                 !isEditableMax ||
                                                 !isNumber(max)
                                                   ? "blank"
@@ -485,12 +487,12 @@ export const OfferPage: React.FC = () => {
                                               }
                                               size="sm"
                                               disabled={
-                                                isArchived ||
+                                                isReadOnly ||
                                                 !isEditableMax ||
                                                 !isNumber(max)
                                               }
                                               tooltipContent={
-                                                !isArchived &&
+                                                !isReadOnly &&
                                                 isEditableMax &&
                                                 isNumber(max) &&
                                                 renderMinMaxTooltip({
@@ -532,7 +534,7 @@ export const OfferPage: React.FC = () => {
               </Form>
               <ActionsWrapper>
                 <Flex column>
-                  {!isArchived && (
+                  {!isReadOnly && (
                     <>
                       <Typography bold size="lg">
                         {isEdit
@@ -543,7 +545,7 @@ export const OfferPage: React.FC = () => {
                     </>
                   )}
                   <Flex>
-                    {!isArchived && (
+                    {!isReadOnly && (
                       <>
                         <Button
                           variant="base"
@@ -556,7 +558,7 @@ export const OfferPage: React.FC = () => {
                         <Spacer width={16} />
                       </>
                     )}
-                    {!isArchived && (
+                    {!isReadOnly && (
                       <>
                         <Button
                           variant="baseRed"
@@ -568,7 +570,7 @@ export const OfferPage: React.FC = () => {
                         <Spacer width={16} />
                       </>
                     )}
-                    {isArchived && (
+                    {isReadOnly && (
                       <>
                         <Button
                           variant="base"
@@ -580,7 +582,7 @@ export const OfferPage: React.FC = () => {
                         <Spacer width={16} />
                       </>
                     )}
-                    {isEdit && !isArchived && (
+                    {!isReadOnly && (
                       <Button
                         variant="link"
                         onClick={handleModalOpen as () => void}
