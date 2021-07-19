@@ -80,6 +80,21 @@ export const OrderPage: React.FC = () => {
     </StyledModal>
   );
 
+  const tableHeader = [
+    {
+      title: "test1",
+      value: 123,
+    },
+    {
+      title: "test1",
+      value: 123,
+    },
+    {
+      title: "test1",
+      value: 123,
+    },
+  ];
+
   const tableData = [
     {
       title: "Сделка",
@@ -105,7 +120,7 @@ export const OrderPage: React.FC = () => {
       content: [companyName],
     },
     {
-      title: "Продавец",
+      title: "Система налогообложения",
       content: [taxType],
     },
     {
@@ -172,7 +187,7 @@ export const OrderPage: React.FC = () => {
       </Heading>
       <Spacer space={28} />
       <OrderWrapper>
-        <Table data={tableData}></Table>
+        <Table data={tableData} headerData={tableHeader} />
       </OrderWrapper>
       {renderModal()}
     </Flex>
