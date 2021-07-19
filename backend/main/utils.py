@@ -51,7 +51,7 @@ def find_distance(warehouse, warehouse_user):
 
 
 def load_data_for_spec():
-    with open(os.path.join(BASE_DIR, 'temp_file', 'spec.csv')) as file:
+    with open(os.path.join(BASE_DIR, 'temp_file', 'spec.csv'), encoding="utf-8") as file:
         data = csv.DictReader(file)
 
         # Единица измерения
@@ -74,7 +74,7 @@ def load_data_for_spec():
                 models.UnitOfMeasurementOfSpecification.objects.create(unit=d['Единица измерения'])
 
             # Показатель
-            name = d['Показатель зерна']
+            name = ' '.join([d['Показатель зерна'], d['Культура']])
             if not models.SpecificationsOfProduct.objects.filter(name=name).exists():
                 spec = models.SpecificationsOfProduct()
                 spec.name = name
@@ -128,7 +128,7 @@ def load_data_for_spec():
                 culture.save()
             else:
                 culture = models.Culture.objects.get(name=d['Культура'])
-                culture.specifications.add(models.SpecificationsOfProduct.objects.get(name=d['Показатель зерна']))
+                culture.specifications.add(models.SpecificationsOfProduct.objects.get(name=name))
 
             # Продукт
             if not models.Product.objects.filter(title=d['Культура']).exists():
