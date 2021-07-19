@@ -13,7 +13,12 @@ from .mixins import UpdateViewSetMixin
 from .. import models
 from .. import serializers as ser
 from ..exceptions import UnprocessableEntityError
-from ..managers.offer import AcceptPayload, CreateOfferPayload, SpecificationsValue
+from ..managers.offer import (
+    AcceptPayload,
+    CreateOfferPayload,
+    SpecificationsValue,
+    OfferSpecUpdate,
+)
 from ..querysets.offer import GroupedOffers
 
 
@@ -40,6 +45,13 @@ class OfferViewSet(
             "warehouse": ser.inline_serializer(
                 "WarehouseById", {"id": serializers.IntegerField(required=True)}
             )(required=False),
+            "specifications": ser.inline_serializer(
+                "SpecificationValue",
+                {
+                    "id": serializers.IntegerField(required=True),
+                    "value": serializers.CharField(required=True),
+                },
+            )(many=True),
         },
     )
     specification_create_serializer = ser.inline_serializer(
@@ -116,6 +128,17 @@ class OfferViewSet(
                 message="Склад с указанным id не найден",
             )
             update_kwargs["warehouse_id"] = warehouse.id
+        if specifications := validated_data.pop("specifications", None):
+            payloads: list[OfferSpecUpdate] = []
+            for spec in specifications:
+                payload = OfferSpecUpdate(
+                    value=spec["value"],
+                    offer_spec=models.OfferSpecification.objects.filter(
+                        offer_id=instance.id, specification__id=spec["id"]
+                    ).first(),
+                )
+                payloads.append(payload)
+            models.Offer.service.update_specs(specs=payloads)
         models.Offer.service.update(instance=instance, **update_kwargs)
         return instance
 
