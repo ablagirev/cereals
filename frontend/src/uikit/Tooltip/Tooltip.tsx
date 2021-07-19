@@ -33,7 +33,6 @@ export const Tooltip: React.FC<IProps> = ({
 }) => {
   return !!tooltipContent ? (
     <OverlayTrigger
-      delay={{ hide: 450, show: 300 }}
       placement={tooltipPlacement}
       overlay={(props) => (
         <StyledReactTooltip id={id} {...props}>

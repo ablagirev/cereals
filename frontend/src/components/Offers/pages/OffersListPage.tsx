@@ -19,6 +19,7 @@ import {
   numberWithSeparators,
 } from "../../../utils/utils";
 import groupBy from "lodash-es/groupBy";
+import orderBy from "lodash-es/orderBy";
 
 const getStatusName = (statusCode: string) => {
   switch (statusCode) {
@@ -127,7 +128,10 @@ export const OffersListPage: React.FC = () => {
   };
 
   const offerTabs = Object.entries(
-    groupBy(offerData, (obj) => getStatusName(obj.status))
+    groupBy(
+      orderBy(offerData, (obj) => obj?.id, "desc"),
+      (obj) => getStatusName(obj.status)
+    )
   ).map((offer) => {
     return renderOfferTab(offer[1]);
   });

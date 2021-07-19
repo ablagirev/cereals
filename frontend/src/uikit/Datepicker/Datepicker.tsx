@@ -35,18 +35,16 @@ export const DatePickerField: React.FC<IProps> = ({
   useEffect(() => {
     startDate && setFieldValue(startFieldName, startDate);
     endDate && setFieldValue(endFieldName, endDate);
-    endDate &&
-      startDate &&
-      setDays(
-        Math.round(
-          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-        ) + 1
-      );
+    setDays(
+      Math.round(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+      ) + 1
+    );
   }, [startDate, endDate, startFieldName, endFieldName, values]);
 
   useEffect(() => {
-    start && setStartDate(new Date(start));
-    end && setEndDate(new Date(end));
+    (start || end) && setStartDate(new Date(start || end || ""));
+    (end || start) && setEndDate(new Date(end || start || ""));
   }, [start, end]);
 
   return (
@@ -72,7 +70,7 @@ export const DatePickerField: React.FC<IProps> = ({
           selectsEnd
         />
       </DatePickerWrapper>
-      {hasCounter && days && <DaysCounter>{`${days} д.`}</DaysCounter>}
+      {hasCounter && <DaysCounter>{`${days} д.`}</DaysCounter>}
     </Flex>
   );
 };
