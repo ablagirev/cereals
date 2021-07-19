@@ -215,7 +215,7 @@ class Offer(models.Model):
         return 0
 
     def __str__(self):
-        if self.title:
+        if self.title != '':
             return self.title
         else:
             return str(self.id)
