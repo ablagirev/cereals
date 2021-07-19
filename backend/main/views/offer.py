@@ -135,7 +135,7 @@ class OfferViewSet(
                     value=spec["value"],
                     offer_spec=models.OfferSpecification.objects.filter(
                         offer_id=instance.id, specification__id=spec["id"]
-                    ),
+                    ).first(),
                 )
                 payloads.append(payload)
             models.Offer.service.update_specs(specs=payloads)
