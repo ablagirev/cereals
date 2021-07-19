@@ -36,6 +36,12 @@ class CreateOfferPayload:
     cost: int
 
 
+@dataclass
+class OfferSpecUpdate:
+    value: str
+    offer_spec: "models.OfferSpecification"
+
+
 class OfferManager(DefaultUpdateManager):
     @atomic()
     def accept(self, *, offer: "models.Offer", payload: AcceptPayload):
@@ -91,6 +97,12 @@ class OfferManager(DefaultUpdateManager):
                 value=self._validate_spec_value(value=spec.value, spec=specs[spec.id]),
             )
         return offer
+
+    @atomic()
+    def update_specs(self, *, specs: list[OfferSpecUpdate]):
+        for payload in specs:
+            payload.offer_spec.value = payload.value
+            payload.offer_spec.save()
 
     def _get_needed_specs(
         self, product: "models.Product"
