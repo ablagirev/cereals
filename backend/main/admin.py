@@ -21,7 +21,7 @@ class UnitOfMeasurementOfSpecificationAdmin(admin.ModelAdmin):
 class SpecificationsOfProductAdmin(admin.ModelAdmin):
     list_display = ("name", "required", "type", "unit_of_measurement", "GOST")
     list_filter = ("name", "required", "type", "unit_of_measurement", "GOST")
-    search_fields = ("name_of_specification__startswith",)
+    search_fields = ("name__startswith",)
 
 
 @admin.register(models.OfferSpecification)
@@ -76,6 +76,7 @@ class OfferSpecificationsInline(admin.TabularInline):
 @admin.register(models.Offer)
 class OfferAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "title",
         "volume",
         "status",

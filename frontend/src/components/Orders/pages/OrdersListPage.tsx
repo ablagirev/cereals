@@ -128,7 +128,11 @@ export const OrdersListPage: React.FC = () => {
         ];
         return (
           <Card
-            title={getTrimText(`#${id} ${title} ${acceptedVolume} т`)}
+            title={getTrimText(
+              `${id && "#"}${id} ${title} ${acceptedVolume} ${
+                acceptedVolume && "т"
+              }`
+            )}
             onClick={() => handleOrderClick(id)}
             statusText={
               <Typography size="sm" color={theme.palette.common.colors.purple}>

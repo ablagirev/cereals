@@ -22,7 +22,6 @@ interface IProps {
     | "left"
     | "left-start";
   children: JSX.Element;
-
   tooltipContent?: string | number | JSX.Element | null | false;
 }
 
@@ -32,9 +31,8 @@ export const Tooltip: React.FC<IProps> = ({
   tooltipPlacement,
   tooltipContent,
 }) => {
-  return tooltipContent ? (
+  return !!tooltipContent ? (
     <OverlayTrigger
-      delay={{ hide: 450, show: 300 }}
       placement={tooltipPlacement}
       overlay={(props) => (
         <StyledReactTooltip id={id} {...props}>

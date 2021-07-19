@@ -30,4 +30,8 @@ export const GlobalStyle = createGlobalStyle`
     a:hover {
         text-decoration: none;
     }
+    
+    .tooltip.show {
+        opacity: 1 !important;
+    }
 `;
