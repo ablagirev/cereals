@@ -27,6 +27,46 @@ import * as Yup from "yup";
 import { isDeepEmpty } from "../../../utils/utils";
 import format from "date-fns/esm/format";
 
+const getSpecifications = (
+  specifications?: IProductSpecs[],
+  offerSpecs?: any[]
+) => {
+  return specifications?.map((spec) => {
+    const {
+      unitOfMeasurement,
+      id: specId,
+      GOST,
+      description,
+      name: nameOfSpecification,
+      spec: specification,
+    } = spec;
+
+    const offerSpec = offerSpecs?.find(
+      (offerSpec) => specId === offerSpec?.specification?.id
+    );
+    const { value } = offerSpec || {};
+    const { max: offerMax, min: offerMin } = (value && JSON.parse(value)) || {};
+
+    const { max, min, isEditableMax, isEditableMin } =
+      (specification && JSON.parse(specification)) || {};
+
+    return {
+      max: offerMax || max || BLANK_CHAR,
+      min: offerMin || min || BLANK_CHAR,
+      defaultMax: max,
+      defaultMin: min,
+      GOST,
+      description,
+      isEditableMax,
+      isEditableMin,
+      nameOfSpecification: unitOfMeasurement?.unit
+        ? `${nameOfSpecification}, ${unitOfMeasurement?.unit}`
+        : nameOfSpecification || EMPTY_CHAR,
+      id: specId || EMPTY_CHAR,
+    };
+  });
+};
+
 export const OfferPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
   const history = useHistory();
@@ -56,9 +96,10 @@ export const OfferPage: React.FC = () => {
     product: offerProduct,
     warehouse: offerWarehouse,
     status: offerStatus,
+    specifications: offerSpecifications,
   } = offerData || {};
 
-  const offerProductId = offerProduct?.id;
+  const { id: offerProductId } = offerProduct || {};
   const offerWarehouseId = offerWarehouse?.id;
 
   const { isSuccess: isCreateSuccess, refetch: refetchOfferCreate } =
@@ -280,32 +321,10 @@ export const OfferPage: React.FC = () => {
         warehouseOptions?.find(
           (option) => option?.value === offerWarehouseId
         ) || warehouseOptions?.[0],
-      specifications: productSpecifications?.map((spec) => {
-        const {
-          unitOfMeasurement,
-          id: specId,
-          GOST,
-          description,
-          name: nameOfSpecification,
-          spec: specification,
-        } = spec;
-
-        const { max, min, isEditableMax, isEditableMin } =
-          (specification && JSON.parse(specification)) || {};
-
-        return {
-          max: max || BLANK_CHAR,
-          min: min || BLANK_CHAR,
-          GOST,
-          description,
-          isEditableMax,
-          isEditableMin,
-          nameOfSpecification: unitOfMeasurement?.unit
-            ? `${nameOfSpecification}, ${unitOfMeasurement?.unit}`
-            : nameOfSpecification || EMPTY_CHAR,
-          id: specId || EMPTY_CHAR,
-        };
-      }),
+      specifications: getSpecifications(
+        productSpecifications,
+        offerSpecifications
+      ),
     };
   }, [
     offerData,
@@ -314,6 +333,7 @@ export const OfferPage: React.FC = () => {
     actualProductId,
     productOptions,
     dateStartShipment,
+    offerSpecifications,
   ]);
 
   return isFetching ? (
@@ -346,7 +366,7 @@ export const OfferPage: React.FC = () => {
                         variant="light"
                         options={productOptions}
                         onChange={handleProductChange}
-                        disabled={!isActive && isEdit}
+                        disabled={isReadOnly || isEdit}
                       />
                     </FormikField>
                     <FormikField
@@ -406,6 +426,8 @@ export const OfferPage: React.FC = () => {
                                   isEditableMax,
                                   isEditableMin,
                                   description,
+                                  defaultMin,
+                                  defaultMax,
                                 } = specification || {};
 
                                 const isSpecValuesEditable =
@@ -458,10 +480,10 @@ export const OfferPage: React.FC = () => {
                                               tooltipContent={
                                                 !isReadOnly &&
                                                 isEditableMin &&
-                                                isNumber(min) &&
+                                                isNumber(defaultMin) &&
                                                 renderMinMaxTooltip({
-                                                  max,
-                                                  min,
+                                                  max: defaultMax,
+                                                  min: defaultMin,
                                                 })
                                               }
                                             />
@@ -494,10 +516,10 @@ export const OfferPage: React.FC = () => {
                                               tooltipContent={
                                                 !isReadOnly &&
                                                 isEditableMax &&
-                                                isNumber(max) &&
+                                                isNumber(defaultMax) &&
                                                 renderMinMaxTooltip({
-                                                  max,
-                                                  min,
+                                                  max: defaultMax,
+                                                  min: defaultMin,
                                                 })
                                               }
                                             />
