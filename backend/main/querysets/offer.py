@@ -48,7 +48,7 @@ class OfferQuerySet(QuerySet):
 
     def iterator_grouped_by_harvest(self, user) -> Iterable[GroupedOffers]:
         def _get_harvest_type(offer):
-            return functools.reduce(getattr, ("product", "title"), offer)
+            return functools.reduce(getattr, ("product", "culture", "id"), offer)
 
         offers = self.ordered_by_type().filter(status="active")
         for k, g in itertools.groupby(offers, _get_harvest_type):
