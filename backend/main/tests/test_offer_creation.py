@@ -11,7 +11,7 @@ from main.managers.offer import CreateOfferPayload, SpecificationsValue
 
 @pytest.fixture()
 def simple_case(admin_user):
-    culture = baker.make("main.Culture", title="Culture")
+    culture = baker.make("main.Culture")
     specs = [
         baker.make(
             "main.SpecificationsOfProduct",
