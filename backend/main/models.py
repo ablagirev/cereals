@@ -141,7 +141,9 @@ class Warehouse(models.Model):
 
 class WarehouseDistance(models.Model):
     # Todo: Added validation
-    form = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name="starts")
+    start = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, related_name="starts"
+    )
     to = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name="ends")
 
     distance = models.IntegerField()
@@ -210,12 +212,12 @@ class Offer(models.Model):
     def days_till_end(self):
         if self.date_finish_shipment:
             # res = datetime.now(timezone.utc) - self.date_finish_shipment
-            res = date.today() - self.date_finish_shipment
+            res = self.date_finish_shipment - date.today()
             return res.days if res.days >= 0 else 0
         return 0
 
     def __str__(self):
-        if self.title != '':
+        if self.title != "":
             return self.title
         else:
             return str(self.id)
@@ -281,19 +283,22 @@ class Order(models.Model):
     date_finish_shipment = models.DateTimeField(
         "Дата окончания экспорта", blank=True, null=True
     )
-    amount_of_NDS = models.IntegerField("Размер НДС", default=0)
-    customer_cost = models.IntegerField(default=0)
-    total = models.IntegerField(default=0)
+    amount_of_NDS = models.IntegerField("Размер НДС", default=NDS)
+    customer_cost = models.IntegerField(
+        default=0, verbose_name="Цена покупателя без НДС"
+    )
+    total = models.IntegerField(default=0, verbose_name="Cделка без НДС")
+    price_for_delivery = models.IntegerField(
+        default=0, help_text="Цена за транспорт без НДС"
+    )
 
     @property
     def total_with_NDS(self):
-        return (
-            self.offer.cost + (self.offer.cost * self.amount_of_NDS / 100)
-        ) * self.accepted_volume
+        return self.total + round(self.total * self.amount_of_NDS / 100)
 
     @property
     def customer_cost_with_NDS(self):
-        return self.customer_cost + (self.customer_cost * self.amount_of_NDS / 100)
+        return self.customer_cost + round(self.customer_cost * self.amount_of_NDS / 100)
 
 
 class RateForDelivery(models.Model):

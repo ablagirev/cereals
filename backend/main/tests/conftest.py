@@ -2,6 +2,7 @@ import pytest
 from model_bakery import baker
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from main import models
 from main.enums import ProfileType
 
 
@@ -56,8 +57,13 @@ def farmer():
     user.is_staff = False
     user.is_superadmin = False
     user.save()
-    baker.make("Warehouse", owner_id=user.id)
+    already_existing_warehouses = models.Warehouse.objects.all()
+    user_warehouse = baker.make("Warehouse", owner_id=user.id)
     baker.make("Profile", user_id=user.id, type=ProfileType.farmer.value)
+    for existing_warehouse in already_existing_warehouses:
+        baker.make(
+            "WarehouseDistance", start_id=existing_warehouse.id, to_id=user_warehouse.id
+        )
     return user
 
 

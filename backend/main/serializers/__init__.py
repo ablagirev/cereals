@@ -1,3 +1,11 @@
+from rest_framework import serializers
+
+
+class PriceField(serializers.IntegerField):
+    def to_representation(self, value):
+        return round(super().to_representation(value) / 100)
+
+
 from .common import inline_serializer
 from .warehouse import WarehouseSerializer, RateForDeliverySerializer
 from .common import inline_serializer, DetailOut

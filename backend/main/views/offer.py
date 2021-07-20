@@ -51,7 +51,7 @@ class OfferViewSet(
                     "id": serializers.IntegerField(required=True),
                     "value": serializers.CharField(required=True),
                 },
-            )(many=True),
+            )(many=True, required=False),
         },
     )
     specification_create_serializer = ser.inline_serializer(
