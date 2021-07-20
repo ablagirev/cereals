@@ -171,7 +171,7 @@ class OfferViewSet(
                 warehouse=warehouse,
                 cost=validated_data["cost"],
                 shipment_end=validated_data["shipment_end"],
-                shipment_start=validated_data["shipment_end"],
+                shipment_start=validated_data["shipment_start"],
                 specifications=list(
                     SpecificationsValue(
                         id=spec["id"],
