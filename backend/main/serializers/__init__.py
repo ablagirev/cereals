@@ -2,8 +2,7 @@ from rest_framework import serializers
 
 
 class PriceField(serializers.IntegerField):
-    def to_representation(self, value):
-        return round(super().to_representation(value) / 100)
+    pass
 
 
 from .common import inline_serializer
