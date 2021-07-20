@@ -97,7 +97,7 @@ class OfferManager(DefaultUpdateManager):
             volume=payload.volume,
             creator_id=user.id,
             date_start_shipment=payload.shipment_start,
-            date_end_shipment=payload.shipment_end,
+            date_finish_shipment=payload.shipment_end,
             cost=payload.cost,
             company_name=company.name_of_provider,
         )
