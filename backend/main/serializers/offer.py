@@ -40,10 +40,10 @@ class OfferSerializer(serializers.ModelSerializer):
         model = models.Offer
         fields = "__all__"
 
-    cost_with_nds = PriceField(
+    cost_with_nds = serializers.IntegerField(
         read_only=True, source="cost_with_NDS", help_text="Цена покупателя с НДС"
     )
-    cost = PriceField(required=True, help_text="Цена покупателя без НДС")
+    cost = serializers.IntegerField(required=True, help_text="Цена покупателя без НДС")
     period_of_export = PriceField(read_only=True, help_text="Период поставки")
     product = product.ProductSerializer(allow_null=True)
     warehouse = warehouse.WarehouseSerializer(allow_null=True, help_text="Порт")
