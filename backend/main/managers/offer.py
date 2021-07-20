@@ -91,6 +91,7 @@ class OfferManager(DefaultUpdateManager):
             )
         specs = {spec.id: spec for spec in payload.product.culture.specifications.all()}
         offer = self.create(
+            title=payload.product.title,
             product_id=payload.product.id,
             warehouse_id=payload.warehouse.id,
             volume=payload.volume,
