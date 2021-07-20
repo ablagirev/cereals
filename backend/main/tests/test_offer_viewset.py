@@ -15,7 +15,7 @@ def offer() -> "models.Offer":
 
 @pytest.fixture()
 def product() -> "models.Product":
-    culture = baker.make("main.Culture")
+    culture = baker.make("main.Culture", name="culture")
     product = baker.make("main.Product", culture_id=culture.id)
     range_spec = baker.make(
         "main.SpecificationsOfProduct",
