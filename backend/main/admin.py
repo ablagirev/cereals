@@ -65,8 +65,8 @@ class WarehouseAdmin(admin.ModelAdmin):
 
 @admin.register(models.WarehouseDistance)
 class WarehouseDistanceAdmin(admin.ModelAdmin):
-    list_display = ("form", "to", "distance", "price")
-    list_filter = ("form", "to", "distance", "price")
+    list_display = ("start", "to", "distance", "price")
+    list_filter = ("start", "to", "distance", "price")
 
 
 class OfferSpecificationsInline(admin.TabularInline):

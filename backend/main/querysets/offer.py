@@ -35,7 +35,7 @@ class OfferQuerySet(QuerySet):
         return self.order_by("product__harvest_type")
 
     def get_price_for(self, offer: "models.Offer", user):
-        prices_data = get_data_of_cost_delivery(user, offer.warehouse, offer.volume)
+        prices_data = get_data_of_cost_delivery(user, offer.warehouse, offer)
         prices = list(
             DeliveryPrice(
                 warehouse=price["warehouse_from"],

@@ -1,6 +1,8 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+
+from . import PriceField
 from .. import models
 from .. import serializers as ser
 from ..enums import TaxTypes
@@ -15,23 +17,34 @@ class OrderSerializer(serializers.ModelSerializer):
     """
 
     title = serializers.CharField(source="offer.product.title")
-    cost_with_nds = serializers.IntegerField(source="offer.cost_with_NDS")
-    cost = serializers.IntegerField(source="offer.cost")
+    cost_with_nds = serializers.IntegerField(
+        source="offer.cost_with_NDS", help_text="Цена предложения (продавца) с НДС"
+    )
+    cost = PriceField(
+        source="offer.cost", help_text="Цена предложения (продавца) с НДС"
+    )
     period_of_export = serializers.IntegerField(source="offer.period_of_export")
-    cost_by_tonne = serializers.SerializerMethodField("get_cost_by_tonne")
+    cost_by_tonne = serializers.SerializerMethodField(
+        "get_cost_by_tonne", help_text="Цена предложения (продавца) с за тонну"
+    )
     offer = ser.OfferSerializer()
     tax_type = serializers.ChoiceField(
         source="offer.tax_type", choices=list(TaxTypes.readable())
     )
     provider_name = serializers.CharField(source="offer.company_name")
-    customer_cost_with_nds = serializers.IntegerField(source="customer_cost_with_NDS")
-    total_with_nds = serializers.IntegerField(source="total_with_NDS")
+    customer_cost_with_nds = PriceField(
+        source="customer_cost_with_NDS", help_text="Цена пользователя с НДС"
+    )
+    total_with_nds = serializers.IntegerField(
+        source="total_with_NDS", help_text="Сделака (Цена полная)"
+    )
     amount_of_nds = serializers.IntegerField(source="amount_of_NDS")
-    selected_warehouse = ser.WarehouseSerializer()
+    selected_warehouse = ser.WarehouseSerializer(help_text="Склад вывоза")
+    price_for_delivery = PriceField(required=True, help_text="Цена за доставку")
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_cost_by_tonne(self, instance: models.Order) -> int:
-        return round(instance.offer.cost_by_kg / 1000)
+        return round(instance.total / instance.accepted_volume)
 
     class Meta:
         model = models.Order
