@@ -14,6 +14,13 @@ class OrderSerializer(serializers.ModelSerializer):
     active - Новая сделка
     finished - Завершенная
     failed - Провалененная сделка
+
+    Документы:
+        id - ИД сущности.
+        name - Название загруженного файла.
+        typeDoc - Тип документа. Пример см. в ручке /api/orders/upload_doc/.
+        file - url чтобы скачать файл.
+        signFile - url чтобы скачать файл подписи. Если его нет, значит файл не подписывали.
     """
 
     title = serializers.CharField(source="offer.product.title")
@@ -41,6 +48,7 @@ class OrderSerializer(serializers.ModelSerializer):
     amount_of_nds = serializers.IntegerField(source="amount_of_NDS")
     selected_warehouse = ser.WarehouseSerializer(help_text="Склад вывоза")
     price_for_delivery = PriceField(required=True, help_text="Цена за доставку")
+    documents = ser.DocumentSerializer(many=True)
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_cost_by_tonne(self, instance: models.Order) -> int:
