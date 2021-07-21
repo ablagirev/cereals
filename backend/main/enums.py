@@ -97,14 +97,37 @@ class TaxTypes(Enum):
 
 
 class DocumentTypes(Enum):
-    act = "act"
     other = "other"
+    specification = "specification"
+    contract_for_signing = "contract_for_signing"
+    payment_invoice = "payment_invoice"
+    quality_certificate = "quality_certificate"
+    contract = "contract"
+    payment_order = "payment_order"
+    verification_act = "verification_act"
+    book_of_purchases_or_sales = "book_of_purchases_or_sales"
+    letter_for_refund = "letter_for_refund"
+    loading_plan = "loading_plan"
+    report_on_the_shipped_goods = "report_on_the_shipped_goods"
+    additional_payment_invoice = "additional_payment_invoice"
+
 
     @classmethod
     def read_map(cls):
         return {
-            cls.act: "Акт",
             cls.other: "Прочее",
+            cls.specification: "Спецификация",
+            cls.contract_for_signing: "Договор на подписание",
+            cls.payment_invoice: "Счет на оплату",
+            cls.quality_certificate: "Сертификат качества",
+            cls.contract: "Договор",
+            cls.payment_order: "Платежное поручение",
+            cls.verification_act: "Акт сверки",
+            cls.book_of_purchases_or_sales: "Книга покупок/продаж",
+            cls.letter_for_refund: "Письмо на возврат",
+            cls.loading_plan: "План погрузки",
+            cls.report_on_the_shipped_goods: "Отчет о погруженном товаре",
+            cls.additional_payment_invoice: "Счет на доплату",
         }
 
     @classmethod
