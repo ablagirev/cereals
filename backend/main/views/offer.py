@@ -51,7 +51,7 @@ class OfferViewSet(
                     "id": serializers.IntegerField(required=True),
                     "value": serializers.CharField(required=True),
                 },
-            )(many=True),
+            )(many=True, required=False),
         },
     )
     specification_create_serializer = ser.inline_serializer(
@@ -171,7 +171,7 @@ class OfferViewSet(
                 warehouse=warehouse,
                 cost=validated_data["cost"],
                 shipment_end=validated_data["shipment_end"],
-                shipment_start=validated_data["shipment_end"],
+                shipment_start=validated_data["shipment_start"],
                 specifications=list(
                     SpecificationsValue(
                         id=spec["id"],

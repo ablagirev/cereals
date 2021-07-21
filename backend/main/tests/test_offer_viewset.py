@@ -15,7 +15,7 @@ def offer() -> "models.Offer":
 
 @pytest.fixture()
 def product() -> "models.Product":
-    culture = baker.make("main.Culture")
+    culture = baker.make("main.Culture", name="culture")
     product = baker.make("main.Product", culture_id=culture.id)
     range_spec = baker.make(
         "main.SpecificationsOfProduct",
@@ -88,28 +88,30 @@ def test_offer_patching(client, offer: models.Offer, products, admin_token):
         data=json.dumps({"product": {"id": models.Product.objects.first().id}}),
         HTTP_AUTHORIZATION=f"Bearer {admin_token}",
     )
-    assert response.status_code == 200
+    assert response.status_code == 200, response.json()
     assert response.json()
     assert models.Offer.objects.count() == 1
     assert models.Offer.objects.first().product_id == models.Product.objects.first().id
 
 
 @pytest.mark.django_db(transaction=True)
-def test_offer_grouped(client, offer_groping_case, admin_token):
+def test_offer_grouped(client, offer_groping_case, farmer_token):
     res = client.get(
-        reverse("offer-grouped"), HTTP_AUTHORIZATION=f"Bearer {admin_token}",
+        reverse("offer-grouped"), HTTP_AUTHORIZATION=f"Bearer {farmer_token}",
     )
-    assert res.status_code == 200
+    assert res.status_code == 200, res.json()
+    data = res.json()
+    assert data[0]["offers"][0]["prices"]
 
 
 @pytest.mark.django_db(transaction=True)
-def test_order_accept(client, admin_token, products, offer: "models.Offer"):
+def test_order_accept(client, farmer_token, products, offer: "models.Offer"):
     offer = models.Offer.objects.first()
     warehouse = models.Warehouse.objects.first()
     res = client.post(
         reverse("offer-accept", kwargs={"pk": offer.id}),
         content_type="application/json",
-        HTTP_AUTHORIZATION=f"Bearer {admin_token}",
+        HTTP_AUTHORIZATION=f"Bearer {farmer_token}",
         data=json.dumps(
             {"volume": round(offer.volume / 2), "warehouseId": warehouse.id}
         ),
