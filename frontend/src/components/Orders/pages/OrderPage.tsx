@@ -83,9 +83,20 @@ export const OrderPage: React.FC = () => {
       const { name, description, unitOfMeasurement, spec } =
         item?.specification || {};
       const { max, min } = (spec && JSON.parse(spec)) || {};
+
+      const getValues = () => {
+        return min && max
+          ? `${min} - ${max}`
+          : !min
+          ? `≤ ${max}`
+          : !max
+          ? `≥
+         ${min}`
+          : null;
+      };
       return {
         title: name,
-        content: [description],
+        content: [description || `${getValues()}${unitOfMeasurement?.unit}`],
       };
     });
 
@@ -137,16 +148,19 @@ export const OrderPage: React.FC = () => {
                       data={[
                         {
                           title: (
-                            <Typography bold size="md">
-                              {getTrimText(
-                                `${product?.title} ${product?.harvestType}${
-                                  product?.harvestYear && ", "
-                                } ${
-                                  product?.harvestYear &&
-                                  formatDate(product?.harvestYear)
-                                }`
-                              )}
-                            </Typography>
+                            <>
+                              <Typography bold size="lg">
+                                {getTrimText(
+                                  `${product?.title} ${product?.harvestType}${
+                                    product?.harvestYear && ", "
+                                  } ${
+                                    product?.harvestYear &&
+                                    formatDate(product?.harvestYear)
+                                  }`
+                                )}
+                              </Typography>
+                              <Spacer />
+                            </>
                           ),
                           content: [],
                         },
