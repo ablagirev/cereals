@@ -39,6 +39,7 @@ export interface IInputProps {
   size?: "lg" | "md" | "sm";
   tooltipContent?: string | number | JSX.Element | null | false;
   errorText?: string;
+  isHighlighed?: boolean;
   tooltipPlacement?:
     | "auto-start"
     | "auto"
@@ -93,6 +94,7 @@ export const Input: React.FC<IInputProps> = ({
   value,
   onChange,
   errorText,
+  isHighlighed,
   ...restProps
 }) => {
   const renderInput = () => (
@@ -101,6 +103,7 @@ export const Input: React.FC<IInputProps> = ({
       variant={variant}
       size={size}
       disabled={disabled}
+      isHighlighed={isHighlighed}
     >
       {type === "masked" ? (
         <StyledIMaskInput
@@ -169,6 +172,8 @@ const FieldWrapper = styled.div<any>`
   background-color: ${({ variant }) => getBgColor(variant)};
   border-radius: 6px;
   overflow: hidden;
+  border-color: ${({ isHighlighed, disabled }) =>
+    !disabled && isHighlighed && "#407ef5"};
 
   &:hover {
     border-color: ${({ disabled }) => !disabled && "#407ef5"};

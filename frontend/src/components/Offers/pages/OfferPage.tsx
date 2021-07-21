@@ -191,8 +191,8 @@ export const OfferPage: React.FC = () => {
       specifications: values?.specifications
         ?.map(({ max, min, id: specId }: any) => {
           const value = {
-            max: parseInt(max) || undefined,
-            min: parseInt(min) || undefined,
+            max: Number(max) || undefined,
+            min: Number(min) || undefined,
           };
           return {
             id: specId,
@@ -354,8 +354,9 @@ export const OfferPage: React.FC = () => {
         validateOnChange={false}
         validateOnBlur={false}
       >
-        {({ handleSubmit, errors }: any) => {
+        {({ handleSubmit, errors, values }: any) => {
           const { cost: costError, volume: volumeError } = errors;
+          console.log(values.specifications);
           return (
             <>
               <Form>
@@ -475,6 +476,14 @@ export const OfferPage: React.FC = () => {
                                                 !isEditableMin ||
                                                 !isNumber(min)
                                               }
+                                              isHighlighed={
+                                                // isNumber(min) &&
+                                                Number(defaultMin) !==
+                                                Number(
+                                                  values?.specifications?.[idx]
+                                                    ?.min
+                                                )
+                                              }
                                               name={`specifications[${idx}].min`}
                                               size="sm"
                                               tooltipContent={
@@ -506,6 +515,14 @@ export const OfferPage: React.FC = () => {
                                                 !isNumber(max)
                                                   ? "blank"
                                                   : "light"
+                                              }
+                                              isHighlighed={
+                                                // isNumber(max) &&
+                                                Number(defaultMax) !==
+                                                Number(
+                                                  values?.specifications?.[idx]
+                                                    ?.max
+                                                )
                                               }
                                               size="sm"
                                               disabled={

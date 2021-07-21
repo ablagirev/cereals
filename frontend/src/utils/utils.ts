@@ -16,7 +16,7 @@ export type MoneyValueType = number | string;
 
 export const formatMoney = (value: MoneyValueType) => {
     const numberValue = Number(value);
-    const fractionDigits = 2;
+    // const fractionDigits = 2;
 
     if (Number.isNaN(numberValue) || value === null || value === '') {
         return EMPTY_CHAR
@@ -24,8 +24,8 @@ export const formatMoney = (value: MoneyValueType) => {
 
     return new Intl.NumberFormat('ru-RU', {
         style: 'decimal',
-        minimumFractionDigits: fractionDigits,
-        maximumFractionDigits: fractionDigits,
+        // minimumFractionDigits: fractionDigits,
+        // maximumFractionDigits: fractionDigits,
     }).format(numberValue);
 };
 
