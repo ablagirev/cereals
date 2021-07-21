@@ -7,6 +7,7 @@ class PriceField(serializers.IntegerField):
 
 from .common import inline_serializer
 from .warehouse import WarehouseSerializer, RateForDeliverySerializer
+from .document import DocumentSerializer
 from .common import inline_serializer, DetailOut
 from .settings import SettingsSerializer
 from .product import (

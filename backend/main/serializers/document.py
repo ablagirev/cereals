@@ -1,10 +1,8 @@
-from main.models import (
-    Document,
-)
+from .. import models
 from rest_framework import serializers
 
 
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Document
+        model = models.Document
         fields = "__all__"

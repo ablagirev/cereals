@@ -12,6 +12,7 @@ from main.enums import (
     OrderStatus,
     ProfileType,
     TaxTypes,
+    DocumentTypes,
 )
 from main.managers.offer import OfferManager
 from main.managers.warehouse import WarehouseManager
@@ -225,7 +226,8 @@ class Offer(models.Model):
 
 class Document(models.Model):
     name = models.CharField("Имя документа", max_length=250, default="")
-    type_doc = models.CharField("Тип документа", max_length=250, null=True, blank=True)
+    type_doc = models.CharField("Тип документа", choices=DocumentTypes.readable(),
+                                default=DocumentTypes.other.value, max_length=250)
     file = models.FileField("Файл", upload_to="uploads/%Y/%m/%d/%H/%M/%S", null=True)
     sign_file = models.FileField(
         "Файл подписи", upload_to="uploads/%Y/%m/%d/%H/%M/%S", null=True

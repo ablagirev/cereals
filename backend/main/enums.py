@@ -96,6 +96,22 @@ class TaxTypes(Enum):
         return ((key.value, map_[key]) for key in cls)
 
 
+class DocumentTypes(Enum):
+    act = "act"
+    other = "other"
+
+    @classmethod
+    def read_map(cls):
+        return {
+            cls.act: "Акт",
+            cls.other: "Прочее",
+        }
+
+    @classmethod
+    def readable(cls):
+        map_ = cls.read_map()
+        return ((key.value, map_[key]) for key in cls)
+
 VALUES_SCHEMAS = {
     SpecificationTypes.int: {"type": ["number"]},
     SpecificationTypes.decimal: {"type": ["number"]},

@@ -2,7 +2,9 @@ from django.urls import path, re_path, include
 from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import SimpleRouter
+from django.conf.urls.static import static
 
+from Daylesford import settings
 from main import views
 from main.views.check_create_sign import UploadDoc
 
@@ -22,4 +24,4 @@ urlpatterns = [
     path("api/load_data/", views.product.load_spec_view),
     path("api/upload_doc/", UploadDoc.as_view()),
     re_path(".*", TemplateView.as_view(template_name="index.html",), name="index",),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
