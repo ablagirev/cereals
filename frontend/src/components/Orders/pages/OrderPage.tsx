@@ -26,7 +26,7 @@ import { PushContext } from "../../../context";
 import * as Yup from "yup";
 import { useOrder } from "../../../hooks/useOrder";
 import { Table } from "../../../uikit/Table/Table";
-import { formatDate, formatMoney } from "../../../utils/utils";
+import { formatDate, formatMoney, getTrimText } from "../../../utils/utils";
 
 export const OrderPage: React.FC = () => {
   const { id: paramId }: IRouteParams = useParams();
@@ -40,21 +40,26 @@ export const OrderPage: React.FC = () => {
     taxType,
     customerCost,
     customerCostWithNds,
+    totalWithNds,
+    priceForDelivery,
+    selectedWarehouse,
+    acceptedVolume,
+    dateStartOfContract,
+    dateFinishShipment,
     id: orderId,
   } = orderData || {};
-  const { product, companyName } = offer || {};
+  const { product, companyName, volume } = offer || {};
   const [orderFormData, setOrderFormData] = useState<any>();
   const [showModalState, setShowModalState] = useState(false);
+  const [modalType, setModalType] = useState<string | null>(null);
 
-  const handleCancel = () => {
-    history.push(generatePath(routes.offers.list.path));
-  };
-
-  const handleModalOpen = () => {
+  const handleModalOpen = (type: string) => {
+    setModalType(type);
     setShowModalState(true);
   };
 
   const handleModalClose = () => {
+    setModalType(null);
     setShowModalState(false);
   };
 
@@ -64,34 +69,116 @@ export const OrderPage: React.FC = () => {
     });
   };
 
-  const renderModal = () => (
-    <StyledModal
-      show={showModalState}
-      onHide={handleModalClose}
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton />
-      <ModalContent>
-        <Flex column vAlignContent="center" hAlignContent="center">
-          123
-        </Flex>
-      </ModalContent>
-    </StyledModal>
-  );
+  const getDaysToExpiration = (date: string) => {
+    const endDate = new Date(date);
+    return (
+      Math.round(
+        (endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      ) + 1
+    );
+  };
+
+  const renderModal = () => {
+    const dataList = offer?.specifications?.map((item) => {
+      const { name, description, unitOfMeasurement, spec } =
+        item?.specification || {};
+      const { max, min } = (spec && JSON.parse(spec)) || {};
+      return {
+        title: name,
+        content: [description],
+      };
+    });
+
+    return (
+      <StyledModal
+        show={showModalState}
+        onHide={handleModalClose}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton />
+        <ModalContent>
+          <Flex column>
+            {modalType === "seller" ? (
+              <>
+                <Flex column vAlignContent="center" hAlignContent="center">
+                  <Typography bold size="lg">
+                    Продавец
+                  </Typography>
+                </Flex>
+                <Spacer space={16} />
+                <Flex column>
+                  <Typography bold size="md">
+                    {companyName}
+                  </Typography>
+                  <Spacer space={16} />
+                  <Typography size="sm" color="#918F88">
+                    <Flex column>
+                      <span>fio</span>
+                      <Spacer space={16} />
+                      <span>inn</span>
+                      <Spacer space={16} />
+                      <span>address</span>
+                    </Flex>
+                  </Typography>
+                </Flex>
+              </>
+            ) : modalType === "harvest" ? (
+              <>
+                <Flex column vAlignContent="center" hAlignContent="center">
+                  <Typography bold size="lg">
+                    Культура
+                  </Typography>
+                </Flex>
+                <Spacer space={16} />
+                <Flex column>
+                  {!!dataList?.length && (
+                    <Table
+                      data={[
+                        {
+                          title: (
+                            <Typography bold size="md">
+                              {getTrimText(
+                                `${product?.title} ${product?.harvestType}${
+                                  product?.harvestYear && ", "
+                                } ${
+                                  product?.harvestYear &&
+                                  formatDate(product?.harvestYear)
+                                }`
+                              )}
+                            </Typography>
+                          ),
+                          content: [],
+                        },
+                        ...dataList,
+                      ]}
+                    />
+                  )}
+                </Flex>
+              </>
+            ) : null}
+            <Spacer space={24} />
+            <StyledButton variant="link" onClick={handleModalClose}>
+              Закрыть
+            </StyledButton>
+          </Flex>
+        </ModalContent>
+      </StyledModal>
+    );
+  };
 
   const tableHeader = [
     {
-      title: "test1",
-      value: 123,
+      title: "Суммарный объем",
+      value: volume,
     },
     {
-      title: "test1",
-      value: 123,
+      title: "Погружено",
+      value: acceptedVolume,
     },
     {
-      title: "test1",
-      value: 123,
+      title: "Осталось отгрузить",
+      value: volume && acceptedVolume && volume - acceptedVolume,
     },
   ];
 
@@ -100,8 +187,7 @@ export const OrderPage: React.FC = () => {
       title: "Сделка",
       content: [
         <Flex>
-          {/* <span>{cost && formatMoney(cost)}</span> */}
-          ????
+          <span>{totalWithNds && formatMoney(totalWithNds)}</span>
           <Spacer width={18} />
           <TaxPresence>без НДС</TaxPresence>
         </Flex>,
@@ -110,14 +196,22 @@ export const OrderPage: React.FC = () => {
     {
       title: "Культура",
       content: [
-        `${product?.title} ${product?.harvestType}, ${
-          product?.harvestYear && formatDate(product?.harvestYear)
-        }`,
+        <StyledButton variant="link" onClick={() => handleModalOpen("harvest")}>
+          {getTrimText(
+            `${product?.title} ${product?.harvestType}${
+              product?.harvestYear && ", "
+            } ${product?.harvestYear && formatDate(product?.harvestYear)}`
+          )}
+        </StyledButton>,
       ],
     },
     {
       title: "Продавец",
-      content: [companyName],
+      content: [
+        <StyledButton variant="link" onClick={() => handleModalOpen("seller")}>
+          {companyName}
+        </StyledButton>,
+      ],
     },
     {
       title: "Система налогообложения",
@@ -142,14 +236,9 @@ export const OrderPage: React.FC = () => {
       title: "Расчетная цена за транспорт, руб",
       content: [
         <Flex>
-          <span>{cost && formatMoney(cost)}</span>
+          <span>{priceForDelivery && formatMoney(priceForDelivery)}</span>
           <Spacer width={18} />
           <TaxPresence>без НДС / CNTP</TaxPresence>
-        </Flex>,
-        <Flex>
-          <span>{costWithNds && formatMoney(costWithNds)}</span>
-          <Spacer width={18} />
-          <TaxPresence>с НДС / CVTP</TaxPresence>
         </Flex>,
       ],
     },
@@ -170,11 +259,11 @@ export const OrderPage: React.FC = () => {
     },
     {
       title: "Адрес вывоза",
-      content: [],
+      content: [selectedWarehouse?.address],
     },
     {
-      title: "Время до вывоза",
-      content: [],
+      title: "Срок окончания контракта",
+      content: [dateFinishShipment && getDaysToExpiration(dateFinishShipment)],
     },
   ];
 
@@ -183,9 +272,12 @@ export const OrderPage: React.FC = () => {
   ) : (
     <Flex column>
       <Heading size="lg2" bold>
+        <Typography size="sm" color="#918F88">
+          {dateStartOfContract && formatDate(dateStartOfContract)}
+        </Typography>
+        <Spacer space={8} />
         {`#${orderId} ${product?.title}`}
       </Heading>
-      <Spacer space={28} />
       <OrderWrapper>
         <Table data={tableData} headerData={tableHeader} />
       </OrderWrapper>
@@ -194,8 +286,14 @@ export const OrderPage: React.FC = () => {
   );
 };
 
+const StyledButton = styled(Button)`
+  padding: 0;
+  color: #407ef5;
+  height: initial;
+`;
+
 const OrderWrapper = styled.div`
-  max-width: 600px;
+  max-width: 660px;
   padding: 44px;
 `;
 

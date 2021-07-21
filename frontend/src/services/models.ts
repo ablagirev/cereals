@@ -122,6 +122,25 @@ export interface IProduct {
         harvestType: string,
         category: number
       },
+      specifications: [
+        {
+            id: number,
+            specification: {
+              id: number,
+              unitOfMeasurement: {
+                id: number,
+                unit: string
+              },
+              name: string,
+              required: boolean,
+              type: string,
+              description: string,
+              GOST: string,
+              spec: string
+            }
+            value: string;
+        }
+      ],
       warehouse: {
         id: number,
         title: string,
@@ -145,6 +164,7 @@ export interface IProduct {
     providerName: string,
     customerCostWithNds: number,
     totalWithNds: number,
+    priceForDelivery: number,
     amountOfNds: number,
     status: string,
     acceptedVolume: number,
@@ -160,6 +180,11 @@ export interface IProduct {
     total: number,
     provider: number,
     customer: number,
-    selectedWarehouse:number,
+    selectedWarehouse: {
+      id: number,
+      title: string,
+      address: string,
+      owner: string,
+    },
     documents: number[]  
   }

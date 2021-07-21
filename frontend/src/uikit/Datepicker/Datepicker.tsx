@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Flex } from "..";
 import styled from "styled-components";
 import ru from "date-fns/locale/ru";
+import addDays from "date-fns/addDays";
 
 registerLocale("ru", ru);
 
@@ -28,7 +29,7 @@ export const DatePickerField: React.FC<IProps> = ({
 }) => {
   const { start, end } = initialValues;
   const [startDate, setStartDate] = useState<Date>(new Date());
-  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(addDays(new Date(), 29));
   const { setFieldValue, values } = useFormikContext();
   const [days, setDays] = useState<number>();
 
