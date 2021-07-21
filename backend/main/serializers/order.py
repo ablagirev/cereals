@@ -14,6 +14,13 @@ class OrderSerializer(serializers.ModelSerializer):
     active - Новая сделка
     finished - Завершенная
     failed - Провалененная сделка
+
+    Документы:
+        id - ИД сущности.
+        name - Название загруженного файла.
+        typeDoc - Тип документа. Пример см. в ручке /api/orders/upload_doc/.
+        file - url чтобы скачать файл.
+        signFile - url чтобы скачать файл подписи. Если его нет, значит файл не подписывали.
     """
 
     title = serializers.CharField(source="offer.product.title")
