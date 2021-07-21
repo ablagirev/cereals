@@ -300,10 +300,6 @@ export const OrderPage: React.FC = () => {
   );
 };
 
-const StyledFlex = styled(Flex)`
-  max-width: 320px;
-`;
-
 const StyledButton = styled(Button)`
   padding: 0;
   color: #407ef5;
