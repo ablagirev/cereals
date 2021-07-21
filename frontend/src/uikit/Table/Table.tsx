@@ -21,9 +21,9 @@ export const Table: FC<IProps> = ({ headerData, data }) => {
             const { title, value } = item || {};
             return (
               <Flex column>
-                <Typography color={"#918F89"} size="md">
+                <StyledTypography color={"#918F89"} size="md">
                   {title}
-                </Typography>
+                </StyledTypography>
                 <Spacer space={8} />
                 <Typography size="lg">{value}</Typography>
               </Flex>
@@ -46,4 +46,8 @@ const Header = styled.div`
   justify-content: space-between;
   width: 100%;
   margin-bottom: 44px;
+`;
+
+const StyledTypography = styled(Typography)`
+  white-space: nowrap;
 `;
