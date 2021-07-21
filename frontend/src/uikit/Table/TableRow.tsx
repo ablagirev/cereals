@@ -4,7 +4,7 @@ import { Flex, Spacer, Typography } from "..";
 
 type TContentItem = ReactNode | string | number | JSX.Element;
 export interface ITableRow {
-  title: string;
+  title: string | JSX.Element;
   content: TContentItem[];
 }
 
