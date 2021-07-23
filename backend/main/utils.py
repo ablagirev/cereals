@@ -31,11 +31,11 @@ def save_file(content, path):
 
 
 def calc_cost_delivery_per_tonne(distance: int):
-    if distance < 100_000:
-        return 50000
-    if distance <= 700_000:
-        return distance / 1000 * 4
-    return distance / 1000 * 3.8
+    if distance < 100:
+        return 500
+    if distance <= 700:
+        return distance * 4
+    return distance * 3.8
 
 
 def get_price_for_between_warehouses(

@@ -12,6 +12,7 @@ from .common import get_or_unprocessable
 from .mixins import UpdateViewSetMixin
 from .. import models
 from .. import serializers as ser
+from ..enums import ProfileType
 from ..exceptions import UnprocessableEntityError
 from ..managers.offer import (
     AcceptPayload,
@@ -86,7 +87,8 @@ class OfferViewSet(
     )
 
     def get_queryset(self):
-        if self.action in ("list",):
+        profile: models.Profile = self.request.user.profile
+        if self.action in ("list",) and profile.type == ProfileType.provider.value:
             return models.Offer.objects.filter(creator_id=self.request.user.id)
         return super().get_queryset()
 

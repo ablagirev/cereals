@@ -5,7 +5,12 @@ from django.db.transaction import atomic
 from jsonschema import validate, ValidationError
 from main.managers.update import DefaultUpdateManager
 from .. import models
-from ..enums import OfferStatus, SCHEMA_BUILDERS, SpecificationTypes
+from ..enums import (
+    OfferStatus,
+    SCHEMA_BUILDERS,
+    SpecificationTypes,
+    DEFAULT_VALUES_GETTER,
+)
 from django.contrib.auth import models as auth_models
 
 from ..exceptions import UnprocessableEntityError
@@ -82,7 +87,7 @@ class OfferManager(DefaultUpdateManager):
             raise UnprocessableEntityError(
                 detail="Были указаны не все требуемые показатели"
             )
-        allowed_specs = set(
+        allowed_specs: set[int] = set(
             spec.id for spec in payload.product.culture.specifications.all()
         )
         if allowed_specs & provided_specs != provided_specs:
@@ -106,6 +111,13 @@ class OfferManager(DefaultUpdateManager):
                 offer=offer,
                 specification=specs[spec.id],
                 value=self._validate_spec_value(value=spec.value, spec=specs[spec.id]),
+            )
+        for spec_id in allowed_specs.difference(provided_specs):
+            spec = models.SpecificationsOfProduct.objects.get(id=spec_id)
+            models.OfferSpecification.objects.create(
+                offer=offer,
+                specification=specs[spec.id],
+                value=self._get_default_value(spec),
             )
         return offer
 
@@ -134,3 +146,6 @@ class OfferManager(DefaultUpdateManager):
                 detail=f"Указаное значпение: '{value}' не действителен для {spec.name} ({spec.id})"
             )
         return value
+
+    def _get_default_value(self, spec: "models.SpecificationsOfProduct") -> str:
+        return DEFAULT_VALUES_GETTER[SpecificationTypes(spec.type)](spec)

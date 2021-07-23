@@ -32,7 +32,7 @@ class GroupedOffers:
 
 class OfferQuerySet(QuerySet):
     def ordered_by_type(self) -> QuerySet:
-        return self.order_by("product__harvest_type")
+        return self.order_by("product__culture__category__id")
 
     def get_price_for(self, offer: "models.Offer", user):
         prices_data = get_data_of_cost_delivery(user, offer.warehouse, offer)
@@ -48,7 +48,9 @@ class OfferQuerySet(QuerySet):
 
     def iterator_grouped_by_harvest(self, user) -> Iterable[GroupedOffers]:
         def _get_harvest_type(offer):
-            return functools.reduce(getattr, ("product", "culture", "id"), offer)
+            return functools.reduce(
+                getattr, ("product", "culture", "category", "id"), offer
+            )
 
         offers = self.ordered_by_type().filter(status="active")
         for k, g in itertools.groupby(offers, _get_harvest_type):
@@ -58,4 +60,6 @@ class OfferQuerySet(QuerySet):
                 any_ = offer
                 prices = self.get_price_for(offer, user)
                 group_offers.append(OfferWithPrices(offer=offer, prices=prices))
-            yield GroupedOffers(offers=group_offers, name=any_.product.title)
+            yield GroupedOffers(
+                offers=group_offers, name=any_.product.culture.category.name
+            )

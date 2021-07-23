@@ -25,7 +25,14 @@ def product() -> "models.Product":
         ),
         type=SpecificationTypes.range.value,
     )
+    usual_spec = baker.make(
+        "main.SpecificationsOfProduct",
+        required=False,
+        type=SpecificationTypes.range.value,
+        spec=json.dumps({"isEditableMin": True}),
+    )
     culture.specifications.add(range_spec)
+    culture.specifications.add(usual_spec)
     return product
 
 
@@ -36,7 +43,9 @@ def warehouse() -> "models.Warehouse":
 
 @pytest.mark.django_db(transaction=True)
 def test_offer_creating(client, admin_token, product):
-    range_spec = models.SpecificationsOfProduct.objects.first()
+    range_spec = models.SpecificationsOfProduct.objects.filter(
+        type=SpecificationTypes.range.value
+    ).first()
     response = client.post(
         reverse("offer-list"),
         content_type="application/json",
@@ -56,6 +65,8 @@ def test_offer_creating(client, admin_token, product):
     assert response.status_code == 201, response.json()
     assert response.json()
     assert models.Offer.objects.count() == 1
+    offer = models.Offer.objects.first()
+    assert offer.specification_values.count() == 2
 
     response = client.post(
         reverse("offer-list"),

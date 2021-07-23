@@ -80,7 +80,7 @@ def test_order_creating(offer: "models.Offer", farmer_token, farmer, client):
     order = models.Order.objects.first()
     assert order.accepted_volume == 50
     data = response.json()
-    assert data["periodOfExport"] == 10
+    assert data["periodOfExport"] == 11
     assert data["status"] == OrderStatus.active.value
     assert data["customerCost"]
     assert data["customerCostWithNds"]
