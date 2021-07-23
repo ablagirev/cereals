@@ -5,7 +5,7 @@ import django.db.models.deletion
 
 
 def reverse(apps, schema_editor):
-    Category = apps.get_model("products", "Category")
+    Category = apps.get_model("main", "Category")
     db_alias = schema_editor.connection.alias
     c = Category.objects.using(db_alias).filter(name="test").first()
     if c:
@@ -13,7 +13,7 @@ def reverse(apps, schema_editor):
 
 
 def up(apps, schema_editor):
-    Category = apps.get_model("products", "Category")
+    Category = apps.get_model("main", "Category")
     db_alias = schema_editor.connection.alias
     Category.objects.using(db_alias).bulk_create(
         [Category(name="test"),]
