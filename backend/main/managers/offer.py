@@ -67,7 +67,7 @@ class OfferManager(DefaultUpdateManager):
                 offer, price_holder.price_for_delivery_per_tonne
             )
             * payload.volume,
-            customer_cost=models.Order.price_service.farmer_price(
+            farmer_cost=models.Order.price_service.farmer_price(
                 offer, price_holder.price_for_delivery_per_tonne
             ),
         )

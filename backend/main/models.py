@@ -296,9 +296,7 @@ class Order(models.Model):
         "Дата окончания экспорта", blank=True, null=True
     )
     amount_of_NDS = models.IntegerField("Размер НДС", default=NDS)
-    customer_cost = models.IntegerField(
-        default=0, verbose_name="Цена покупателя без НДС"
-    )
+    farmer_cost = models.IntegerField(default=0, verbose_name="Цена покупателя без НДС")
     total = models.IntegerField(default=0, verbose_name="Cделка без НДС")
     price_for_delivery = models.IntegerField(
         default=0, help_text="Цена за транспорт без НДС"
@@ -317,7 +315,7 @@ class Order(models.Model):
         )
 
     @property
-    def customer_cost_with_NDS(self):
+    def farmer_cost_with_NDS(self):
         return round(
             Order.price_service.farmer_price_with_nds(
                 self.offer, self.price_for_delivery

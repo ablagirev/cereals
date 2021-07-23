@@ -2,7 +2,6 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from . import PriceField
 from .. import models
 from .. import serializers as ser
 from ..enums import TaxTypes
@@ -39,8 +38,8 @@ class OrderSerializer(serializers.ModelSerializer):
         source="offer.tax_type", choices=list(TaxTypes.readable())
     )
     provider_name = serializers.CharField(source="offer.company_name")
-    customer_cost_with_nds = PriceField(
-        source="customer_cost_with_NDS", help_text="Цена пользователя с НДС"
+    farmer_cost_with_nds = serializers.IntegerField(
+        source="farmer_cost_with_NDS", help_text="Цена пользователя с НДС"
     )
     total_with_nds = serializers.IntegerField(
         source="total_with_NDS", help_text="Сделака (Цена полная)"

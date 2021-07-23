@@ -1,8 +1,8 @@
 from rest_framework import serializers
+
 from . import product, SpecificationsOfProductSerializer
 from . import warehouse
 from .. import models
-from . import PriceField
 
 
 class ProductSpecificationsSerializer(serializers.ModelSerializer):
