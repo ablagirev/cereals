@@ -65,8 +65,8 @@ export const OrdersListPage: React.FC = () => {
           costWithNds,
           taxType,
           id,
-          customerCost,
-          customerCostWithNds,
+          farmerCost,
+          farmerCostWithNds,
         } = item || {};
 
         const { status, companyName } = offer || {};
@@ -114,12 +114,12 @@ export const OrdersListPage: React.FC = () => {
             title: "Цена покупателя, руб",
             content: [
               <Flex>
-                <span>{formatMoney(customerCost)}</span>
+                <span>{formatMoney(farmerCost)}</span>
                 <Spacer width={18} />
                 <TaxPresence>без НДС / CNCPT</TaxPresence>
               </Flex>,
               <Flex>
-                <span>{formatMoney(customerCostWithNds)}</span>
+                <span>{formatMoney(farmerCostWithNds)}</span>
                 <Spacer width={18} />
                 <TaxPresence>с НДС / CVCPT</TaxPresence>
               </Flex>,
