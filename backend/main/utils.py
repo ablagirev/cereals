@@ -11,13 +11,6 @@ from main import models
 from Daylesford.settings import BASE_DIR
 
 
-@dataclass
-class PriceBetweenWarehouses:
-    from_: "models.Warehouse"
-    to: "models.Warehouse"
-    price_for_delivery: int
-
-
 def read_byte_file(path_file):
     with open(path_file, "rb") as file:
         raw = file.read()
@@ -38,29 +31,6 @@ def calc_cost_delivery_per_tonne(distance: int):
     return distance * 3.8
 
 
-def get_price_for_between_warehouses(
-    warehouse: "models.Warehouse", warehouse_user: "models.Warehouse"
-) -> PriceBetweenWarehouses:
-    distance = (
-        models.WarehouseDistance.objects.filter(
-            Q(start=warehouse, to=warehouse_user)
-            | Q(start=warehouse_user, to=warehouse_user)
-        )
-        .order_by()
-        .distinct()
-        .first()
-    )
-    if distance is None:
-        raise ValidationError(
-            detail=f"Не найдено расстояние от {warehouse.title} до {warehouse_user.title}"
-        )
-    return PriceBetweenWarehouses(
-        from_=warehouse,
-        to=warehouse_user,
-        price_for_delivery=calc_cost_delivery_per_tonne(distance.distance),
-    )
-
-
 # Todo: change!
 def get_data_of_cost_delivery(
     user, warehouse: "models.Warehouse", offer: "models.Offer"
@@ -68,19 +38,14 @@ def get_data_of_cost_delivery(
     warehouses_user = models.Warehouse.objects.filter(owner=user)
     result_cost_delivery_map = {}
     for warehouse_user in warehouses_user:
-        price_holder = get_price_for_between_warehouses(warehouse, warehouse_user)
+        price_holder = models.Order.price_service.warehouse_price(
+            warehouse, warehouse_user
+        )
         result_cost_delivery_map[warehouse_user.id] = {
-            "cost_delivery": (price_holder.price_for_delivery * offer.volume)
-            + (offer.volume * offer.cost),
-            "cost_delivery_per_tonne": (
-                (price_holder.price_for_delivery * offer.volume)
-                + (offer.volume * offer.cost)
-            )
-            / offer.volume,
+            "cost_delivery_per_tonne": price_holder.price_for_delivery_per_tonne,
             "warehouse_from": warehouse_user,
             "warehouse_to": warehouse,
         }
-
     return result_cost_delivery_map.values()
 
 

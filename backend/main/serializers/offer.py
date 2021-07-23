@@ -1,8 +1,8 @@
 from rest_framework import serializers
+
 from . import product, SpecificationsOfProductSerializer
 from . import warehouse
 from .. import models
-from . import PriceField
 
 
 class ProductSpecificationsSerializer(serializers.ModelSerializer):
@@ -14,8 +14,8 @@ class ProductSpecificationsSerializer(serializers.ModelSerializer):
 
 
 class DeliveryPrice(serializers.Serializer):
-    price = PriceField()
-    price_per_tonne = PriceField()
+    price_per_tonne_with_nds = serializers.IntegerField()
+    price_per_tonne = serializers.IntegerField()
     warehouse = warehouse.WarehouseSerializer()
 
 
@@ -62,7 +62,7 @@ class DetailOfferSerializer(OfferSerializer):
 
 class GroupOfferItem(serializers.ModelSerializer):
     days_till_end = serializers.IntegerField()
-    cost_with_nds = PriceField(source="cost_with_NDS")
+    cost_with_nds = serializers.IntegerField(source="cost_with_NDS")
     status = serializers.CharField()
 
     class Meta:

@@ -156,3 +156,8 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "company", "type")
     list_filter = ("user", "company", "type")
     search_fields = ("user__startswith",)
+
+
+@admin.register(models.Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name",)

@@ -62,7 +62,7 @@ def farmer():
     user.is_staff = False
     user.is_superadmin = False
     user.save()
-    already_existing_warehouses = models.Warehouse.objects.all()
+    already_existing_warehouses = list(models.Warehouse.objects.all())
     user_warehouse = baker.make("Warehouse", owner_id=user.id)
     baker.make("Profile", user_id=user.id, type=ProfileType.farmer.value)
     for existing_warehouse in already_existing_warehouses:

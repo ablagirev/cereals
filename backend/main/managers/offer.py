@@ -14,7 +14,6 @@ from ..enums import (
 from django.contrib.auth import models as auth_models
 
 from ..exceptions import UnprocessableEntityError
-from ..utils import get_price_for_between_warehouses
 
 
 @dataclass
@@ -54,17 +53,23 @@ class OfferManager(DefaultUpdateManager):
         warehouse = models.Warehouse.objects.filter(id=payload.warehouse_id).first()
         if warehouse is None:
             raise ValidationError("Выбранный склад не найден")
-        price_holder = get_price_for_between_warehouses(offer.warehouse, warehouse)
+        price_holder = models.Order.price_service.warehouse_price(
+            warehouse, offer.warehouse
+        )
         order = models.Order.objects.create(
             offer_id=offer.id,
             accepted_volume=payload.volume,
             provider_id=offer.creator.id,
             customer_id=payload.user_id,
             selected_warehouse_id=payload.warehouse_id,
-            price_for_delivery=(price_holder.price_for_delivery * payload.volume),
-            total=(price_holder.price_for_delivery * payload.volume)
-            + (offer.cost * payload.volume),
-            customer_cost=(offer.cost * payload.volume),
+            price_for_delivery=price_holder.price_for_delivery_per_tonne,
+            total=models.Order.price_service.farmer_price(
+                offer, price_holder.price_for_delivery_per_tonne
+            )
+            * payload.volume,
+            farmer_cost=models.Order.price_service.farmer_price(
+                offer, price_holder.price_for_delivery_per_tonne
+            ),
         )
         offer.save()
         return order

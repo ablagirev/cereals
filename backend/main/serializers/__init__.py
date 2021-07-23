@@ -1,10 +1,3 @@
-from rest_framework import serializers
-
-
-class PriceField(serializers.IntegerField):
-    pass
-
-
 from .common import inline_serializer
 from .warehouse import WarehouseSerializer, RateForDeliverySerializer
 from .document import DocumentSerializer
