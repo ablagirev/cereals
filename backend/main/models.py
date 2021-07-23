@@ -4,6 +4,7 @@ from typing import Optional
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Sum
 
 from main.consts import NDS
 from main.enums import (
@@ -15,6 +16,7 @@ from main.enums import (
     DocumentTypes,
 )
 from main.managers.offer import OfferManager
+from main.managers.order import OrderPriceService
 from main.managers.warehouse import WarehouseManager
 from main.querysets.offer import OfferQuerySet, DeliveryPrice
 
@@ -107,7 +109,14 @@ class OfferSpecification(models.Model):
     value = models.TextField(blank=True, null=True)
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+
+
 class Culture(models.Model):
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, null=False, blank=False
+    )
     name = models.CharField(max_length=255)
     specifications = models.ManyToManyField(
         SpecificationsOfProduct, blank=True, related_name="categories",
@@ -157,12 +166,6 @@ class Offer(models.Model):
     )
     volume = models.IntegerField(verbose_name="Объем")
     description = models.TextField("Описание", blank=True, default="")
-    status = models.CharField(
-        "Статус",
-        max_length=250,
-        choices=OfferStatus.readable(),
-        default=OfferStatus.active.value,
-    )
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField("Создано (время)", auto_now_add=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -191,21 +194,24 @@ class Offer(models.Model):
     service = OfferManager()
 
     @property
-    def cost_with_NDS(self):
-        if self.cost:
-            return self.cost + (self.cost * NDS / 100)
-        else:
-            return 0
+    def status(self) -> str:
+        data = Order.objects.filter(offer_id=self.id).aggregate(
+            accepted_total=Sum("accepted_volume")
+        )
+        accepted_volume = data["accepted_total"] or 0
+        if self.volume - accepted_volume <= 0:
+            return OfferStatus.archived.value
+        return OfferStatus.active.value
 
     @property
-    def cost_by_kg(self) -> Decimal:
-        return Decimal(round(self.cost / self.volume))
+    def cost_with_NDS(self):
+        return Order.price_service.buyer_cost_with_nds(self)
 
     @property
     def period_of_export(self):
         if self.date_finish_shipment and self.date_start_shipment:
             delta = self.date_finish_shipment - self.date_start_shipment
-            return delta.days
+            return delta.days + 1
         else:
             return 0
 
@@ -214,7 +220,7 @@ class Offer(models.Model):
         if self.date_finish_shipment:
             # res = datetime.now(timezone.utc) - self.date_finish_shipment
             res = self.date_finish_shipment - date.today()
-            return res.days if res.days >= 0 else 0
+            return res.days + 1 if res.days >= 0 else 0
         return 0
 
     def __str__(self):
@@ -226,8 +232,12 @@ class Offer(models.Model):
 
 class Document(models.Model):
     name = models.CharField("Имя документа", max_length=250, default="")
-    type_doc = models.CharField("Тип документа", choices=DocumentTypes.readable(),
-                                default=DocumentTypes.other.value, max_length=250)
+    type_doc = models.CharField(
+        "Тип документа",
+        choices=DocumentTypes.readable(),
+        default=DocumentTypes.other.value,
+        max_length=250,
+    )
     file = models.FileField("Файл", upload_to="uploads/%Y/%m/%d/%H/%M/%S", null=True)
     sign_file = models.FileField(
         "Файл подписи", upload_to="uploads/%Y/%m/%d/%H/%M/%S", null=True
@@ -286,21 +296,32 @@ class Order(models.Model):
         "Дата окончания экспорта", blank=True, null=True
     )
     amount_of_NDS = models.IntegerField("Размер НДС", default=NDS)
-    customer_cost = models.IntegerField(
-        default=0, verbose_name="Цена покупателя без НДС"
-    )
+    farmer_cost = models.IntegerField(default=0, verbose_name="Цена покупателя без НДС")
     total = models.IntegerField(default=0, verbose_name="Cделка без НДС")
     price_for_delivery = models.IntegerField(
         default=0, help_text="Цена за транспорт без НДС"
     )
 
-    @property
-    def total_with_NDS(self):
-        return self.total + round(self.total * self.amount_of_NDS / 100)
+    objects = models.Manager()
+    price_service = OrderPriceService()
 
     @property
-    def customer_cost_with_NDS(self):
-        return self.customer_cost + round(self.customer_cost * self.amount_of_NDS / 100)
+    def total_with_NDS(self) -> int:
+        return round(
+            Order.price_service.farmer_price_with_nds(
+                self.offer, self.price_for_delivery
+            )
+            * self.accepted_volume
+        )
+
+    @property
+    def farmer_cost_with_NDS(self):
+        return round(
+            Order.price_service.farmer_price_with_nds(
+                self.offer, self.price_for_delivery
+            )
+            * self.accepted_volume
+        )
 
 
 class RateForDelivery(models.Model):

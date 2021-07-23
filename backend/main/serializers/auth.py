@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .. import models
-from . import CompanySerializer
+from .company import CompanySerializer
 
 
 class LoginOut(serializers.Serializer):
