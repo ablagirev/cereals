@@ -62,7 +62,7 @@ def test_simple_case(admin_user, simple_case):
     assert first_offer.warehouse == warehouse
     assert first_offer.product == product
     assert first_offer.creator == admin_user
-    assert first_offer.specification_values.count() == 1
+    assert first_offer.specification_values.count() == 2
     offer_int: models.OfferSpecification = first_offer.specification_values.first()
     assert offer_int.value == "10"
     assert offer_int.specification == simple_spec

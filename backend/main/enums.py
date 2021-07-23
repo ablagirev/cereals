@@ -2,6 +2,8 @@ import json
 from copy import deepcopy
 from enum import Enum
 
+from main import models
+
 
 class SpecificationTypes(Enum):
     int = "int"
@@ -111,7 +113,6 @@ class DocumentTypes(Enum):
     report_on_the_shipped_goods = "report_on_the_shipped_goods"
     additional_payment_invoice = "additional_payment_invoice"
 
-
     @classmethod
     def read_map(cls):
         return {
@@ -134,6 +135,7 @@ class DocumentTypes(Enum):
     def readable(cls):
         map_ = cls.read_map()
         return ((key.value, map_[key]) for key in cls)
+
 
 VALUES_SCHEMAS = {
     SpecificationTypes.int: {"type": ["number"]},
@@ -177,4 +179,28 @@ SCHEMA_BUILDERS = {
     SpecificationTypes.str: build_primitive_schema,
     SpecificationTypes.range: build_range_spec,
     SpecificationTypes.bool: build_primitive_schema,
+}
+
+
+def default_primitive(spec: "models.SpecificationsOfProduct") -> str:
+    data = json.loads(spec.spec).get("value", None) if spec.spec else None
+    return json.dumps(data) if data else None
+
+
+def default_range(spec: "models.SpecificationsOfProduct") -> str:
+    data = json.loads(spec.spec) if spec.spec else None
+    result = {} if data else None
+    if data and (min_ := data.get("min")):
+        result["min"] = min_
+    if data and (max_ := data.get("min")):
+        result["max"] = max_
+    return json.dumps(result or None)
+
+
+DEFAULT_VALUES_GETTER = {
+    SpecificationTypes.int: default_primitive,
+    SpecificationTypes.decimal: default_primitive,
+    SpecificationTypes.str: default_primitive,
+    SpecificationTypes.range: build_range_spec,
+    SpecificationTypes.bool: default_primitive,
 }

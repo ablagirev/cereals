@@ -107,7 +107,14 @@ class OfferSpecification(models.Model):
     value = models.TextField(blank=True, null=True)
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+
+
 class Culture(models.Model):
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, null=False, blank=False
+    )
     name = models.CharField(max_length=255)
     specifications = models.ManyToManyField(
         SpecificationsOfProduct, blank=True, related_name="categories",
@@ -205,7 +212,7 @@ class Offer(models.Model):
     def period_of_export(self):
         if self.date_finish_shipment and self.date_start_shipment:
             delta = self.date_finish_shipment - self.date_start_shipment
-            return delta.days
+            return delta.days + 1
         else:
             return 0
 
@@ -214,7 +221,7 @@ class Offer(models.Model):
         if self.date_finish_shipment:
             # res = datetime.now(timezone.utc) - self.date_finish_shipment
             res = self.date_finish_shipment - date.today()
-            return res.days if res.days >= 0 else 0
+            return res.days + 1 if res.days >= 0 else 0
         return 0
 
     def __str__(self):
@@ -226,8 +233,12 @@ class Offer(models.Model):
 
 class Document(models.Model):
     name = models.CharField("Имя документа", max_length=250, default="")
-    type_doc = models.CharField("Тип документа", choices=DocumentTypes.readable(),
-                                default=DocumentTypes.other.value, max_length=250)
+    type_doc = models.CharField(
+        "Тип документа",
+        choices=DocumentTypes.readable(),
+        default=DocumentTypes.other.value,
+        max_length=250,
+    )
     file = models.FileField("Файл", upload_to="uploads/%Y/%m/%d/%H/%M/%S", null=True)
     sign_file = models.FileField(
         "Файл подписи", upload_to="uploads/%Y/%m/%d/%H/%M/%S", null=True
