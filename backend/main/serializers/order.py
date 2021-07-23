@@ -27,7 +27,7 @@ class OrderSerializer(serializers.ModelSerializer):
     cost_with_nds = serializers.IntegerField(
         source="offer.cost_with_NDS", help_text="Цена предложения (продавца) с НДС"
     )
-    cost = PriceField(
+    cost = serializers.IntegerField(
         source="offer.cost", help_text="Цена предложения (продавца) с НДС"
     )
     period_of_export = serializers.IntegerField(source="offer.period_of_export")
@@ -47,7 +47,9 @@ class OrderSerializer(serializers.ModelSerializer):
     )
     amount_of_nds = serializers.IntegerField(source="amount_of_NDS")
     selected_warehouse = ser.WarehouseSerializer(help_text="Склад вывоза")
-    price_for_delivery = PriceField(required=True, help_text="Цена за доставку")
+    price_for_delivery = serializers.IntegerField(
+        required=True, help_text="Цена за доставку"
+    )
     documents = ser.DocumentSerializer(many=True)
 
     @extend_schema_field(OpenApiTypes.INT)

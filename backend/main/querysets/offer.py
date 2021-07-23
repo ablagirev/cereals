@@ -15,8 +15,8 @@ from ..utils import get_data_of_cost_delivery
 @dataclass
 class DeliveryPrice:
     warehouse: "models.Warehouse"
-    price: int
     price_per_tonne: int
+    price_per_tonne_with_nds: int
 
 
 @dataclass
@@ -54,8 +54,12 @@ class OfferQuerySet(QuerySet):
         prices = list(
             DeliveryPrice(
                 warehouse=price["warehouse_from"],
-                price=price["cost_delivery"],
-                price_per_tonne=price["cost_delivery_per_tonne"],
+                price_per_tonne=models.Order.price_service.farmer_price(
+                    offer=offer, delivery_cost=price["cost_delivery_per_tonne"]
+                ),
+                price_per_tonne_with_nds=models.Order.price_service.farmer_price_with_nds(
+                    offer=offer, delivery_cost=price["cost_delivery_per_tonne"]
+                ),
             )
             for price in prices_data
         )

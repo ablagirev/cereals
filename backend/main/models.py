@@ -16,6 +16,7 @@ from main.enums import (
     DocumentTypes,
 )
 from main.managers.offer import OfferManager
+from main.managers.order import OrderPriceService
 from main.managers.warehouse import WarehouseManager
 from main.querysets.offer import OfferQuerySet, DeliveryPrice
 
@@ -204,14 +205,7 @@ class Offer(models.Model):
 
     @property
     def cost_with_NDS(self):
-        if self.cost:
-            return self.cost + (self.cost * NDS / 100)
-        else:
-            return 0
-
-    @property
-    def cost_by_kg(self) -> Decimal:
-        return Decimal(round(self.cost / self.volume))
+        return Order.price_service.buyer_cost_with_nds(self)
 
     @property
     def period_of_export(self):
@@ -310,13 +304,26 @@ class Order(models.Model):
         default=0, help_text="Цена за транспорт без НДС"
     )
 
+    objects = models.Manager()
+    price_service = OrderPriceService()
+
     @property
-    def total_with_NDS(self):
-        return self.total + round(self.total * self.amount_of_NDS / 100)
+    def total_with_NDS(self) -> int:
+        return round(
+            Order.price_service.farmer_price_with_nds(
+                self.offer, self.price_for_delivery
+            )
+            * self.accepted_volume
+        )
 
     @property
     def customer_cost_with_NDS(self):
-        return self.customer_cost + round(self.customer_cost * self.amount_of_NDS / 100)
+        return round(
+            Order.price_service.farmer_price_with_nds(
+                self.offer, self.price_for_delivery
+            )
+            * self.accepted_volume
+        )
 
 
 class RateForDelivery(models.Model):
