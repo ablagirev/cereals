@@ -79,7 +79,6 @@ class OfferAdmin(admin.ModelAdmin):
         "id",
         "title",
         "volume",
-        "status",
         "creator",
         "product",
         "warehouse",
@@ -90,7 +89,6 @@ class OfferAdmin(admin.ModelAdmin):
     list_filter = (
         "title",
         "volume",
-        "status",
         "creator",
         "product",
         "warehouse",

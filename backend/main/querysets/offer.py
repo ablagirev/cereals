@@ -5,9 +5,10 @@ from collections import Iterable
 from dataclasses import dataclass
 from typing import Optional
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Sum, F, Case, When, CharField, Value
 
 from .. import models
+from ..enums import OfferStatus
 from ..utils import get_data_of_cost_delivery
 
 
@@ -34,6 +35,20 @@ class OfferQuerySet(QuerySet):
     def ordered_by_type(self) -> QuerySet:
         return self.order_by("product__culture__category__id")
 
+    def annotate_status(self):
+        return self.annotate(
+            accepted_volume=Sum(F("orders__accepted_volume"))
+        ).annotate(
+            status_sql=Case(
+                When(
+                    accepted_volume__gte=F("volume"),
+                    then=Value(OfferStatus.archived.value),
+                ),
+                default=Value(OfferStatus.active.value),
+                output_field=CharField(),
+            )
+        )
+
     def get_price_for(self, offer: "models.Offer", user):
         prices_data = get_data_of_cost_delivery(user, offer.warehouse, offer)
         prices = list(
@@ -52,7 +67,7 @@ class OfferQuerySet(QuerySet):
                 getattr, ("product", "culture", "category", "id"), offer
             )
 
-        offers = self.ordered_by_type().filter(status="active")
+        offers = self.annotate_status().ordered_by_type().filter(status_sql="active")
         for k, g in itertools.groupby(offers, _get_harvest_type):
             any_: Optional["models.Offer"] = None
             group_offers = []
