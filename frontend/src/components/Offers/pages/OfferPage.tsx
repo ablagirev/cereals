@@ -688,7 +688,7 @@ const StyledModal = styled(Modal)`
 `;
 
 const ModalContent = styled.div`
-  padding: 47px;
+  padding: 32px;
   background-color: #f9f6ed;
   border-radius: 10px;
 `;

@@ -38,9 +38,10 @@ export const OrderPage: React.FC = () => {
     costWithNds,
     offer,
     taxType,
-    customerCost,
-    customerCostWithNds,
+    farmerCost,
+    farmerCostWithNds,
     totalWithNds,
+    total,
     priceForDelivery,
     selectedWarehouse,
     acceptedVolume,
@@ -201,9 +202,14 @@ export const OrderPage: React.FC = () => {
       title: "Сделка",
       content: [
         <Flex>
-          <span>{totalWithNds && formatMoney(totalWithNds)}</span>
+          <span>{total && formatMoney(total)}</span>
           <Spacer width={18} />
           <TaxPresence>без НДС</TaxPresence>
+        </Flex>,
+        <Flex>
+          <span>{totalWithNds && formatMoney(totalWithNds)}</span>
+          <Spacer width={18} />
+          <TaxPresence>с НДС</TaxPresence>
         </Flex>,
       ],
     },
@@ -260,12 +266,12 @@ export const OrderPage: React.FC = () => {
       title: "Цена покупателя, руб",
       content: [
         <Flex>
-          <span>{customerCost && formatMoney(customerCost)}</span>
+          <span>{farmerCost && formatMoney(farmerCost)}</span>
           <Spacer width={18} />
           <TaxPresence>без НДС / CNCPT</TaxPresence>
         </Flex>,
         <Flex>
-          <span>{customerCostWithNds && formatMoney(customerCostWithNds)}</span>
+          <span>{farmerCostWithNds && formatMoney(farmerCostWithNds)}</span>
           <Spacer width={18} />
           <TaxPresence>с НДС / CVCPT</TaxPresence>
         </Flex>,
@@ -331,7 +337,7 @@ const StyledModal = styled(Modal)`
 `;
 
 const ModalContent = styled.div`
-  padding: 47px;
+  padding: 32px;
   background-color: #f9f6ed;
   border-radius: 10px;
 `;
