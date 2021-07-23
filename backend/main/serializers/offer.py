@@ -53,6 +53,7 @@ class OfferSerializer(serializers.ModelSerializer):
     specifications = ProductSpecificationsSerializer(
         many=True, source="specification_values"
     )
+    status = serializers.CharField()
 
 
 class DetailOfferSerializer(OfferSerializer):
@@ -62,6 +63,7 @@ class DetailOfferSerializer(OfferSerializer):
 class GroupOfferItem(serializers.ModelSerializer):
     days_till_end = serializers.IntegerField()
     cost_with_nds = PriceField(source="cost_with_NDS")
+    status = serializers.CharField()
 
     class Meta:
         model = models.Offer
@@ -72,6 +74,7 @@ class GroupOfferItem(serializers.ModelSerializer):
             "title",
             "cost",
             "cost_with_nds",
+            "status",
         )
 
 

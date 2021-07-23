@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
                 verbose_name="Тип документа",
             ),
         ),
-        migrations.RunPython(up, reverse),
+        # migrations.RunPython(up, reverse),
         migrations.AddField(
             model_name="culture",
             name="category",

@@ -31,18 +31,12 @@ class SpecificationTypes(Enum):
 class OfferStatus(Enum):
     active = "active"
     archived = "archived"
-    accepted = "accepted"
-    pending = "pending"
-    partial = "partial"
 
     @classmethod
     def read_map(cls):
         return {
             cls.active: "Активный",
             cls.archived: "Архивирован",
-            cls.accepted: "Принят",
-            cls.pending: "В процессе",
-            cls.partial: "Частично выполнен",
         }
 
     @classmethod

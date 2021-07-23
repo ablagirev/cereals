@@ -4,6 +4,7 @@ from typing import Optional
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Sum
 
 from main.consts import NDS
 from main.enums import (
@@ -164,12 +165,6 @@ class Offer(models.Model):
     )
     volume = models.IntegerField(verbose_name="Объем")
     description = models.TextField("Описание", blank=True, default="")
-    status = models.CharField(
-        "Статус",
-        max_length=250,
-        choices=OfferStatus.readable(),
-        default=OfferStatus.active.value,
-    )
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField("Создано (время)", auto_now_add=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -196,6 +191,16 @@ class Offer(models.Model):
 
     objects = OfferQuerySet.as_manager()
     service = OfferManager()
+
+    @property
+    def status(self) -> str:
+        data = Order.objects.filter(offer_id=self.id).aggregate(
+            accepted_total=Sum("accepted_volume")
+        )
+        accepted_volume = data["accepted_total"] or 0
+        if self.volume - accepted_volume <= 0:
+            return OfferStatus.archived.value
+        return OfferStatus.active.value
 
     @property
     def cost_with_NDS(self):

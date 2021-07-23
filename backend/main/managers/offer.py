@@ -66,7 +66,6 @@ class OfferManager(DefaultUpdateManager):
             + (offer.cost * payload.volume),
             customer_cost=(offer.cost * payload.volume),
         )
-        offer.status = OfferStatus.pending.value
         offer.save()
         return order
 
