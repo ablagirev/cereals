@@ -14,7 +14,13 @@ def admin_user():
     user.is_superadmin = True
     user.save()
     baker.make("Warehouse", owner_id=user.id)
-    baker.make("Profile", user_id=user.id, type=ProfileType.provider.value)
+    company = baker.make("Company")
+    baker.make(
+        "Profile",
+        user_id=user.id,
+        type=ProfileType.provider.value,
+        company_id=company.id,
+    )
     return user
 
 

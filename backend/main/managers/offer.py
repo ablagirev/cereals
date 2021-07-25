@@ -21,6 +21,7 @@ class AcceptPayload:
     volume: int
     user_id: int
     warehouse_id: int
+    company_id: int
 
 
 @dataclass
@@ -70,6 +71,7 @@ class OfferManager(DefaultUpdateManager):
             farmer_cost=models.Order.price_service.farmer_price(
                 offer, price_holder.price_for_delivery_per_tonne
             ),
+            company_id=payload.company_id,
         )
         offer.save()
         return order
@@ -108,7 +110,6 @@ class OfferManager(DefaultUpdateManager):
             date_start_shipment=payload.shipment_start,
             date_finish_shipment=payload.shipment_end,
             cost=payload.cost,
-            company_name=company.name_of_provider,
         )
         for spec in payload.specifications:
             models.OfferSpecification.objects.create(
