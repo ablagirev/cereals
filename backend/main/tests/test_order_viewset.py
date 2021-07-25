@@ -11,7 +11,11 @@ from main.enums import SpecificationTypes, OrderStatus
 
 @pytest.fixture()
 def orders(admin_user):
-    baker.make("main.Order", customer_id=admin_user.id)
+    baker.make(
+        "main.Order",
+        customer_id=admin_user.id,
+        company_id=admin_user.profile.company.id,
+    )
 
 
 @pytest.fixture()
@@ -42,7 +46,6 @@ def offer(product: "models.Product", admin_user) -> "models.Offer":
         date_start_shipment=datetime.date(2021, 10, 1),
         date_finish_shipment=datetime.date(2021, 10, 11),
         cost=1000,
-        company_name=admin_user.profile.company.name_of_provider,
     )
     range_spec = product.culture.specifications.first()
     baker.make(

@@ -210,6 +210,7 @@ class OfferViewSet(
         serializer: serializers.Serializer = self.accept_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
+        company = request.user.profile.company
         offer = models.Offer.objects.get(id=pk)
         order = models.Offer.service.accept(
             offer=offer,
@@ -217,6 +218,7 @@ class OfferViewSet(
                 volume=data["volume"],
                 user_id=request.user.id,
                 warehouse_id=data["warehouse_id"],
+                company_id=company.id,
             ),
         )
         return Response(ser.OrderSerializer(instance=order).data)
