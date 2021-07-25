@@ -1,6 +1,12 @@
 from docxtpl import DocxTemplate
 from num2words import num2words
+from openpyxl import load_workbook
+import os
+from django.core.files import File
 
+from Daylesford.settings import BASE_DIR
+from main import models
+from main.utils import save_doc_after_generation
 
 def gen_doc(offer, company, product, deal):
     # Документ 2
@@ -115,7 +121,120 @@ def gen_doc(offer, company, product, deal):
 #   "name_of_bank": "ЮГ-ИНВЕСТБАНК (ПАО) г. Краснодар"
 # }
 
-from openpyxl import load_workbook
+def gen_doc_specification():
+    tpl_path = os.path.join(BASE_DIR, 'temp_file' , 'template_doc', 'specification.docx')
+    tpl = DocxTemplate(tpl_path)
+
+
+    name_of_contract = '113/ДМА'
+    name_of_provider = 'Общество с ограниченной ответственностью "Маныч-Агро"'
+    head_of_provider = 'Директора Ротко Анатолия Викторовича'
+    basis_of_doc = 'Устава'
+    name_of_product = 'КУКУРУЗА'
+    harvest_year = '2020'
+    address_load = '344002, г. Ростов-на-Дону, ул. 1-я Луговая, 42'
+    volume_product = '2 200'
+    volume_product_in_words = 'Две тысячи двести'
+    volume_product_in_words = num2words(2200, lang='ru') + ' рублей'
+    sum_per_tonne = '18 150,00'
+    sum_per_tonne_in_words = 'Восемнадцать тысяч сто пятьдесят рублей 00 копеек'
+    sum_per_tonne_in_words = num2words(18150, lang='ru') + ' рублей 00 копеек'
+    date_start_of_contract = '29 января 2021 г.'
+    date_start_of_spec = '29 января 2021 г.'
+    date_start_shipment = '29 января 2021 г.'
+    date_finish_shipment = '28 февраля 2021 г.'
+    size_NDS_per_tonne = '1 650,00'
+    total_sum = '39 930 000,00'
+    total_sum_in_words = 'Тридцать девять миллионов девятьсот тридцать тысяч рублей 00 копеек'
+    total_sum_in_words = num2words(39930000, lang='ru') + ' рублей 00 копеек'
+    size_NDS = '3 630 000,00'
+    number_of_spec = '1'
+    date_of_contract = '27 января 2021 г.'
+    date_of_spec = '28 января 2021 г.'
+    TEXT1 = 'Датой поставки считается дата передачи Товара уполномоченному представителю Покупателя'
+    TEXT2 = ' Приёмка Товара по качеству и количеству осуществляется при погрузке товара в автотранспорт Покупателя. ' \
+            'После приемки Товара по количеству подписывается товарно-транспортная накладная СП-31, по утвержденной ' \
+            'в Приложении к настоящей Спецификации форме'
+
+    context = {
+        'number_of_spec': number_of_spec,
+        'name_of_contract': name_of_contract,
+        'date_of_contract': date_start_of_contract,
+        'date_of_spec': date_start_of_spec,
+        'name_of_provider': name_of_provider,
+        'head_of_provider': head_of_provider,
+        'basis_of_doc': basis_of_doc,
+        'name_of_product': name_of_product,
+        'harvest_year': harvest_year,
+        'volume_product': volume_product,
+        'volume_product_in_words': volume_product_in_words,
+        'date_start_shipment': date_start_shipment,
+        'date_finish_shipment': date_finish_shipment,
+        'sum_per_tonne': sum_per_tonne,
+        'sum_per_tonne_in_words': sum_per_tonne_in_words,
+        'size_NDS_per_tonne': size_NDS_per_tonne,
+        'total_sum': total_sum,
+        'total_sum_in_words': total_sum_in_words,
+        'size_NDS': size_NDS,
+        'address_load': address_load,
+        'TEXT1': TEXT1,
+        'TEXT2': TEXT2,
+    }
+
+    tpl.render(context)
+    tpl_save_path = os.path.join(BASE_DIR, 'temp_file', 'temporary_files', 'Спецификация.docx')
+    tpl.save(tpl_save_path)
+    save_doc_after_generation('Спецификация.docx', 'specification', tpl_save_path)
+
+
+def gen_doc_contract():
+    tpl_path = os.path.join(BASE_DIR, 'temp_file' , 'template_doc', 'contract.docx')
+    tpl = DocxTemplate(tpl_path)
+
+    name_of_contract = '113/ДМА'
+    date_start_of_contract = '27 января 2021 г.'
+    name_of_provider = 'Общество с ограниченной ответственностью "Маныч-Агро"'
+    head_of_provider = 'Директора Ротко Анатолия Викторовича'
+    basis_of_doc = "Устава"
+    date_finish_of_contract = '31 декабря 2021 г.'
+    ul_address = '346601, Ростовская обл, Багаевский р-н, Манычская ст-ца, Магаданская ул, дом 7'
+    inn = '6166018099'
+    kpp = '610301001'
+    phone_number = '8-86357-43-2-33'
+    email_of_head = 'manychagro@mail.ru'
+    ogrn = '1026103161336'
+    payment_account = '40702810900900000450'
+    name_of_bank = 'ЮГ-ИНВЕСТБАНК (ПАО) г. Краснодар'
+    correspondent_account = '30101810600000000966'
+    bik = '040349966'
+    position_head_of_provider = 'Директор'
+    short_fio = 'Ротко А.В.'
+
+    context = {
+        'name_of_contract': name_of_contract,
+        'date_of_contract': date_start_of_contract,
+        'name_of_provider': name_of_provider,
+        'head_of_provider': head_of_provider,
+        'basis_of_doc': basis_of_doc,
+        'date_finish_of_contract': date_finish_of_contract,
+        'ul_address': ul_address,
+        'inn': inn,
+        'kpp': kpp,
+        'phone_number': phone_number,
+        'email_of_head': email_of_head,
+        'ogrn': ogrn,
+        'payment_account': payment_account,
+        'name_of_bank': name_of_bank,
+        'correspondent_account': correspondent_account,
+        'bik': bik,
+        'position_head_of_provider': position_head_of_provider,
+        'short_fio': short_fio,
+    }
+
+    tpl.render(context)
+    tpl_save_path = os.path.join(BASE_DIR, 'temp_file', 'temporary_files', 'Договор.docx')
+    tpl.save(tpl_save_path)
+    save_doc_after_generation('Договор.docx', 'contract', tpl_save_path)
 
 def gen_doc_payment_invoice():
     wb = load_workbook(filename='backend/temp_file/init_doc/Счет на оплату_sample (1).xlsx')
@@ -162,7 +281,8 @@ def gen_doc_payment_invoice():
     wb.save('12.xlsx')
 
 def gen_doc_loading_register():
-    tpl = DocxTemplate('backend/temp_file/template_doc/loading_register.docx')
+    tpl_path = os.path.join(BASE_DIR, 'temp_file' , 'template_doc', 'loading_register.docx')
+    tpl = DocxTemplate(tpl_path)
 
     context = {
         'company': 'Общество с ограниченной ответственностью «Дейлсфорд Мёрчант»',
@@ -181,10 +301,13 @@ def gen_doc_loading_register():
     }
 
     tpl.render(context)
-    tpl.save('dynamic_table.docx')
+    tpl_save_path = os.path.join(BASE_DIR, 'temp_file', 'temporary_files', 'Реестр_погрузки.docx')
+    tpl.save(tpl_save_path)
+    save_doc_after_generation('Реестр_погрузки.docx', 'loading_plan', tpl_save_path)
 
 def gen_doc_act_check():
-    wb = load_workbook(filename='backend/temp_file/init_doc/Акт сверки взаиморасчетов_sample (1).xlsx')
+    tpl_path = os.path.join(BASE_DIR, 'temp_file', 'init_doc', 'Акт сверки взаиморасчетов_sample (1).xlsx')
+    wb = load_workbook(filename=tpl_path)
     ws = wb.active
 
     date_start = '01.01.2021'
@@ -281,10 +404,13 @@ def gen_doc_act_check():
     ws['B20'] = customer_position
     ws['D22'] = customer_fio_short
 
-    wb.save('12.xlsx')
+    tpl_save_path = os.path.join(BASE_DIR, 'temp_file', 'temporary_files', 'Акт_сверки_взаиморасчетов.xlsx')
+    wb.save(tpl_save_path)
+    save_doc_after_generation('Акт_сверки_взаиморасчетов.xlsx', 'verification_act', tpl_save_path)
 
 def gen_doc_YPD():
-    wb = load_workbook(filename='backend/temp_file/init_doc/УПД (статус 1)_sample.xlsx')
+    tpl_path = os.path.join(BASE_DIR, 'temp_file', 'init_doc', 'УПД (статус 1)_sample.xlsx')
+    wb = load_workbook(filename=tpl_path)
     ws = wb.active
 
     invoice_number = '579' # P1:U1
@@ -328,4 +454,29 @@ def gen_doc_YPD():
     ws['T22'] = contract
     ws['C40'] = text_for_C40_to_AL40
 
-    wb.save('12.xlsx')
+    tpl_save_path = os.path.join(BASE_DIR, 'temp_file', 'temporary_files', 'УПД.xlsx')
+    wb.save(tpl_save_path)
+    save_doc_after_generation('УПД.xlsx', 'universal_transfer_document', tpl_save_path)
+
+
+def gen_doc_letter_for_refund():
+    tpl_path = os.path.join(BASE_DIR, 'temp_file' , 'template_doc', 'return_letter.docx')
+    tpl = DocxTemplate(tpl_path)
+
+    context = {
+        'to': 'ИП Лесных В.Н.',
+        'date': '20.07.2021 г.',
+        'name_head': 'Виктор Николаевич',
+        'conract': '№ 53/ДМ от 04.08.2020',
+        'cost': '602888,00',
+        'cost_with_words': 'Шестьсот две тысячи восемьсот восемьдесят восемь руб 00 коп',
+        'correspondent_account': '30101810000000000272',
+        'bank_name': 'ПАО БАНК ЗЕНИТ, г. Москва',
+        'bik': '044525272',
+        'payment_account': '40702810700002026956',
+    }
+
+    tpl.render(context)
+    tpl_save_path = os.path.join(BASE_DIR, 'temp_file' , 'temporary_files', 'Письмо_на_возврат.docx')
+    tpl.save(tpl_save_path)
+    save_doc_after_generation('Письмо_на_возврат.docx', 'letter_for_refund', tpl_save_path)

@@ -106,6 +106,7 @@ class DocumentTypes(Enum):
     loading_plan = "loading_plan"
     report_on_the_shipped_goods = "report_on_the_shipped_goods"
     additional_payment_invoice = "additional_payment_invoice"
+    universal_transfer_document = "universal_transfer_document"
 
     @classmethod
     def read_map(cls):
@@ -123,6 +124,7 @@ class DocumentTypes(Enum):
             cls.loading_plan: "План погрузки",
             cls.report_on_the_shipped_goods: "Отчет о погруженном товаре",
             cls.additional_payment_invoice: "Счет на доплату",
+            cls.universal_transfer_document: "Универсальный передаточный документ",
         }
 
     @classmethod

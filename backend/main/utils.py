@@ -2,7 +2,7 @@ import os.path
 import csv
 import json
 from dataclasses import dataclass
-
+from django.core.files import File
 from django.db.models import Q
 from rest_framework.exceptions import ValidationError
 
@@ -208,3 +208,9 @@ def load_data_for_spec():
                 offer.warehouse = models.Warehouse.objects.get(id=1)
                 offer.cost = 10000
                 offer.save()
+
+def save_doc_after_generation(name, type_doc, path):
+    doc = models.Document()
+    doc.name = name
+    doc.type_doc = type_doc
+    doc.file.save(name, File(open(path, 'rb')))
