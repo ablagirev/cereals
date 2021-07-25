@@ -25,7 +25,7 @@ export const Table: FC<IProps> = ({ headerData, data }) => {
                   {title}
                 </StyledTypography>
                 <Spacer space={8} />
-                <Typography size="lg">{value}</Typography>
+                <StyledTypography size="lg">{value}</StyledTypography>
               </Flex>
             );
           })}
