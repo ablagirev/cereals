@@ -1,7 +1,7 @@
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -9,8 +9,9 @@ from rest_framework import serializers
 
 from main.views.mixins import UpdateViewSetMixin
 from .. import models
-from ..serializers import OrderSerializer
+from ..serializers import OrderSerializer, DetailOut
 from .. import serializers as ser
+from ..serializers.steps import Step1Docs
 
 
 @extend_schema(tags=["order"])
@@ -75,3 +76,14 @@ class OrderViewSet(UpdateViewSetMixin, ModelViewSet):
         doc = models.Document.objects.get(id=serializer.data.get("id"))
         models.Order.objects.get(id=order_id).documents.add(doc)
         return Response(data="uploaded")
+
+
+class StepsViewSet(ViewSet):
+    @action(methods=("GET",), detail=False)
+    @extend_schema(responses={200: Step1Docs, 403: DetailOut})
+    def get_step_1_docs(self):
+        return {
+            "forSign": "",
+            "specification": "",
+            "bill": "",
+        }

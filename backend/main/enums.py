@@ -81,15 +81,21 @@ class ProfileType(Enum):
 
 class TaxTypes(Enum):
     simple = "simple"
+    main = "main"
 
     @classmethod
     def read_map(cls):
-        return {cls.simple: "Упрощенная"}
+        return {cls.simple: "Упрощенная", cls.main: "Основной"}
 
     @classmethod
     def readable(cls):
         map_ = cls.read_map()
         return ((key.value, map_[key]) for key in cls)
+
+    @classmethod
+    def values(cls):
+        map_ = cls.read_map()
+        return (map_[key] for key in cls)
 
 
 class DocumentTypes(Enum):
@@ -106,6 +112,7 @@ class DocumentTypes(Enum):
     loading_plan = "loading_plan"
     report_on_the_shipped_goods = "report_on_the_shipped_goods"
     additional_payment_invoice = "additional_payment_invoice"
+    universal_transfer_document = "universal_transfer_document"
 
     @classmethod
     def read_map(cls):
@@ -123,6 +130,7 @@ class DocumentTypes(Enum):
             cls.loading_plan: "План погрузки",
             cls.report_on_the_shipped_goods: "Отчет о погруженном товаре",
             cls.additional_payment_invoice: "Счет на доплату",
+            cls.universal_transfer_document: "Универсальный передаточный документ",
         }
 
     @classmethod
