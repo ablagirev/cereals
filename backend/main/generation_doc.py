@@ -184,7 +184,8 @@ def gen_doc_specification():
     tpl.render(context)
     tpl_save_path = os.path.join(BASE_DIR, 'temp_file', 'temporary_files', 'Спецификация.docx')
     tpl.save(tpl_save_path)
-    save_doc_after_generation('Спецификация.docx', 'specification', tpl_save_path)
+    doc_id = save_doc_after_generation('Спецификация.docx', 'specification', tpl_save_path)
+    return doc_id
 
 
 def gen_doc_contract():
@@ -234,10 +235,13 @@ def gen_doc_contract():
     tpl.render(context)
     tpl_save_path = os.path.join(BASE_DIR, 'temp_file', 'temporary_files', 'Договор.docx')
     tpl.save(tpl_save_path)
-    save_doc_after_generation('Договор.docx', 'contract', tpl_save_path)
+    doc_id = save_doc_after_generation('Договор.docx', 'contract', tpl_save_path)
+    return doc_id
+
 
 def gen_doc_payment_invoice():
-    wb = load_workbook(filename='backend/temp_file/init_doc/Счет на оплату_sample (1).xlsx')
+    tpl_path = os.path.join(BASE_DIR, 'temp_file', 'init_doc', 'Счет на оплату_sample (1).xlsx')
+    wb = load_workbook(filename=tpl_path)
     ws = wb.active
 
     recipients_bank = 'ЦЕНТРАЛЬНО-ЧЕРНОЗЕМНЫЙ БАНК ПАО СБЕРБАНК г. Воронеж' # B3
@@ -278,7 +282,11 @@ def gen_doc_payment_invoice():
     ws['B29'] = result
     ws['B30'] = total_cost_in_words
 
-    wb.save('12.xlsx')
+    tpl_save_path = os.path.join(BASE_DIR, 'temp_file', 'temporary_files', 'Счет на оплату.xlsx')
+    wb.save(tpl_save_path)
+    doc_id = save_doc_after_generation('Счет на оплату.xlsx', 'payment_invoice', tpl_save_path)
+    return doc_id
+
 
 def gen_doc_loading_register():
     tpl_path = os.path.join(BASE_DIR, 'temp_file' , 'template_doc', 'loading_register.docx')
@@ -304,6 +312,7 @@ def gen_doc_loading_register():
     tpl_save_path = os.path.join(BASE_DIR, 'temp_file', 'temporary_files', 'Реестр_погрузки.docx')
     tpl.save(tpl_save_path)
     save_doc_after_generation('Реестр_погрузки.docx', 'loading_plan', tpl_save_path)
+
 
 def gen_doc_act_check():
     tpl_path = os.path.join(BASE_DIR, 'temp_file', 'init_doc', 'Акт сверки взаиморасчетов_sample (1).xlsx')
@@ -407,6 +416,7 @@ def gen_doc_act_check():
     tpl_save_path = os.path.join(BASE_DIR, 'temp_file', 'temporary_files', 'Акт_сверки_взаиморасчетов.xlsx')
     wb.save(tpl_save_path)
     save_doc_after_generation('Акт_сверки_взаиморасчетов.xlsx', 'verification_act', tpl_save_path)
+
 
 def gen_doc_YPD():
     tpl_path = os.path.join(BASE_DIR, 'temp_file', 'init_doc', 'УПД (статус 1)_sample.xlsx')
