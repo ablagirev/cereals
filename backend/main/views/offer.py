@@ -21,7 +21,7 @@ from ..managers.offer import (
     OfferSpecUpdate,
 )
 from ..querysets.offer import GroupedOffers
-from signals import order
+# from main.signals import order
 
 
 @extend_schema(tags=["offer"])
