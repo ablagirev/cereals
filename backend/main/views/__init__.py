@@ -4,4 +4,4 @@ from .product import ProductViewSet
 from .warehouse import WarehouseViewSet
 from .settings import SettingsViewSet
 from .company import CompanyViewSet
-from .order import OrderViewSet
+from .order import OrderViewSet, StepsViewSet
