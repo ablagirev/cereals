@@ -46,17 +46,28 @@ class OfferStatus(Enum):
 
 
 class OrderStatus(Enum):
-    active = "active"
-    finished = "finished"
-    failed = "failed"
+    step1 = "step1"
+    step2 = "step2_onway"
+    step2_tests = "step2_tests_taken"
+    step2_quality = "step2_quality"
+    step2_quality_accepted = "step2_quality_accepted"
+    step2_quality_failed = "step2_quality_failed"
+    step3 = "step3"
+    step3_docs_ready = "step3_docs_ready"
+    step3_sign_ready = "step3_sign_ready"
+    step3_prebill_send = "step3_prebill_send"
+    step4 = "step4"
+    step4_plan_ready = "step4_plan_ready"
+    step4_selected_date = "step4_selected_date"
+    step4_date_approved = "step4_date_approved"
+    step4_loading_started = "step4_loading_started"
+    step4_over_today = "step4_over_today"
+    step4_over_contract = "step4_over_contract"
+    step4_done = "step4_done"
 
     @classmethod
     def read_map(cls):
-        return {
-            cls.active: "Новый",
-            cls.finished: "Завершена",
-            cls.failed: "Проваленная сделка",
-        }
+        return {key: key.value for key in cls}
 
     @classmethod
     def readable(cls):
