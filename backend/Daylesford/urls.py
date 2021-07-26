@@ -35,5 +35,4 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("info/", include(docs_urlpatterns)),
     path("", include("main.urls")),
-    # path('auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

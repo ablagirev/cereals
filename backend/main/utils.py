@@ -209,8 +209,10 @@ def load_data_for_spec():
                 offer.cost = 10000
                 offer.save()
 
+
 def save_doc_after_generation(name, type_doc, path):
     doc = models.Document()
     doc.name = name
     doc.type_doc = type_doc
     doc.file.save(name, File(open(path, 'rb')))
+    return doc.id
