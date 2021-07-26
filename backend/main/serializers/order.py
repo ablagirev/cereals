@@ -35,7 +35,9 @@ class OrderSerializer(serializers.ModelSerializer):
     )
     offer = ser.OfferSerializer()
     tax_type = serializers.ChoiceField(
-        source="offer.tax_type", choices=list(TaxTypes.readable())
+        source="offer.get_tax_type_display",
+        choices=list(TaxTypes.values()),
+        read_only=True,
     )
     farmer_cost_with_nds = serializers.IntegerField(
         source="farmer_cost_with_NDS", help_text="Цена пользователя с НДС"
