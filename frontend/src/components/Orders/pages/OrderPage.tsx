@@ -48,8 +48,10 @@ export const OrderPage: React.FC = () => {
     dateStartOfContract,
     dateFinishShipment,
     id: orderId,
+    company,
   } = orderData || {};
-  const { product, companyName, volume } = offer || {};
+  const { product, volume } = offer || {};
+  const { nameOfProvider, inn, headOfProvider, ulAddress } = company || {};
   const [orderFormData, setOrderFormData] = useState<any>();
   const [showModalState, setShowModalState] = useState(false);
   const [modalType, setModalType] = useState<string | null>(null);
@@ -121,16 +123,16 @@ export const OrderPage: React.FC = () => {
                 <Spacer space={16} />
                 <Flex column>
                   <Typography bold size="md">
-                    {companyName}
+                    {nameOfProvider}
                   </Typography>
                   <Spacer space={16} />
                   <Typography size="sm" color="#918F88">
                     <Flex column>
-                      <span>fio</span>
+                      <span>{headOfProvider}</span>
                       <Spacer space={16} />
-                      <span>inn</span>
+                      <span>{inn}</span>
                       <Spacer space={16} />
-                      <span>address</span>
+                      <span>{ulAddress}</span>
                     </Flex>
                   </Typography>
                 </Flex>
@@ -229,7 +231,7 @@ export const OrderPage: React.FC = () => {
       title: "Продавец",
       content: [
         <StyledButton variant="link" onClick={() => handleModalOpen("seller")}>
-          {companyName}
+          {nameOfProvider}
         </StyledButton>,
       ],
     },
