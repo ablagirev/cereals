@@ -1,3 +1,5 @@
+import datetime
+
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated
@@ -82,8 +84,12 @@ class StepsViewSet(ViewSet):
     @extend_schema(responses={200: Step1Docs(), 403: DetailOut()})
     @action(methods=("GET",), detail=False)
     def get_step_1_docs(self, request, offer_id: int):
-        return {
-            "forSign": "",
-            "specification": "",
-            "bill": "",
-        }
+        offer = models.Offer.objects.get(id=offer_id)
+        return Response(
+            {
+                "forSign": "",
+                "specification": "",
+                "bill": "",
+                "createdAt": datetime.datetime.now().strftime("%d-%m-%y"),
+            }
+        )
