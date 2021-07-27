@@ -17,6 +17,11 @@ entryPoints:
     transport:
       respondingtimeouts:
         idletimeout: 1800
+  dev:
+    address: ":8080"
+    transport:
+      respondingtimeouts:
+        idletimeout: 1800
 
 providers:
   docker:
