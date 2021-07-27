@@ -19,7 +19,6 @@ export const TableRow: React.FC<ITableRow> = ({ title, content }) => {
       <StyledTd>
         {!!content?.length && (
           <Flex>
-            <Spacer width={60} />
             <ul>
               {content.map((item: TContentItem, idx) => (
                 <li key={idx}>
