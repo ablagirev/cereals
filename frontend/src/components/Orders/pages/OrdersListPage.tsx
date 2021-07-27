@@ -67,14 +67,16 @@ export const OrdersListPage: React.FC = () => {
           id,
           farmerCost,
           farmerCostWithNds,
+          company,
         } = item || {};
 
-        const { status, companyName } = offer || {};
+        const { status } = offer || {};
+        const { nameOfProvider } = company || {};
 
         const dataList = [
           {
             title: "Продавец",
-            content: [companyName],
+            content: [nameOfProvider],
           },
           {
             title: "Налогообложение",
