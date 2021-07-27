@@ -81,10 +81,10 @@ class OrderViewSet(UpdateViewSetMixin, ModelViewSet):
 
 
 class StepsViewSet(ViewSet):
-    @extend_schema(responses={200: Step1Docs(), 403: DetailOut()})
-    @action(methods=("GET",), detail=False)
-    def get_step_1_docs(self, request, offer_id: int):
-        offer = models.Offer.objects.get(id=offer_id)
+    @extend_schema(responses={200: Step1Docs, 403: DetailOut})
+    @action(methods=["GET"], detail=False)
+    def get_step_1_docs(self, request, order_id: int):
+        order = models.Order.objects.get(id=order_id)
         return Response(
             {
                 "forSign": "",
