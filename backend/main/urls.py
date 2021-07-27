@@ -16,6 +16,7 @@ router.register("product", views.ProductViewSet, basename="product")
 router.register("company", views.CompanyViewSet, basename="company")
 router.register("settings", views.SettingsViewSet, basename="settings")
 router.register("orders", views.OrderViewSet, basename="orders")
+router.register("steps/<int:offer_id>", views.StepsViewSet, basename="steps")
 
 urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

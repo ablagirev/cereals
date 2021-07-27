@@ -61,10 +61,9 @@ class Company(models.Model):
     name_of_bank = models.CharField(
         "Название банка", max_length=250, blank=True, default="",
     )
-
-    # @property
-    # def is_valid_for_sign(self) -> bool:
-    #     return (self.pro)
+    mail_address = models.CharField(
+        verbose_name="Почтовый адрес", blank=True, default="", max_length=255
+    )
 
     def __str__(self):
         return self.name_of_provider
@@ -180,7 +179,6 @@ class Offer(models.Model):
     tax_type = models.CharField(
         max_length=25, choices=TaxTypes.readable(), default=TaxTypes.simple.value
     )
-    company_name = models.CharField(max_length=225, default="", blank=True)
 
     prices: Optional[list[DeliveryPrice]] = None
     specifications = models.ManyToManyField(
@@ -258,7 +256,7 @@ class Shipment(models.Model):
 class Order(models.Model):
     offer = models.ForeignKey(Offer, on_delete=models.CASCADE, related_name="orders")
     status = models.CharField(
-        max_length=50, choices=OrderStatus.readable(), default=OrderStatus.active.value
+        max_length=50, choices=OrderStatus.readable(), default=OrderStatus.step1.value
     )
     provider = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="provider"
@@ -300,6 +298,9 @@ class Order(models.Model):
     total = models.IntegerField(default=0, verbose_name="Cделка без НДС")
     price_for_delivery = models.IntegerField(
         default=0, help_text="Цена за транспорт без НДС"
+    )
+    company = models.ForeignKey(
+        "main.Company", on_delete=models.CASCADE, blank=True, null=False
     )
 
     objects = models.Manager()

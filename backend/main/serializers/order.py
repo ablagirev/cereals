@@ -35,9 +35,10 @@ class OrderSerializer(serializers.ModelSerializer):
     )
     offer = ser.OfferSerializer()
     tax_type = serializers.ChoiceField(
-        source="offer.tax_type", choices=list(TaxTypes.readable())
+        source="offer.get_tax_type_display",
+        choices=list(TaxTypes.values()),
+        read_only=True,
     )
-    provider_name = serializers.CharField(source="offer.company_name")
     farmer_cost_with_nds = serializers.IntegerField(
         source="farmer_cost_with_NDS", help_text="Цена пользователя с НДС"
     )
@@ -50,6 +51,7 @@ class OrderSerializer(serializers.ModelSerializer):
         required=True, help_text="Цена за доставку"
     )
     documents = ser.DocumentSerializer(many=True)
+    company = ser.CompanySerializer()
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_cost_by_tonne(self, instance: models.Order) -> int:
