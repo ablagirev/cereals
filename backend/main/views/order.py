@@ -3,20 +3,24 @@ from dataclasses import dataclass
 
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema
+from rest_framework import serializers
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ModelViewSet, ViewSet
-from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import serializers
+from rest_framework.viewsets import ModelViewSet, ViewSet
 
 from main.views.mixins import UpdateViewSetMixin
 from .. import models
+from .. import serializers as ser
 from ..enums import DocumentTypes
 from ..serializers import OrderSerializer, DetailOut
-from .. import serializers as ser
-from ..serializers.steps import Step1Docs, StepBlockSerializer, StepBlockMobile
+from ..serializers.steps import (
+    Step1Docs,
+    StepBlockMobile,
+    StepWeb,
+)
 
 
 @extend_schema(tags=["order"])
@@ -120,9 +124,9 @@ class StepsViewSet(ViewSet):
         )
         return Response(Step1Docs(instance=payload).data)
 
-    @extend_schema(responses={200: StepBlockSerializer(many=True), 403: DetailOut})
-    @action(methods=["GET"], detail=False)
-    def steps(self):
+    @extend_schema(responses={200: StepWeb(many=True), 403: DetailOut})
+    @action(methods=["GET"], detail=False, url_path="web", url_name="")
+    def steps(self, pk):
         pass
 
     @extend_schema(responses={200: StepBlockMobile(many=True), 403: DetailOut})

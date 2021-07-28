@@ -13,10 +13,10 @@ class Step1Docs(serializers.Serializer):
 class StepBlock(serializers.Serializer):
     type = serializers.ChoiceField(choices=tuple(key.value for key in StepBlockType))
     datetime = serializers.DateTimeField(allow_null=True)
-    value = serializers.JSONField(allow_null=True)
+    value = serializers.CharField(allow_null=True)
 
 
-class StepBlockSerializer(serializers.Serializer):
+class StepWeb(serializers.Serializer):
     stage = serializers.ChoiceField(choices=tuple(key.value for key in StepBlockStages))
     blocks = StepBlock(many=True)
 
