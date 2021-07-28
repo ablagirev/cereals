@@ -1,7 +1,9 @@
 import datetime
+from dataclasses import dataclass
 
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.decorators import action
@@ -11,9 +13,10 @@ from rest_framework import serializers
 
 from main.views.mixins import UpdateViewSetMixin
 from .. import models
+from ..enums import DocumentTypes
 from ..serializers import OrderSerializer, DetailOut
 from .. import serializers as ser
-from ..serializers.steps import Step1Docs
+from ..serializers.steps import Step1Docs, StepBlockSerializer, StepBlockMobile
 
 
 @extend_schema(tags=["order"])
@@ -80,16 +83,59 @@ class OrderViewSet(UpdateViewSetMixin, ModelViewSet):
         return Response(data="uploaded")
 
 
+@dataclass
+class Step1DocPayload:
+    specification: models.Document
+    for_sign: models.Document
+    bill: models.Document
+    createdAt: datetime
+
+
 class StepsViewSet(ViewSet):
     @extend_schema(responses={200: Step1Docs, 403: DetailOut})
     @action(methods=["GET"], detail=False)
     def get_step_1_docs(self, request, order_id: int):
         order = models.Order.objects.get(id=order_id)
-        return Response(
-            {
-                "forSign": "",
-                "specification": "",
-                "bill": "",
-                "createdAt": datetime.datetime.now().strftime("%d-%m-%y"),
-            }
+        docs = {
+            doc.type.value: doc
+            for doc in order.documents.filter(
+                Q(type=DocumentTypes.specification.value)
+                | Q(type=DocumentTypes.contract_for_signing.value)
+                | Q(type=DocumentTypes.payment_invoice.value)
+            )
+        }
+        if any(
+            (
+                DocumentTypes.specification.value not in docs,
+                DocumentTypes.contract_for_signing.value not in docs,
+                DocumentTypes.payment_invoice.value not in docs,
+            )
+        ):
+            raise ValidationError(detail="Не все документы готовы на выдачу")
+        payload = Step1DocPayload(
+            specification=docs.get("specification"),
+            for_sign=docs.get("for_sign"),
+            bill=docs.get("bill"),
+            createdAt=datetime.datetime.now(),
         )
+        return Response(Step1Docs(instance=payload).data)
+
+    @extend_schema(responses={200: StepBlockSerializer(many=True), 403: DetailOut})
+    @action(methods=["GET"], detail=False)
+    def steps(self):
+        pass
+
+    @extend_schema(responses={200: StepBlockMobile(many=True), 403: DetailOut})
+    @action(methods=["GET"], detail=False)
+    def step1(self):
+        pass
+
+    @extend_schema(responses={200: StepBlockMobile(many=True), 403: DetailOut})
+    @action(methods=["GET"], detail=False)
+    def step2(self):
+        pass
+
+    @extend_schema(responses={200: StepBlockMobile(many=True), 403: DetailOut})
+    @action(methods=["GET"], detail=False)
+    def step3(self):
+        pass
