@@ -1,4 +1,7 @@
 export interface IOffer {
+    totalVolume: number,
+    currentVolume: number,
+    ordersQty: number,
     cost: number;
     costWithNds: number;
     createdAt: string;
@@ -52,7 +55,6 @@ export interface IOffer {
     };
     status: string;
     title: string;
-    volume: number;
     warehouse: {
       id: number;
       title: string;

@@ -56,7 +56,9 @@ export const OffersListPage: React.FC = () => {
       label: status && `${status} - ${data?.length}`,
       items: data?.map((item) => {
         const {
-          volume,
+          totalVolume,
+          currentVolume,
+          ordersQty,
           costWithNds,
           cost,
           periodOfExport,
@@ -75,10 +77,14 @@ export const OffersListPage: React.FC = () => {
           } ${formatDate(dateFinishShipment)} (${periodOfExport} д.)`
         );
 
+        const volumeInfo = `${numberWithSeparators(
+          currentVolume
+        )} / ${numberWithSeparators(totalVolume)} (сделок: ${ordersQty})`;
+
         const dataList = [
           {
             title: "Объем, т",
-            content: [numberWithSeparators(volume)],
+            content: [volumeInfo],
           },
           {
             title: "Цена покупателя, руб",
