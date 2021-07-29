@@ -127,206 +127,207 @@ class StepsViewSet(ViewSet):
 
     @extend_schema(responses={200: StepWeb(many=True), 403: DetailOut})
     @action(methods=["GET"], detail=False, url_path="web", url_name="")
-    def steps(self, request):
+    def steps(self, request, order_id: int):
         return Response(
-            json.dumps(
-                [
-                    {
-                        "stage": "step1",
-                        "blocks": [
-                            {
-                                "type": "docs",
-                                "datetime": "2021-07-28T18:21:04.717Z",
-                                "value": json.dumps(
-                                    [
-                                        {
-                                            "title": "Договор на подписание",
-                                            "link": "http://www.africau.edu/images/default/sample.pdf",
-                                            "format": "pdf",
-                                        },
-                                        {
-                                            "title": "Спецификация",
-                                            "link": "http://www.africau.edu/images/default/sample.pdf",
-                                            "format": "pdf",
-                                        },
-                                        {
-                                            "title": "Счет на оплату",
-                                            "link": "http://www.africau.edu/images/default/sample.pdf",
-                                            "format": "pdf",
-                                        },
-                                    ]
-                                ),
-                            },
-                        ],
-                    },
-                    {
-                        "stage": "step2",
-                        "blocks": [
-                            {
-                                "type": "title",
-                                "datetime": "2021-07-28T18:21:04.717Z",
-                                "value": json.dumps(
-                                    "Проверка будет произведена по месту хранения:\n Москва"
-                                ),
-                            },
-                            {
-                                "type": "action",
-                                "datetime": "2021-07-28T18:21:04.717Z",
-                                "value": json.dumps({"code": "specialist-on-way"}),
-                            },
-                        ],
-                    },
-                    {
-                        "stage": "step3",
-                        "blocks": [
-                            {
-                                "type": "title",
-                                "datetime": "2021-07-28T18:21:04.717Z",
-                                "value": json.dumps(
-                                    "Проверка будет произведена по месту хранения:\n Москва"
-                                ),
-                            },
-                            {
-                                "type": "action-file",
-                                "datetime": "2021-07-28T18:21:04.717Z",
-                                "value": json.dumps(
-                                    {"code": "certificate", "title": ""}
-                                ),
-                            },
-                            {
-                                "type": "heading",
-                                "datetime": "2021-07-28T18:21:04.717Z",
-                                "value": json.dumps(
-                                    {"isExcepted": False, "title": "Зерно не подойдет"}
-                                ),
-                            },
-                        ],
-                    },
-                ]
-            )
+            [
+                {
+                    "stage": "step1",
+                    "blocks": [
+                        {
+                            "type": "docs",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps(
+                                [
+                                    {
+                                        "title": "Договор на подписание",
+                                        "link": "http://www.africau.edu/images/default/sample.pdf",
+                                        "format": "pdf",
+                                    },
+                                    {
+                                        "title": "Спецификация",
+                                        "link": "http://www.africau.edu/images/default/sample.pdf",
+                                        "format": "pdf",
+                                    },
+                                    {
+                                        "title": "Счет на оплату",
+                                        "link": "http://www.africau.edu/images/default/sample.pdf",
+                                        "format": "pdf",
+                                    },
+                                ]
+                            ),
+                        },
+                    ],
+                },
+                {
+                    "stage": "step2",
+                    "blocks": [
+                        {
+                            "type": "title",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps(
+                                "Проверка будет произведена по месту хранения:\n Москва"
+                            ),
+                        },
+                        {
+                            "type": "action",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps({"code": "specialist-on-way"}),
+                        },
+                    ],
+                },
+                {
+                    "stage": "step3",
+                    "blocks": [
+                        {
+                            "type": "title",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps(
+                                "Проверка будет произведена по месту хранения:\n Москва"
+                            ),
+                        },
+                        {
+                            "type": "action-file",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps({"code": "certificate", "title": ""}),
+                        },
+                        {
+                            "type": "heading",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps(
+                                {"isExcepted": False, "title": "Зерно не подойдет"}
+                            ),
+                        },
+                    ],
+                },
+            ]
         )
 
     @extend_schema(responses={200: StepBlockMobile(many=True), 403: DetailOut})
     @action(methods=["GET"], detail=False)
-    def step1(self, request):
+    def step1(self, request, order_id: int):
         return Response(
-            json.dumps(
-                [
-                    {
-                        "type": "empty",
-                        "value": json.dumps("Документы сформированы"),
-                        "status": True,
-                        "datetime": "2021-07-28T18:21:04.717Z",
-                    },
-                    {
-                        "type": "docs",
-                        "status": True,
-                        "datetime": "2021-07-28T18:21:04.717Z",
-                        "value": json.dumps(
-                            [
-                                {
-                                    "title": "Договор на подписание",
-                                    "link": "http://www.africau.edu/images/default/sample.pdf",
-                                    "format": "pdf",
-                                },
-                                {
-                                    "title": "Спецификация",
-                                    "link": "http://www.africau.edu/images/default/sample.pdf",
-                                    "format": "pdf",
-                                },
-                                {
-                                    "title": "Счет на оплату",
-                                    "link": "http://www.africau.edu/images/default/sample.pdf",
-                                    "format": "pdf",
-                                },
-                            ]
-                        ),
-                    },
-                ]
-            )
+            [
+                {
+                    "type": "empty",
+                    "value": json.dumps("Документы сформированы"),
+                    "status": True,
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                },
+                {
+                    "type": "docs",
+                    "status": True,
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                    "value": json.dumps(
+                        [
+                            {
+                                "title": "Договор на подписание",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                            {
+                                "title": "Спецификация",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                            {
+                                "title": "Счет на оплату",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                        ]
+                    ),
+                },
+            ]
         )
 
     @extend_schema(responses={200: StepBlockMobile(many=True), 403: DetailOut})
     @action(methods=["GET"], detail=False)
-    def step2(self, request):
+    def step2(self, request, order_id: int):
         return Response(
-            json.dumps(
-                [
-                    {
-                        "type": "empty",
-                        "value": json.dumps(
-                            "Назначен специалист на проверку качества по адресу"
-                        ),
-                        "status": True,
-                        "datetime": "2021-07-28T18:21:04.717Z",
-                    },
-                    {
-                        "type": "address",
-                        "status": True,
-                        "value": json.dumps({"address": "г Москва ул Тверская"}),
-                        "datetime": "2021-07-28T18:21:04.717Z",
-                    },
-                    {
-                        "type": "empty",
-                        "status": True,
-                        "value": json.dumps("Специалист выехал по адресу"),
-                        "datetime": "2021-07-28T18:21:04.717Z",
-                    },
-                ]
-            )
+            [
+                {
+                    "type": "empty",
+                    "value": json.dumps(
+                        "Назначен специалист на проверку качества по адресу",
+                        ensure_ascii=False,
+                    ),
+                    "status": True,
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                },
+                {
+                    "type": "address",
+                    "status": True,
+                    "value": json.dumps(
+                        {"address": "г Москва ул Тверская"}, ensure_ascii=False
+                    ),
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                },
+                {
+                    "type": "empty",
+                    "status": True,
+                    "value": json.dumps(
+                        "Специалист выехал по адресу", ensure_ascii=False
+                    ),
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                },
+            ]
         )
 
     @extend_schema(responses={200: StepBlockMobile(many=True), 403: DetailOut})
     @action(methods=["GET"], detail=False)
-    def step3(self, request):
+    def step3(self, request, order_id: int):
         return Response(
-            json.dumps(
-                [
-                    {
-                        "type": "empty",
-                        "value": json.dumps("Документы подписаны с двух сторон"),
-                        "status": True,
-                        "datetime": "2021-07-28T18:21:04.717Z",
-                    },
-                    {
-                        "type": "docs",
-                        "status": True,
-                        "datetime": "2021-07-28T18:21:04.717Z",
-                        "value": json.dumps(
-                            [
-                                {
-                                    "title": "Договор",
-                                    "link": "http://www.africau.edu/images/default/sample.pdf",
-                                    "format": "pdf",
-                                },
-                                {
-                                    "title": "Спецификация",
-                                    "link": "http://www.africau.edu/images/default/sample.pdf",
-                                    "format": "pdf",
-                                },
-                            ]
-                        ),
-                    },
-                    {
-                        "type": "empty",
-                        "value": json.dumps("Покупатель произвел оплату"),
-                        "status": True,
-                        "datetime": "2021-07-28T18:21:04.717Z",
-                    },
-                    {
-                        "type": "docs",
-                        "status": True,
-                        "datetime": "2021-07-28T18:21:04.717Z",
-                        "value": json.dumps(
-                            [
-                                {
-                                    "title": "Платежное поручение",
-                                    "link": "http://www.africau.edu/images/default/sample.pdf",
-                                    "format": "pdf",
-                                },
-                            ]
-                        ),
-                    },
-                ]
-            )
+            [
+                {
+                    "type": "empty",
+                    "value": json.dumps(
+                        "Документы подписаны с двух сторон", ensure_ascii=False
+                    ),
+                    "status": True,
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                },
+                {
+                    "type": "docs",
+                    "status": True,
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                    "value": json.dumps(
+                        [
+                            {
+                                "title": "Договор",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                            {
+                                "title": "Спецификация",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                        ],
+                        ensure_ascii=False,
+                    ),
+                },
+                {
+                    "type": "empty",
+                    "value": json.dumps(
+                        "Покупатель произвел оплату", ensure_ascii=False
+                    ),
+                    "status": True,
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                },
+                {
+                    "type": "docs",
+                    "status": True,
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                    "value": json.dumps(
+                        [
+                            {
+                                "title": "Платежное поручение",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                        ],
+                        ensure_ascii=False,
+                    ),
+                },
+            ]
         )
