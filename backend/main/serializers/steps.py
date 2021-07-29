@@ -26,3 +26,4 @@ class StepBlockMobile(StepBlock):
         choices=tuple(key.value for key in StepMobileBlockType)
     )
     status = serializers.BooleanField()
+    title = serializers.CharField()

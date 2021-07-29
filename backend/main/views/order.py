@@ -208,13 +208,8 @@ class StepsViewSet(ViewSet):
         return Response(
             [
                 {
-                    "type": "empty",
-                    "value": json.dumps("Документы сформированы"),
-                    "status": True,
-                    "datetime": "2021-07-28T18:21:04.717Z",
-                },
-                {
                     "type": "docs",
+                    "title": "Документы сформированы",
                     "status": True,
                     "datetime": "2021-07-28T18:21:04.717Z",
                     "value": json.dumps(
@@ -246,28 +241,17 @@ class StepsViewSet(ViewSet):
         return Response(
             [
                 {
-                    "type": "empty",
-                    "value": json.dumps(
-                        "Назначен специалист на проверку качества по адресу",
-                        ensure_ascii=False,
-                    ),
-                    "status": True,
-                    "datetime": "2021-07-28T18:21:04.717Z",
-                },
-                {
                     "type": "address",
                     "status": True,
-                    "value": json.dumps(
-                        {"address": "г Москва ул Тверская"}, ensure_ascii=False
-                    ),
+                    "title": "Назначен специалист на проверку качества по адресу",
+                    "value": json.dumps({"address": "г Москва ул Тверская"},),
                     "datetime": "2021-07-28T18:21:04.717Z",
                 },
                 {
                     "type": "empty",
                     "status": True,
-                    "value": json.dumps(
-                        "Специалист выехал по адресу", ensure_ascii=False
-                    ),
+                    "title": "Специалист выехал по адресу",
+                    "value": None,
                     "datetime": "2021-07-28T18:21:04.717Z",
                 },
             ]
@@ -279,15 +263,8 @@ class StepsViewSet(ViewSet):
         return Response(
             [
                 {
-                    "type": "empty",
-                    "value": json.dumps(
-                        "Документы подписаны с двух сторон", ensure_ascii=False
-                    ),
-                    "status": True,
-                    "datetime": "2021-07-28T18:21:04.717Z",
-                },
-                {
                     "type": "docs",
+                    "title": "Документы подписаны с двух сторон",
                     "status": True,
                     "datetime": "2021-07-28T18:21:04.717Z",
                     "value": json.dumps(
@@ -307,16 +284,9 @@ class StepsViewSet(ViewSet):
                     ),
                 },
                 {
-                    "type": "empty",
-                    "value": json.dumps(
-                        "Покупатель произвел оплату", ensure_ascii=False
-                    ),
-                    "status": True,
-                    "datetime": "2021-07-28T18:21:04.717Z",
-                },
-                {
                     "type": "docs",
                     "status": True,
+                    "title": "Покупатель произвел оплату",
                     "datetime": "2021-07-28T18:21:04.717Z",
                     "value": json.dumps(
                         [
