@@ -22,8 +22,7 @@ class StepWeb(serializers.Serializer):
 
 
 class StepBlockMobile(StepBlock):
-    type = serializers.ChoiceField(choices=tuple(key.value for key in StepBlockStages))
-    status = serializers.BooleanField()
-    blocks = serializers.ChoiceField(
+    type = serializers.ChoiceField(
         choices=tuple(key.value for key in StepMobileBlockType)
     )
+    status = serializers.BooleanField()

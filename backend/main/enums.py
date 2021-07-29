@@ -236,7 +236,7 @@ class StepBlockType(Enum):
 
 
 class StepMobileBlockType(Enum):
-    string = "string"
+    empty = "empty"
     docs = "docs"
     address = "address"
     total = "total"
