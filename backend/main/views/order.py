@@ -1,19 +1,27 @@
 import datetime
+import json
+from dataclasses import dataclass
 
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework import serializers
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import serializers
+from rest_framework.viewsets import ModelViewSet, ViewSet
 
 from main.views.mixins import UpdateViewSetMixin
 from .. import models
-from ..serializers import OrderSerializer, DetailOut
 from .. import serializers as ser
-from ..serializers.steps import Step1Docs
+from ..enums import DocumentTypes
+from ..serializers import OrderSerializer, DetailOut
+from ..serializers.steps import (
+    Step1Docs,
+    StepBlockMobile,
+    StepWeb,
+)
 
 
 @extend_schema(tags=["order"])
@@ -80,16 +88,216 @@ class OrderViewSet(UpdateViewSetMixin, ModelViewSet):
         return Response(data="uploaded")
 
 
+@dataclass
+class Step1DocPayload:
+    specification: models.Document
+    for_sign: models.Document
+    bill: models.Document
+    createdAt: datetime
+
+
 class StepsViewSet(ViewSet):
-    @extend_schema(responses={200: Step1Docs(), 403: DetailOut()})
-    @action(methods=("GET",), detail=False)
-    def get_step_1_docs(self, request, offer_id: int):
-        offer = models.Offer.objects.get(id=offer_id)
+    @extend_schema(responses={200: Step1Docs, 403: DetailOut})
+    @action(methods=["GET"], detail=False)
+    def get_step_1_docs(self, request, order_id: int):
+        order = models.Order.objects.get(id=order_id)
+        docs = {
+            doc.type.value: doc
+            for doc in order.documents.filter(
+                Q(type=DocumentTypes.specification.value)
+                | Q(type=DocumentTypes.contract_for_signing.value)
+                | Q(type=DocumentTypes.payment_invoice.value)
+            )
+        }
+        if any(
+            (
+                DocumentTypes.specification.value not in docs,
+                DocumentTypes.contract_for_signing.value not in docs,
+                DocumentTypes.payment_invoice.value not in docs,
+            )
+        ):
+            raise ValidationError(detail="Не все документы готовы на выдачу")
+        payload = Step1DocPayload(
+            specification=docs.get("specification"),
+            for_sign=docs.get("for_sign"),
+            bill=docs.get("bill"),
+            createdAt=datetime.datetime.now(),
+        )
+        return Response(Step1Docs(instance=payload).data)
+
+    @extend_schema(responses={200: StepWeb(many=True), 403: DetailOut})
+    @action(methods=["GET"], detail=False, url_path="web", url_name="")
+    def steps(self, request, order_id: int):
         return Response(
-            {
-                "forSign": "",
-                "specification": "",
-                "bill": "",
-                "createdAt": datetime.datetime.now().strftime("%d-%m-%y"),
-            }
+            [
+                {
+                    "stage": "step1",
+                    "blocks": [
+                        {
+                            "type": "docs",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps(
+                                [
+                                    {
+                                        "title": "Договор на подписание",
+                                        "link": "http://www.africau.edu/images/default/sample.pdf",
+                                        "format": "pdf",
+                                    },
+                                    {
+                                        "title": "Спецификация",
+                                        "link": "http://www.africau.edu/images/default/sample.pdf",
+                                        "format": "pdf",
+                                    },
+                                    {
+                                        "title": "Счет на оплату",
+                                        "link": "http://www.africau.edu/images/default/sample.pdf",
+                                        "format": "pdf",
+                                    },
+                                ]
+                            ),
+                        },
+                    ],
+                },
+                {
+                    "stage": "step2",
+                    "blocks": [
+                        {
+                            "type": "title",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps(
+                                "Проверка будет произведена по месту хранения:\n Москва"
+                            ),
+                        },
+                        {
+                            "type": "action",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps({"code": "specialist-on-way"}),
+                        },
+                    ],
+                },
+                {
+                    "stage": "step3",
+                    "blocks": [
+                        {
+                            "type": "title",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps(
+                                "Проверка будет произведена по месту хранения:\n Москва"
+                            ),
+                        },
+                        {
+                            "type": "action-file",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps({"code": "certificate", "title": ""}),
+                        },
+                        {
+                            "type": "heading",
+                            "datetime": "2021-07-28T18:21:04.717Z",
+                            "value": json.dumps(
+                                {"isExcepted": False, "title": "Зерно не подойдет"}
+                            ),
+                        },
+                    ],
+                },
+            ]
+        )
+
+    @extend_schema(responses={200: StepBlockMobile(many=True), 403: DetailOut})
+    @action(methods=["GET"], detail=False)
+    def step1(self, request, order_id: int):
+        return Response(
+            [
+                {
+                    "type": "docs",
+                    "title": "Документы сформированы",
+                    "status": True,
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                    "value": json.dumps(
+                        [
+                            {
+                                "title": "Договор на подписание",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                            {
+                                "title": "Спецификация",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                            {
+                                "title": "Счет на оплату",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                        ]
+                    ),
+                },
+            ]
+        )
+
+    @extend_schema(responses={200: StepBlockMobile(many=True), 403: DetailOut})
+    @action(methods=["GET"], detail=False)
+    def step2(self, request, order_id: int):
+        return Response(
+            [
+                {
+                    "type": "address",
+                    "status": True,
+                    "title": "Назначен специалист на проверку качества по адресу",
+                    "value": json.dumps({"address": "г Москва ул Тверская"},),
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                },
+                {
+                    "type": "empty",
+                    "status": True,
+                    "title": "Специалист выехал по адресу",
+                    "value": None,
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                },
+            ]
+        )
+
+    @extend_schema(responses={200: StepBlockMobile(many=True), 403: DetailOut})
+    @action(methods=["GET"], detail=False)
+    def step3(self, request, order_id: int):
+        return Response(
+            [
+                {
+                    "type": "docs",
+                    "title": "Документы подписаны с двух сторон",
+                    "status": True,
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                    "value": json.dumps(
+                        [
+                            {
+                                "title": "Договор",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                            {
+                                "title": "Спецификация",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                        ],
+                        ensure_ascii=False,
+                    ),
+                },
+                {
+                    "type": "docs",
+                    "status": True,
+                    "title": "Покупатель произвел оплату",
+                    "datetime": "2021-07-28T18:21:04.717Z",
+                    "value": json.dumps(
+                        [
+                            {
+                                "title": "Платежное поручение",
+                                "link": "http://www.africau.edu/images/default/sample.pdf",
+                                "format": "pdf",
+                            },
+                        ],
+                        ensure_ascii=False,
+                    ),
+                },
+            ]
         )

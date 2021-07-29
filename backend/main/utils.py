@@ -153,10 +153,22 @@ def load_data_for_spec():
                     spec.GOST = d["ГОСТ"]
                     spec.save()
 
+            # Категория
+            if not models.Category.objects.filter(name=d["Категория культуры"]).exists() and \
+                    len(d["Категория культуры"]) > 1:
+                category = models.Category()
+                category.name = d["Категория культуры"]
+                category.save()
+
             # Культура
             if not models.Culture.objects.filter(name=d["Культура"]).exists():
                 culture = models.Culture()
                 culture.name = d["Культура"]
+                if 'Пшеница' in d["Культура"]:
+                    category = 'Пшеница'
+                else:
+                    category = d["Культура"]
+                culture.category = models.Category.objects.get(name=category)
                 culture.save()
 
                 culture = models.Culture.objects.get(name=d["Культура"])

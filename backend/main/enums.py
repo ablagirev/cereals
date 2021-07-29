@@ -217,3 +217,26 @@ DEFAULT_VALUES_GETTER = {
     SpecificationTypes.range: build_range_spec,
     SpecificationTypes.bool: default_primitive,
 }
+
+
+class StepBlockStages(Enum):
+    step1 = "step1"
+    step2 = "step2"
+    step3 = "step3"
+    step4 = "step4"
+    step5 = "step5"
+
+
+class StepBlockType(Enum):
+    title = "title"
+    docs = "docs"
+    action = "action"
+    action_file = "action-file"
+    heading = "heading"
+
+
+class StepMobileBlockType(Enum):
+    empty = "empty"
+    docs = "docs"
+    address = "address"
+    total = "total"
